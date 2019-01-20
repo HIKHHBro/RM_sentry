@@ -1,0 +1,28 @@
+
+/MDK-ARM/*
+!/MDK-ARM/startup_stm32f427xx.s
+!/MDK-ARM/startup_stm32f427xx.lst
+!/MDK-ARM/rmofos.uvprojx
+!/MDK-ARM/rmofos.uvoptx
+!/MDK-ARM/EventRecorderStub.scvd
+!/MDK-ARM/RTE/
+!/MDK-ARM/
+##class file##
+*.com ?
+*.class ?
+*.dll ?
+*.exe ?
+*.o ?
+*.so? 
+# compression file
+*.7z ?
+*.dmg ?
+*.gz ?
+*.iso ?
+*.jar ?
+*.rar ?
+*.tar ?
+*.zip ?
+*.via
+*.tmp
+*.err 
