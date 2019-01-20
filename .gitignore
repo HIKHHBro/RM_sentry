@@ -1,4 +1,5 @@
-
+/Drivers/
+/Middlewares/
 /MDK-ARM/*
 !/MDK-ARM/startup_stm32f427xx.s
 !/MDK-ARM/startup_stm32f427xx.lst
