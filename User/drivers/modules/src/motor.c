@@ -662,8 +662,9 @@ static int16_t s_max_motor_lines = 8192 ;//电机一圈最大线数
 	* @param   RM6623电机结构体地址
 	* @retval  void
 	*/
-void RM6623StructInit(RM6623Struct *RM6623)
+void RM6623StructInit(RM6623Struct *RM6623,CAN_HandleTypeDef *hcanx)
 {
+	RM6623->id = 0;
 	RM6623->target = 0;				//目标值
 	RM6623->tem_target = 0;		//临时目标值
 	RM6623->real_current = 0; //真实电流
@@ -671,6 +672,7 @@ void RM6623StructInit(RM6623Struct *RM6623)
 	RM6623->tem_angle = 0;		//临时角度
 	RM6623->zero = 0;					//电机零点
 	RM6623->Percentage = 0;		//转换比例（减速前角度:减速后的角度 = x:1）
+	RM6623->hcanx = hcanx;
 	/*根据读取时间间隔，估算最大转过线数p，thresholds = p -s_max_motor_lines */
 	RM6623->thresholds = 1200 - s_max_motor_lines;//1200是瞎给的，别计较
 }
@@ -684,7 +686,7 @@ void RM6623StructInit(RM6623Struct *RM6623)
 void RM6623ParseData(RM6623Struct*RM6623,uint8_t *data)
 {
 	int16_t tem_angle = 0;
-	RM6623->real_current = ((int16_t)(data[4]<<8)|data[5]);
+	RM6623->real_current = ((int16_t)(data[4] << 8) | data[5]);
 	tem_angle = ((int16_t)(data[0] << 8) | data[1]);
 	tem_angle = RatiometricConversion(tem_angle, RM6623->thresholds, RM6623->Percentage);
 	RM6623->real_angle = zeroArgument(tem_angle, RM6623->thresholds);
@@ -699,12 +701,14 @@ void RM6623ParseData(RM6623Struct*RM6623,uint8_t *data)
 	* @param   RM3508电机结构体地址
 	* @retval  void
 	*/
-void RM3508StructInit(RM3508Struct *RM3508)
+void RM3508StructInit(RM3508Struct *RM3508,CAN_HandleTypeDef *hcanx)
 {
+		RM3508->id = 0;
 		RM3508->target = 0;
 		RM3508->real_current = 0;
 		RM3508->real_angle = 0;
 		RM3508->real_speed = 0;
+		RM3508->hcanx = hcanx;
 }
 /*---------------------------------80字符限制-----------------------------------*/
 	/**
@@ -732,9 +736,8 @@ void RM3508StructInit(RM3508Struct *RM3508)
 int16_t RatiometricConversion(int16_t real,int16_t threshold,int16_t percentage)
 {
 
-		static int32_t last_real,Real_Angle,tem=0;
+		static int32_t last_real,tem=0;
 		static uint16_t  coefficient=0;
-		static uint8_t expansion; 
 		if (real - last_real < threshold)
 		{
 			/*角度系数循环自增,下面转36圈归零系数,设置范围[0,Percentage] */

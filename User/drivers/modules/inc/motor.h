@@ -29,7 +29,7 @@
 #ifndef __MOTOR_H 
 #define __MOTOR_H
 	#include "baseclass.h"
-//	#include "can.h"
+	#include "bsp_can.h" 
 ///* ----------------- maxion电机 -------------------- */
 //  /* -------- ID号 --------- */
 //	typedef enum
@@ -88,7 +88,8 @@
 /* ================================== RM6623 of begin ================================= */
 	typedef struct RM6623Struct
 	{
-		int16_t target;//目标值
+		uint16_t id;//电机can的ip
+		int16_t target;		 //目标值
 		int16_t tem_target;//临时目标值
 		int16_t real_current; //真实电流
 		int16_t real_angle;//真实角度
@@ -96,20 +97,22 @@
 		int16_t zero;			 //电机零点
 		int16_t Percentage;//转换比例（减速前角度:减速后的角度 = x:1
 		int16_t thresholds; //电机反转阀值
-
+		CAN_HandleTypeDef *hcanx;
 	} RM6623Struct;
-	void RM6623StructInit(RM6623Struct *RM6623);
+	void RM6623StructInit(RM6623Struct *RM6623,CAN_HandleTypeDef *hcanx);
 	void RM6623ParseData(RM6623Struct*RM6623,uint8_t *data);
 	/* ================================== RM6623 of end =================================== */
 	/* ================================== Rm3508 of begin ================================= */
 	typedef struct RM3508Struct
 	{
+		uint16_t id;//电机can的ip
 		int16_t target; //目标值
 		int16_t real_current;//真实电流
 		int16_t real_angle;//真实角度
 		int16_t real_speed;//真实速度
+		CAN_HandleTypeDef *hcanx;
 	}RM3508Struct;
-	void RM3508StructInit(RM3508Struct *RM3508);
+	void RM3508StructInit(RM3508Struct *RM3508,CAN_HandleTypeDef *hcanx);
 	void RM3508ParseData(RM3508Struct *RM3508,uint8_t *data);
 /* ================================== Rm3508 of end =================================== */
 int16_t RatiometricConversion(int16_t real,int16_t threshold,int16_t percentage);

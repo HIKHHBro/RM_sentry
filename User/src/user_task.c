@@ -93,6 +93,7 @@ void StartParseTask(void const *argument)
 		if(task_on_off==ENABLE)
 		{
 			DbusParseData(&dbus_t);
+			
 			parse_task_status = ENABLE;
       osDelay(1);
 		}

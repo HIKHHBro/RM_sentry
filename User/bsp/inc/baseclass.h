@@ -29,8 +29,8 @@
 #define HAL_F1 0
 #define HAL_F4 1
 #if HAL_F1 
-	#include "stm32f1xx_hal.h"
-	#include <stdlib.h>
+	// #include "stm32f1xx_hal.h"
+	// #include <stdlib.h>
 #elif HAL_F4
 		#include "stm32f4xx_hal.h"
 		#include "cmsis_os.h"

@@ -120,7 +120,7 @@ HAL_StatusTypeDef UsartAndDMAInit(UART_HandleTypeDef *huartx,uint8_t frame_size\
 	HAL_StatusTypeDef UsartQueueCreate(usartDataStrcut *usartx,uint8_t len,\
 																														uint8_t deep)
 	{
-		usartx->usart_queue = xQueueCreate(len,deep);//创建深度len长度20队列
+		usartx->usart_queue = xQueueCreate(len,deep);//创建深度len长度21队列
 		if(usartx->usart_queue == NULL)
 			return HAL_ERROR;
 		return HAL_OK;

@@ -37,6 +37,7 @@ canDataStrcut *pcan2_t = NULL;
 HAL_StatusTypeDef UserCanConfig(CAN_HandleTypeDef* hcanx)   
 {
 	canDataStrcut *addr;
+	addr = GetCantAddr(hcanx);
 	if(AllocateCanxSpace(hcanx) != HAL_OK)//用户can结构体空间分配
 	{
 		free(addr);
@@ -49,13 +50,12 @@ HAL_StatusTypeDef UserCanConfig(CAN_HandleTypeDef* hcanx)
 		return HAL_ERROR;
 	if(CanRxInit(hcanx) != HAL_OK)
 		return HAL_ERROR;
-	// if(CanQueueCreate(addr,5,) != HAL_OK) //创建队列
-	// {
-	// 	//添加错误机制
-	// 	free(addr->rx_buff_data);
-	// 	free(addr);
-	// 	return HAL_ERROR;
-	// }
+	if(CanQueueCreate(addr,5,16) != HAL_OK) //创建队列
+	{
+		//添加错误机制
+		free(addr);
+		return HAL_ERROR;
+	}
 	 HAL_CAN_Start(hcanx);
 	 HAL_CAN_ActivateNotification(hcanx, CAN_IT_RX_FIFO0_MSG_PENDING); //开启中断
 	 return HAL_OK;
@@ -68,7 +68,7 @@ HAL_StatusTypeDef UserCanConfig(CAN_HandleTypeDef* hcanx)
   * @retval HAL Status
  **/
 /* -------------------------------- end -------------------------------- */
-HAL_StatusTypeDef CAanFilterInit(CAN_HandleTypeDef* hcanx)
+HAL_StatusTypeDef CanFilterInit(CAN_HandleTypeDef* hcanx)
 {
 	canDataStrcut *addr;
 	addr = GetCantAddr(hcanx);
@@ -162,7 +162,7 @@ HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
 				return HAL_ERROR;
 				return HAL_OK;
 			} 
-			else if (hcanx->Instance == USART2) 
+			else if (hcanx->Instance == CAN2) 
 			{
 				pcan2_t	= (struct canDataStrcut*)malloc(sizeof(struct canDataStrcut));
 				if(pcan2_t== NULL)
@@ -199,7 +199,11 @@ HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
 	*/
 	void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 	{
-		
+		canDataStrcut *addr;
+	  addr = GetCantAddr(hcan); //获取相应用户can结构体地址
+		HAL_CAN_GetRxMessage(hcan,CAN_RX_FIFO0,&addr->rxMsg,addr->rxdata);
+		 memcpy(addr->queue_data,&addr->rxdata,8);
+		xQueueSendToBackFromISR(addr->can_queue,addr->queue_data, 0);
 	}
 /*---------------------------------80字符限制-----------------------------------*/
 	/**
@@ -208,9 +212,9 @@ HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
 	* @param   void
 	* @retval  void
 	*/
-	void UsartQueueCreate(canDataStrcut *canx,uint8_t len,uint8_t deep)
+	HAL_StatusTypeDef CanQueueCreate(canDataStrcut *canx,uint8_t len,uint8_t deep)
 	{
-		canx->can_queue == xQueueCreate(len,deep);//创建深度len长度20队列
+		canx->can_queue = xQueueCreate(len,deep);//创建深度len长度20队列
 		if(canx->can_queue == NULL)
 			return HAL_ERROR;
 		return HAL_OK;
@@ -227,7 +231,7 @@ HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
 	{
 //				portBASE_TYPE xStatus;
 		canDataStrcut *addr;
-		addr = GetCanAddr(hcanx);
+		addr = GetCantAddr(hcanx);
 //				xStatus = 
 		xQueueReceive(addr->can_queue, pvBuffer, 1);
 //				if(pdPASS != xStatus)

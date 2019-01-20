@@ -1,19 +1,19 @@
 /**
-	|-------------------------------- Copyright ----------------------------------------|
-	|                                                                                   |
-	|                        (C) Copyright 2018,海康平头哥,                              |
-	|            1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China            |
-	|                            All Rights Reserved                                    |
-	|                                                                                   |
-	|            By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)               |
-	|                     https://github.com/GCUWildwolfteam                            |
-	|-----------------------------------------------------------------------------------|
-	|--FileName    : Chassis.c                                                
+	|-------------------------------- Copyright -----------------------------------|
+	|                                                                              |
+	|                        (C) Copyright 2019,海康平头哥,                         |
+	|            1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China       |
+	|                            All Rights Reserved                               |
+	|                                                                              |
+	|            By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)          |
+	|                     https://github.com/GCUWildwolfteam                       |
+	|------------------------------------------------------------------------------|
+	|--FileName    : chassis.c                                                
 	|--Version     : v1.0                                                            
 	|--Author      : 海康平头哥                                                       
-	|--Date        : 2018-12-11               
-	|--Description : 1、三轮底盘
-	|								 2、用底盘文件,请包含motor.h和motor.c文件                                                       
+	|--Date        : 2019-01-19               
+	|--Libsupports : STM32CubeF1 Firmware Package V1.6.0(用别的库出问题别问我)
+	|--Description :                                                       
 	|--FunctionList                                                       
 	|-------1. ....                                                       
 	|          <version>:                                                       
@@ -21,55 +21,46 @@
 	|             <data>:                                                       
 	|      <description>:                                                        
 	|-------2. ...                                                       
-	|---------------------------------declaration of end---------------------------------|
+	|---------------------------------declaration of end----------------------------|
  **/
-#include "Chassis.h" 
-	  /**
-		* @Data    2018-12-11 20:25
-		* @brief   底盘数据初始化话
-		* @param   chassisClass_t * cC
-		* @retval  void
-		*/
-		HAL_StatusTypeDef ChassisClassInit(chassiStruct * cc,CAN_HandleTypeDef* hcan\
-																											,photoelectricStruct* ps)
-		{
-		/* -------- 检测缓存空间是否分配成功 --------- */		
-			if(cc == NULL)
-	 			return HAL_ERROR;
-			SET_BIT(e_objects_flag,CREATE_OBJECTS_OF_CHASSIS); //获取标志
-			cc->p_canx = RecognizeCanType(hcan); //识别can类型，获can类型地址
-		/* -------- 检测传值 --------- */
-			if(cc->p_canx != hcan&&cc->p_canx ==NULL)
-			{
-				SET_BIT(e_periphera_error_flag,GET_CAN_ADDR_FAIL);
-				return HAL_ERROR;
-			}
-			cc->thirdWheelChassis_t.motorspeed1= 0;
-			cc->thirdWheelChassis_t.motorspeed2 = 0;
-			cc->thirdWheelChassis_t.motorspeed3 = 0;
-			cc->thirdWheelChassis_t.v_x = 0;
-			cc->thirdWheelChassis_t.v_y = 0;
-			cc->thirdWheelChassis_t.v_w = 0;
-			cc->status = 0;
-			cc->p_addr_cache = NULL; //不能动这句话（危险）
-			UserCANConfig(hcan);          //can初始化
-
-			/* -------- 继承 --------- */
-				cc->photoelectric_t = ps;
-			/* -------- 模块初始化 --------- */
-				PhotoelectricInit(ps,hcan);
-			return HAL_OK;
-		}
-  /**
-	* @Data    2018-12-11 20:31
-	* @brief   底盘电机模式初始化
-	* @param   uint8_t mode 底盘电机控制模式
+#include "chassis.h"
+	RM3508Struct wheel1_t;//轮子1
+	RM3508Struct wheel2_t;//轮子2
+	extern CAN_HandleTypeDef hcan1;
+	#define WHEEL1_ID 0x205
+	#define WHEEL2_ID 0x206
+	/*---------------------------------80字符限制-----------------------------------*/
+	/**
+	* @Data    2019-01-19 11:45
+	* @brief   底盘数据解析
+	* @param   chassisStruct* css 底盘结构体指针
 	* @retval  void
 	*/
-	void ChassisMotorModeInit(uint8_t mode)
+	void ChassisInit(chassisStruct* css)
 	{
-		// CAN_TRANSMIT(&hcan,0x001,mode,0,0,0); //选择进入电流速度模式
+		css->pwheel1_t = &wheel1_t;
+		css->pwheel2_t = &wheel2_t;
+		RM3508StructInit(css->pwheel1_t,&hcan1);
+		RM3508StructInit(css->pwheel2_t,&hcan1);
 	}
-/*------------------------------------file of end------------------------------------*/
-
-
+/*---------------------------------80字符限制-----------------------------------*/
+	/**
+	* @Data    2019-01-19 12:01
+	* @brief   底盘数据解析
+	* @param   Peripheral type外设类型,串口CAN_HandleTypeDef,can的CAN_HandleTypeDef
+	* @retval  void
+	*/
+	void ChassisParseDate(uint16_t id)
+	{
+		
+		switch (id)
+		{
+			case WHEEL1_ID:
+				// RM3508ParseData();
+				break;
+		
+			default:
+				break;
+		}
+	}
+	/*------------------------------------file of end-------------------------------*/
