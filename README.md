@@ -6,7 +6,7 @@
 - Middlewares
 - Src
 - User
-  1. bsp
-  2. drivers
-  3. control
-  4. apps
+  * bsp
+  * drivers
+  * control
+  * apps
