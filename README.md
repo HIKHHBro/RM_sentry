@@ -4,14 +4,14 @@
 + Middlewares（freertos层）
 + MDK-ARM （keil工程文件和编译文件）
 + User（用户层）
-  * bsp（用户底层配置层）
-  * drivers（用户模块设备层）
-    - counters(控制器等算法)
-    - data_struture(用户自定义数据结构)
-    - modules（模块和外设）
-  * control（控制层）
-  * inc（应用层头文件）
-  * src（应用层源文件）
+  - bsp（用户底层配置层）
+  - drivers（用户模块设备层）
+    * counters(控制器等算法)
+    * data_struture(用户自定义数据结构)
+    * modules（模块和外设）
+  - control（控制层）
+  - inc（应用层头文件）
+  - src（应用层源文件）
 + Inc（主函数和中断层头文件）
 + Src（主函数和中断层源文件）
 ## 库说明
