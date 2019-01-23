@@ -13,3 +13,5 @@
 - Src（主函数和中断层源文件）
 ## 库说明
 STM32CubeF4 Firmware Package V1.21.0 / 23-February-2018
+## 开发板支持
+RM新版和旧版（f427IIHx）
