@@ -16,9 +16,9 @@ STM32CubeF4 Firmware Package V1.21.0 / 23-February-2018
 ## 开发板支持
 RM新版和旧版（f427IIHx）
 ## 代码命名规则说明
-函数名          大驼峰 如MyName;
-普通变量        全小写 如my_name;
-结构体声明      小驼峰 如myNameStruct;
-结构体定义      小驼峰_t 如 myName_t;
-(枚举联合体规则类似结构体);
-指针类型        相应类型前加p 如普通变量指针类型pmy_name，结构体指针类型pmyName_t，其他类型类似;
+ 函数名          *大驼峰 如MyName*
+ 普通变量        *全小写 如my_name*
+ 结构体声明      *小驼峰 如myNameStruct*
+ 结构体定义      *小驼峰_t 如 myName_t*
+ (枚举联合体规则类似结构体)
+ 指针类型        *相应类型前加p 如普通变量指针类型pmy_name，结构体指针类型pmyName_t，其他类型类似*
