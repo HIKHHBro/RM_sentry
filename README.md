@@ -1,4 +1,4 @@
-# RM_freetrtos_templates_HAL
+# RM_freetrtos_templates_HAL   v1.0
 ## 文件层次
 - Drivers(HAL库驱动层)
 - Middlewares（freertos层）
@@ -6,6 +6,9 @@
 - User（用户层）
   * bsp（用户底层配置层）
   * drivers（用户模块设备层）
+    + counters(控制器等算法)
+    + data_struture(用户自定义数据结构)
+    + modules（模块和外设）
   * control（控制层）
   * inc（应用层头文件）
   * src（应用层源文件）
