@@ -35,6 +35,7 @@
 		#include "stm32f4xx_hal.h"
 		#include "cmsis_os.h"
 		#include <stdlib.h>
+    #include <string.h>
 #endif 
 	#define MAX(X,Y) (X)>(Y)?(Y):(X)  //限做大值
 	#define MIN(X,Y) (X)<(Y)?(Y):(X)  //限做小值
