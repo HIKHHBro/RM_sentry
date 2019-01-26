@@ -21,12 +21,15 @@ FreeTROS
 ## 开发板支持
 RM新板RM,旧板,彬哥第一代板（f427IIHx）
 ## 代码命名规则说明
- 函数名 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; *大驼峰 如MyName*<br>
- 普通变量  &ensp;  &ensp;  &ensp;  &ensp;&ensp;&ensp; *全小写 如my_name*<br>
- 结构体声明  &ensp;  &ensp;  &ensp;  &ensp;&ensp;&ensp; *小驼峰 如myNameStruct*<br>
- 结构体定义 &ensp;  &ensp;  &ensp;  &ensp; &ensp;&ensp;*小驼峰_t 如 myName_t*<br>
- (枚举联合体规则类似结构体)<br>
- 指针类型 &ensp;  &ensp;  &ensp;  &ensp;&ensp;&ensp; *相应类型前加p 如普通变量指针类型pmy_name，结构体指针类型pmyName_t，其他类型类似*<br>
+类型|命名规则|示例
+-|-|-
+ 函数名|大驼峰|MyName
+ 普通变量|全小写,连接加下划线|my_name
+ 结构体声明|小驼峰加后缀Struct|myNameStruct
+ 结构体定义|小驼峰加后缀_t|myName_t
+ 枚举声明|小驼峰加后缀Enum|myNameEnum
+ 枚举定义|小驼峰加后缀_e|myName_e
+ 指针类型|相应类型加前缀p|普通变量指针类型pmy_name，结构体指针类型pmyName_t
 ## 底层外设支持（bsp）
  串口空闲中断+DMA不定长度接收<br>
  can中断接收
