@@ -1,27 +1,27 @@
 /**
-	|-------------------------------- Copyright ----------------------------------------|
-	|                                                                                   |
-	|                        (C) Copyright 2018,海康平头哥,                              |
-	|            1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China            |
-	|                            All Rights Reserved                                    |
-	|                                                                                   |
-	|            By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)               |
-	|                     https://github.com/GCUWildwolfteam                            |
-	|-----------------------------------------------------------------------------------|
-	|--FileName    : baseclass.h                                                
-	|--Version     : v1.0                                                            
-	|--Author      : 海康平头哥                                                       
+	|-------------------------------- Copyright |--------------------------------|
+	|                                                                            |
+	|                        (C) Copyright 2018,海康平头哥,                       |
+	|         1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China        |
+	|                         All Rights Reserved                                |
+	|                                                                            |
+	|          By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)          |
+	|                   https://github.com/GCUWildwolfteam                       |
+	|----------------------------------------------------------------------------|
+	|--FileName    : baseclass.h
+	|--Version     : v1.0
+	|--Author      : 海康平头哥
 	|--Date        : 2018-11-27 
-	|-- Libsupports: STM32CubeF1 Firmware Package V1.6.0 / 17-May-2017(用别的库出问题别问我)              
-	|--Description : 1、支持板子f103vetx                                                     
-	|--FunctionList                                                       
-	|-------1. ....                                                       
-	|          <version>:                                                       
-	|     <modify staff>:                                                       
-	|             <data>:                                                       
-	|      <description>:                                                        
-	|-------2. ...                                                       
-	|---------------------------------declaration of end---------------------------------|
+	|-- Libsupports:           
+	|--Description :
+	|--FunctionList
+	|-------1. ....
+	|          <version>:
+	|     <modify staff>:
+	|             <data>:
+	|      <description>:
+	|-------2. ...
+	|-----------------------------declaration of end-----------------------------|
  **/
 #ifndef __BASECLASS_H 
 #define __BASECLASS_H 
@@ -71,12 +71,12 @@
 	#define NO_CREATE_OBJECTS_OF_WHOLEPOSITION        0x0000U //申请全场定位的对象
 	#define CREATE_OBJECTS_OF_WHOLEPOSITION        0x0001U //申请全场定位的对象
 	#define CREATE_OBJECTS_OF_CHASSIS 						0x0002U //申请底盘的对象
-	// #define (x,y)
 	/* --这两个宏一定要一起用，缓存之后一定要释放 -- */
 	#define CACHE_ADDR(CACHES,ADDRS) 	(CACHES = ADDRS) //缓存地址
-	#define FREE_ADDR(CACHES) 	(CACHES = NULL)		//释放地址  	
-	UART_HandleTypeDef* RecognizeUSARTType(UART_HandleTypeDef* huartx);//识别串口类型
-  CAN_HandleTypeDef* RecognizeCanType(CAN_HandleTypeDef* hcanx);//识别can类型
+	#define FREE_ADDR(CACHES) 	(CACHES = NULL)		//释放地址  
+/* -------------- 函数定义 ----------------- */
+	UART_HandleTypeDef* RecognizeUSARTType(UART_HandleTypeDef* huartx);
+  CAN_HandleTypeDef* RecognizeCanType(CAN_HandleTypeDef* hcanx);
 	void SetFrameDropflag(int16_t flag);
 	void SetNormalflag(int16_t flag);
 	HAL_StatusTypeDef RCREncryption(uint8_t *pdata, uint8_t size);
@@ -84,6 +84,6 @@
 
 #endif	// __BASECLASS_H
 	
- /*------------------------------------file of end------------------------------------*/
+ /*--------------------------------file of end--------------------------------*/
 
 

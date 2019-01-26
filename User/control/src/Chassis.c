@@ -1,18 +1,18 @@
 /**
-	|-------------------------------- Copyright -----------------------------------|
-	|                                                                              |
-	|                        (C) Copyright 2019,海康平头哥,                         |
-	|            1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China       |
-	|                            All Rights Reserved                               |
-	|                                                                              |
-	|            By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)          |
-	|                     https://github.com/GCUWildwolfteam                       |
-	|------------------------------------------------------------------------------|
+	|------------------------------- Copyright ----------------------------------|
+	|                                                                            |
+	|                        (C) Copyright 2019,海康平头哥,                       |
+	|          1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China       |
+	|                            All Rights Reserved                             |
+	|                                                                            |
+	|           By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)         |
+	|                    https://github.com/GCUWildwolfteam                      |
+	|----------------------------------------------------------------------------|
 	|--FileName    : chassis.c                                                
 	|--Version     : v1.0                                                            
 	|--Author      : 海康平头哥                                                       
 	|--Date        : 2019-01-19               
-	|--Libsupports : STM32CubeF1 Firmware Package V1.6.0(用别的库出问题别问我)
+	|--Libsupports : 
 	|--Description :                                                       
 	|--FunctionList                                                       
 	|-------1. ....                                                       
@@ -21,7 +21,7 @@
 	|             <data>:                                                       
 	|      <description>:                                                        
 	|-------2. ...                                                       
-	|---------------------------------declaration of end----------------------------|
+	|-------------------------------declaration of end---------------------------|
  **/
 #include "chassis.h"
 	RM3508Struct wheel1_t;//轮子1
@@ -29,8 +29,7 @@
 	extern CAN_HandleTypeDef hcan1;
 	#define WHEEL1_ID 0x205
 	#define WHEEL2_ID 0x206
-	/*---------------------------------80字符限制-----------------------------------*/
-	/**
+/**
 	* @Data    2019-01-19 11:45
 	* @brief   底盘数据解析
 	* @param   chassisStruct* css 底盘结构体指针
@@ -43,8 +42,7 @@
 		RM3508StructInit(css->pwheel1_t,&hcan1);
 		RM3508StructInit(css->pwheel2_t,&hcan1);
 	}
-/*---------------------------------80字符限制-----------------------------------*/
-	/**
+/**
 	* @Data    2019-01-19 12:01
 	* @brief   底盘数据解析
 	* @param   Peripheral type外设类型,串口CAN_HandleTypeDef,can的CAN_HandleTypeDef
@@ -63,4 +61,4 @@
 				break;
 		}
 	}
-	/*------------------------------------file of end-------------------------------*/
+/*----------------------------------file of end-------------------------------*/

@@ -1,18 +1,18 @@
 /**
-	|-------------------------------- Copyright -----------------------------------|
-	|                                                                              |
-	|                        (C) Copyright 2019,海康平头哥,                         |
-	|            1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China       |
-	|                            All Rights Reserved                               |
-	|                                                                              |
-	|            By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)          |
-	|                     https://github.com/GCUWildwolfteam                       |
-	|------------------------------------------------------------------------------|
+	|-------------------------------- Copyright ---------------------------------|
+	|                                                                            |
+	|                      (C) Copyright 2019,海康平头哥,                         |
+	|          1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China       |
+	|                           All Rights Reserved                              |
+	|                                                                            |
+	|           By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)         |
+	|                     https://github.com/GCUWildwolfteam                     |
+	|----------------------------------------------------------------------------|
 	|--FileName    : DJI_dbus.h                                                
 	|--Version     : v1.0                                                            
 	|--Author      : 海康平头哥                                                       
 	|--Date        : 2019-01-15               
-	|--Libsupports : STM32CubeF1 Firmware Package V1.6.0(用别的库出问题别问我)
+	|--Libsupports : 
 	|--Description :                                                       
 	|--FunctionList                                                       
 	|-------1. ....                                                       
@@ -21,7 +21,7 @@
 	|             <data>:                                                       
 	|      <description>:                                                        
 	|-------2. ...                                                       
-	|---------------------------------declaration of end----------------------------|
+	|-------------------------------declaration of end---------------------------|
  **/
 #ifndef __DJI_DBUS_H 
 #define __DJI_DBUS_H 
@@ -66,10 +66,10 @@
 		}mouse;
 		struct 
 		{
-	/**********************************************************************************
-		 * 键盘通道:15   14   13   12   11   10   9   8   7   6     5     4   3   2   1
-		 *          V    C    X	  Z    G    F    R   E   Q  CTRL  SHIFT  D   A   S   W
-	************************************************************************************/
+	/*****************************************************************************
+	 * 键盘通道:15   14   13   12   11   10   9   8   7   6     5     4   3   2   1
+	 *          V    C    X	  Z    G    F    R   E   Q  CTRL  SHIFT  D   A   S   W
+	*****************************************************************************/
 			uint16_t key_code;              //原始键值
 					uint16_t jumpkey_code;          //跳变后的键值
 		}keyBoard;
@@ -83,4 +83,4 @@
 	void DbusParseData(dbusStruct *dbs);
 #endif // __DJI_DBUS_H
 
-	/*------------------------------------file of end-------------------------------*/
+/*----------------------------------file of end-------------------------------*/

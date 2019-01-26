@@ -1,18 +1,18 @@
 /**
-	|-------------------------------- Copyright -----------------------------------|
-	|                                                                              |
-	|                        (C) Copyright 2019,海康平头哥,                         |
-	|            1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China       |
-	|                            All Rights Reserved                               |
-	|                                                                              |
-	|            By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)          |
-	|                     https://github.com/GCUWildwolfteam                       |
-	|------------------------------------------------------------------------------|
+	|-------------------------------- Copyright ---------------------------------|
+	|                                                                            |
+	|                       (C) Copyright 2019,海康平头哥,                        |
+	|          1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China       |
+	|                          All Rights Reserved                               |
+	|                                                                            |
+	|           By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)         |
+	|                     https://github.com/GCUWildwolfteam                     |
+	|----------------------------------------------------------------------------|
 	|--FileName    : bsp_can.h                                                
 	|--Version     : v1.0                                                            
 	|--Author      : 海康平头哥                                                       
 	|--Date        : 2019-01-18               
-	|--Libsupports : STM32CubeF1 Firmware Package V1.6.0(用别的库出问题别问我)
+	|--Libsupports : 
 	|--Description :                                                       
 	|--FunctionList                                                       
 	|-------1. ....                                                       
@@ -21,7 +21,7 @@
 	|             <data>:                                                       
 	|      <description>:                                                        
 	|-------2. ...                                                       
-	|---------------------------------declaration of end----------------------------|
+	|-------------------------------declaration of end---------------------------|
  **/
 #ifndef __BSP_CAN_H 
 #define __BSP_CAN_H 
@@ -45,6 +45,6 @@ canDataStrcut* GetCantAddr(CAN_HandleTypeDef *hcanx);
 HAL_StatusTypeDef CanQueueCreate(canDataStrcut *canx,uint8_t len,uint8_t deep);
 #endif // __BSP_CAN_H
 
-/*------------------------------------file of end-------------------------------*/
+/*-----------------------------------file of end------------------------------*/
 
 

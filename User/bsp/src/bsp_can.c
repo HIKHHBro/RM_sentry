@@ -1,13 +1,13 @@
 /**
-	|-------------------------------- Copyright -----------------------------------|
-	|                                                                              |
-	|                        (C) Copyright 2019,海康平头哥,                         |
-	|            1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China       |
-	|                            All Rights Reserved                               |
-	|                                                                              |
-	|            By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)          |
-	|                     https://github.com/GCUWildwolfteam                       |
-	|------------------------------------------------------------------------------|
+	|-------------------------------- Copyright ---------------------------------|
+	|                                                                            |
+	|                        (C) Copyright 2019,海康平头哥,                       |
+	|           1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China      |
+	|                          All Rights Reserved                               |
+	|                                                                            |
+	|           By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)         |
+	|                    https://github.com/GCUWildwolfteam                      |
+	|----------------------------------------------------------------------------|
 	|--FileName    : bsp_can.c                                                
 	|--Version     : v1.0                                                            
 	|--Author      : 海康平头哥                                                       
@@ -21,19 +21,18 @@
 	|             <data>:                                                       
 	|      <description>:                                                        
 	|-------2. ...                                                       
-	|---------------------------------declaration of end----------------------------|
+	|--------------------------------declaration of end--------------------------|
  **/
 #include "bsp_can.h" 
 /* ----------------- 结构体地址列表 -------------------- */
 canDataStrcut *pcan1_t = NULL;
 canDataStrcut *pcan2_t = NULL;
-/* -------------------------------- begin -------------------------------- */
 /**
-  * @brief  can配置初始化
-  * @param  hcanx (x=1,2)
-  * @retval HAL Status
- **/
-/* -------------------------------- end -------------------------------- */
+	* @Data    2019-01-26 12:27
+	* @brief   can配置初始化
+	* @param   hcanx (x=1,2)
+	* @retval  HAL Status
+	*/
 HAL_StatusTypeDef UserCanConfig(CAN_HandleTypeDef* hcanx)   
 {
 	canDataStrcut *addr;
@@ -60,14 +59,12 @@ HAL_StatusTypeDef UserCanConfig(CAN_HandleTypeDef* hcanx)
 	 HAL_CAN_ActivateNotification(hcanx, CAN_IT_RX_FIFO0_MSG_PENDING); //开启中断
 	 return HAL_OK;
 }
-
-/* -------------------------------- begin -------------------------------- */
 /**
-  * @brief  can邮箱配置
-  * @param CAN_HandleTypeDef *hcanx(x=1,2)
-  * @retval HAL Status
- **/
-/* -------------------------------- end -------------------------------- */
+	* @Data    2019-01-26 12:28
+	* @brief   can邮箱配置
+	* @param   CAN_HandleTypeDef *hcanx(x=1,2)
+	* @retval   HAL Status
+	*/
 HAL_StatusTypeDef CanFilterInit(CAN_HandleTypeDef* hcanx)
 {
 	canDataStrcut *addr;
@@ -75,7 +72,7 @@ HAL_StatusTypeDef CanFilterInit(CAN_HandleTypeDef* hcanx)
 	addr->filter.FilterIdHigh = 0x0000;									 //要过滤的ID高位
 	addr->filter.FilterIdLow = 0x0000;										 //要过滤的ID低位
 	addr->filter.FilterMaskIdHigh = 0x0000;							 //过滤器高16位每位必须匹配
-	addr->filter.FilterMaskIdLow = 0x0000;								 //过滤器低16位每位必须匹配
+	addr->filter.FilterMaskIdLow = 0x0000;								//过滤器低16位每位必须匹配
 	addr->filter.FilterFIFOAssignment = CAN_FILTER_FIFO0; //过滤器被关联到FIFO 0
 	addr->filter.FilterBank = 0;
 	addr->filter.FilterScale = CAN_FILTERSCALE_32BIT;
@@ -84,15 +81,12 @@ HAL_StatusTypeDef CanFilterInit(CAN_HandleTypeDef* hcanx)
 	addr->filter.SlaveStartFilterBank = 14;
 	return (HAL_CAN_ConfigFilter(hcanx, &addr->filter)); //使能筛选器
 }
-
-
-/* -------------------------------- begin -------------------------------- */
 /**
-  * @brief  can 发送结构体初始化
-  * @param  CanTxMsgTypeDef* TxMsg
-  * @retval HAL Status
- **/
-/* -------------------------------- end -------------------------------- */
+	* @Data    2019-01-26 12:28
+	* @brief   can 发送结构体初始化
+	* @param   CanTxMsgTypeDef* TxMsg
+	* @retval  HAL Status
+	*/
 HAL_StatusTypeDef CanTxInit(CAN_HandleTypeDef* hcanx)
 {
 	canDataStrcut *addr;
@@ -115,15 +109,12 @@ HAL_StatusTypeDef CanTxInit(CAN_HandleTypeDef* hcanx)
 	addr->txdata[7] = 0x00;
 	return HAL_OK;
 }
-
-
-/* -------------------------------- begin -------------------------------- */
 /**
-  * @brief  can 接受结构体初始化
-  * @param  CanRxMsgTypeDef* RxMsg
-  * @retval void
- **/
-/* -------------------------------- end -------------------------------- */
+	* @Data    2019-01-26 12:29
+	* @brief   can 接受结构体初始化
+	* @param   CanRxMsgTypeDef* RxMsg
+	* @retval  void
+	*/
 HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
 {
 		canDataStrcut *addr;
@@ -145,8 +136,7 @@ HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
     addr->rxdata[7] = 0x00;
 		return HAL_OK;
 }
-/*---------------------------------80字符限制-----------------------------------*/
-	/**
+/**
 	* @Data    2019-01-16 10:54
 	* @brief   分配相应can类型数据的空间
 	* @param   hcanx （x=1,2）
@@ -154,25 +144,23 @@ HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
 	*/
 	HAL_StatusTypeDef AllocateCanxSpace(CAN_HandleTypeDef *hcanx)
 	{
-		
-			if (hcanx->Instance == CAN1) 
-			{
-				pcan1_t	= (struct canDataStrcut*)malloc(sizeof(struct canDataStrcut));
-				if(pcan1_t == NULL)
-				return HAL_ERROR;
-				return HAL_OK;
-			} 
-			else if (hcanx->Instance == CAN2) 
-			{
-				pcan2_t	= (struct canDataStrcut*)malloc(sizeof(struct canDataStrcut));
-				if(pcan2_t== NULL)
-				return HAL_ERROR;
-				return HAL_OK;
-			}
-			else	return HAL_ERROR;
+		if (hcanx->Instance == CAN1) 
+		{
+			pcan1_t	= (struct canDataStrcut*)malloc(sizeof(struct canDataStrcut));
+			if(pcan1_t == NULL)
+			return HAL_ERROR;
+			return HAL_OK;
+		} 
+		else if (hcanx->Instance == CAN2) 
+		{
+			pcan2_t	= (struct canDataStrcut*)malloc(sizeof(struct canDataStrcut));
+			if(pcan2_t== NULL)
+			return HAL_ERROR;
+			return HAL_OK;
+		}
+		else	return HAL_ERROR;
 	}
-/*---------------------------------80字符限制-----------------------------------*/
-	/**
+/**
 	* @Data    2019-01-16 11:08
 	* @brief   自动判别can类型获取相应用户can结构体地址
 	* @param   hcanx （x=1,2）
@@ -190,8 +178,7 @@ HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
 		} 
 		else	return NULL;
 	}
-/*---------------------------------80字符限制-----------------------------------*/
-	/**
+/**
 	* @Data    2019-01-19 00:58
 	* @brief   can接受回调函数
 	* @param   void
@@ -205,8 +192,7 @@ HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
 		 memcpy(addr->queue_data,&addr->rxdata,8);
 		xQueueSendToBackFromISR(addr->can_queue,addr->queue_data, 0);
 	}
-/*---------------------------------80字符限制-----------------------------------*/
-	/**
+/**
 	* @Data    2019-01-19 00:58
 	* @brief   can接受中断队列创建
 	* @param   void
@@ -219,15 +205,15 @@ HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
 			return HAL_ERROR;
 		return HAL_OK;
 	}
-/*---------------------------------80字符限制-----------------------------------*/
-	/**
+/**
 	* @Data    2019-01-16 15:22
 	* @brief   队列接收
 	* @param   hcanx（1,2,3,6）
 	* @param 	 pvBuffer 接收数据地址
 	* @retval  HAL Status
 	*/
-	HAL_StatusTypeDef UserCanQueueRX(CAN_HandleTypeDef *hcanx,void* const pvBuffer)
+	HAL_StatusTypeDef UserCanQueueRX(CAN_HandleTypeDef *hcanx,\
+																		void* const pvBuffer)
 	{
 //				portBASE_TYPE xStatus;
 		canDataStrcut *addr;
@@ -240,6 +226,6 @@ HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
 //				}
 		return HAL_OK;
 	}
-/*------------------------------------file of end-------------------------------*/
+/*-----------------------------------file of end------------------------------*/
 
 

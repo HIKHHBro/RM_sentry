@@ -1,18 +1,18 @@
 /**
-	|-------------------------------- Copyright ----------------------------------------|
-	|                                                                                   |
-	|                        (C) Copyright 2018,海康平头哥,                              |
-	|            1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China            |
-	|                            All Rights Reserved                                    |
-	|                                                                                   |
-	|            By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)               |
-	|                     https://github.com/GCUWildwolfteam                            |
-	|-----------------------------------------------------------------------------------|
+	|----------------------------- Copyright ------------------------------------|
+	|                                                                            |
+	|                        (C) Copyright 2018,海康平头哥,                       |
+	|        1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China         |
+	|                         All Rights Reserved                                |
+	|                                                                            |
+	|         By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)           |
+	|                  https://github.com/GCUWildwolfteam                        |
+	|----------------------------------------------------------------------------|
 	|--FileName    : baseclass.c                                                
 	|--Version     : v1.0                                                            
 	|--Author      : 海康平头哥                                                       
 	|--Date        : 2018-12-30               
-	|--Libsupports : STM32CubeF1 Firmware Package V1.6.0 / 17-May-2017(用别的库出问题别问我)
+	|--Libsupports : 
 	|--Description :                                                       
 	|--FunctionList                                                       
 	|-------1. ....                                                       
@@ -21,7 +21,7 @@
 	|             <data>:                                                       
 	|      <description>:                                                        
 	|-------2. ...                                                       
-	|---------------------------------declaration of end---------------------------------|
+	|------------------------------declaration of end----------------------------|
  **/
 #include "baseclass.h" 
 /* ----------------- 标志位变量定义 -------------------- */
@@ -38,7 +38,6 @@
 	{
 		return Peripheral;
 	}
-/*---------------------------------80字符限制-----------------------------------*/
 	/**
 	* @Data    2018-12-30 21:14
 	* @brief   识别串口类型,设置相应串口标志状态位
@@ -75,7 +74,7 @@
 		else return NULL;
 
 	}
-	/*---------------------------------80字符限制-----------------------------------*/
+
 	/**
 	* @Data    2018-12-30 21:14
 	* @brief   识别can类型,设置相应can标志状态位
@@ -98,7 +97,6 @@ CAN_HandleTypeDef* RecognizeCanType(CAN_HandleTypeDef* hcanx)
 #endif 
 	else return NULL;
 }
-/*---------------------------------80字符限制-----------------------------------*/
 	/**
 	* @Data    2018-12-30 22:16
 	* @brief   掉帧标志位设置
@@ -115,7 +113,6 @@ CAN_HandleTypeDef* RecognizeCanType(CAN_HandleTypeDef* hcanx)
 			flag = 0;
 		}
 	}
-/*---------------------------------80字符限制-----------------------------------*/
 	/**
 	* @Data    2018-12-30 22:16
 	* @brief   正常标志位设置
@@ -127,7 +124,6 @@ CAN_HandleTypeDef* RecognizeCanType(CAN_HandleTypeDef* hcanx)
 		if(flag > 0)
 		flag =1;
 	}
-/*---------------------------------80字符限制-----------------------------------*/
 /**
 * @Data    2019-01-16 16:01
 * @brief   RCR校验加密
@@ -152,7 +148,6 @@ HAL_StatusTypeDef RCREncryption(uint8_t* pdata,uint8_t size)
 	pdata[size-2] = (unsigned char)(*p+1);//高八位
 	return HAL_OK;
 }
-/*---------------------------------80字符限制-----------------------------------*/
 	/**
 	* @Data    2019-01-16 16:38
 	* @brief   RCR校验加密
@@ -174,4 +169,4 @@ HAL_StatusTypeDef RCREncryption(uint8_t* pdata,uint8_t size)
 			return HAL_OK;
 		return HAL_ERROR;
 	}
-	/*------------------------------------file of end------------------------------------*/
+/*--------------------------------file of end-------------------------------*/

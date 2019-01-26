@@ -1,18 +1,18 @@
 /**
-	|-------------------------------- Copyright -----------------------------------|
-	|                                                                              |
-	|                        (C) Copyright 2019,海康平头哥,                         |
-	|            1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China       |
-	|                            All Rights Reserved                               |
-	|                                                                              |
-	|            By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)          |
-	|                     https://github.com/GCUWildwolfteam                       |
-	|------------------------------------------------------------------------------|
+	|------------------------------ Copyright -----------------------------------|
+	|                                                                            |
+	|                       (C) Copyright 2019,海康平头哥,                        |
+	|          1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China       |
+	|                            All Rights Reserved                             |
+	|                                                                            |
+	|          By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)          |
+	|                     https://github.com/GCUWildwolfteam                     |
+	|----------------------------------------------------------------------------|
 	|--FileName    : user_task.c                                                
 	|--Version     : v1.0                                                            
 	|--Author      : 海康平头哥                                                       
 	|--Date        : 2019-01-15               
-	|--Libsupports : STM32CubeF1 Firmware Package V1.6.0(用别的库出问题别问我)
+	|--Libsupports : 
 	|--Description :                                                       
 	|--FunctionList                                                       
 	|-------1. ....                                                       
@@ -21,7 +21,7 @@
 	|             <data>:                                                       
 	|      <description>:                                                        
 	|-------2. ...                                                       
-	|---------------------------------declaration of end----------------------------|
+	|------------------------------declaration of end----------------------------|
  **/
 #include "user_task.h"
 /* ----------------- 模块对象声明 -------------------- */
@@ -38,7 +38,6 @@ void StartLedTask(void const *argument);
 /* ----------------- 任务信号量 -------------------- */
 static uint8_t task_on_off = 0; //功能任务开关
 static uint8_t parse_task_status = 0;//数据解析任务工作状态标志
-/*---------------------------------80字符限制-----------------------------------*/
 /**
 	* @Data    2019-01-16 18:30
 	* @brief   系统初始化任务
@@ -53,7 +52,6 @@ void SysInitCreate(void)
 	startSysInitTaskHandle = osThreadCreate(osThread(sysInitTask), NULL);
    
 	}
-/*---------------------------------80字符限制-----------------------------------*/
 	/**
 	* @Data    2019-01-16 18:27
 	* @brief   系统初始化钩子函数
@@ -79,7 +77,6 @@ void SysInitCreate(void)
 			vTaskDelete(startSysInitTaskHandle);
     }
 	}
-/*---------------------------------80字符限制-----------------------------------*/
 	/**
 	* @Data    2019-01-16 18:27
 	* @brief   解析任务
@@ -102,7 +99,6 @@ void StartParseTask(void const *argument)
 			osDelay(1);
 	}
 }
-/*---------------------------------80字符限制-----------------------------------*/
 	/**
 	* @Data    2019-01-18 11:31
 	* @brief   led灯提示任务钩子函数
@@ -124,5 +120,5 @@ void StartParseTask(void const *argument)
 			else osDelay(1);
 		}
 	}
-/*------------------------------------file of end-------------------------------*/
+/*----------------------------------file of end-------------------------------*/
   
