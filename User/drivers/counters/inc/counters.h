@@ -44,6 +44,37 @@
 	#define LIMIT_MAX									0x0DU     //最大限幅
 	#define LIMIT_MIN									0x0EU     //最小限幅
 	float Bezier(int x,int y);
+/* -------------- 位置式pid ----------------- */
+	typedef struct postionPidStruct
+	{
+		float kp;
+		float kd;
+		float ki;
+		int16_t error;
+		int16_t last_error;//上次误差
+		int16_t integral_er;//误差积分
+		float pout;//p输出
+		float iout;//i输出
+		float dout;//k输出
+		int16_t pid_out;//pid输出
+	}postionPidStruct;
+	int16_t PostionPid(postionPidStruct *pps, int16_t error);
+/* -------------- 速度式pid ----------------- */
+	typedef struct speedPidStruct
+	{
+		float kp;
+		float kd;
+		float ki;
+		int16_t error;
+		int16_t last_error;//上次误差
+		int16_t before_last_error;//上上次误差
+		int16_t integral_er;//误差积分
+		float pout;//p输出
+		float iout;//i输出
+		float dout;//k输出
+		int16_t pid_out;//pid输出
+}speedPidStruct;
+int16_t SpeedPid(speedPidStruct *sps, int16_t error);
 #endif	// __COUNTERS_H
 	
 /*--------------------------------file of end---------------------------------*/

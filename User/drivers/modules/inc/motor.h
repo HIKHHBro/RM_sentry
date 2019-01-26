@@ -30,6 +30,7 @@
 #define __MOTOR_H
 	#include "baseclass.h"
 	#include "bsp_can.h" 
+	#include "counters.h" 
 /* ============================= RM6623 of begin ============================ */
 	typedef struct RM6623Struct
 	{
@@ -43,6 +44,8 @@
 		int16_t Percentage;//转换比例（减速前角度:减速后的角度 = x:1
 		int16_t thresholds; //电机反转阀值
 		CAN_HandleTypeDef *hcanx;
+		postionPidStruct *ppostionPidStruct;
+		speedPidStruct *speedPidStruct;
 	} RM6623Struct;
 	void RM6623StructInit(RM6623Struct *RM6623,CAN_HandleTypeDef *hcanx);
 	void RM6623ParseData(RM6623Struct*RM6623,uint8_t *data);
@@ -56,12 +59,26 @@
 		int16_t real_angle;//真实角度
 		int16_t real_speed;//真实速度
 		CAN_HandleTypeDef *hcanx;
+		postionPidStruct *ppostionPidStruct;
+		speedPidStruct *speedPidStruct;
 	}RM3508Struct;
-	void RM3508StructInit(RM3508Struct *RM3508,CAN_HandleTypeDef *hcanx);
-	void RM3508ParseData(RM3508Struct *RM3508,uint8_t *data);
 /* ============================== Rm3508 of end ============================= */
-int16_t RatiometricConversion(int16_t real,int16_t threshold,int16_t perce);
-int16_t zeroArgument(int16_t real,int16_t threshold);
+/* =========================== M6620 of begin =========================== */
+	typedef struct M2006Struct
+	{
+		uint16_t id;//电机can的ip
+		int16_t target; //目标值
+		int16_t real_current;//真实电流
+		int16_t real_angle;//真实角度
+		int16_t real_speed;//真实速度
+		CAN_HandleTypeDef *hcanx;
+		postionPidStruct *ppostionPidStruct;
+		speedPidStruct *speedPidStruct;
+	}M2006Struct;
+	void RM2006ParseData(M2006Struct *M2006, uint8_t *data);
+/* =========================== M6620 of end =========================== */
+	int16_t RatiometricConversion(int16_t real, int16_t threshold, int16_t perce);
+	int16_t zeroArgument(int16_t real, int16_t threshold);
 #endif	// __MOTOR_H
 /*---------------------------------file of end--------------------------------*/
 

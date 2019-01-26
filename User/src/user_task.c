@@ -28,15 +28,14 @@
 dbusStruct dbus_t; //大疆遥控
 extern UART_HandleTypeDef huart1;//串口1
 /* ----------------- 任务句柄 -------------------- */
-osThreadId startSysInitTaskHandle; 
-osThreadId startParseTaskHandle;
-osThreadId startLedTaskHandle;
+	osThreadId startSysInitTaskHandle; 
+	osThreadId startParseTaskHandle;
+	osThreadId startLedTaskHandle;
 /* ----------------- 任务钩子函数 -------------------- */
-void StartSysInitTask(void const *argument);
-void StartParseTask(void const *argument);
-void StartLedTask(void const *argument);
+	void StartSysInitTask(void const *argument);
+	void StartParseTask(void const *argument);
+	void StartLedTask(void const *argument);
 /* ----------------- 任务信号量 -------------------- */
-static uint8_t task_on_off = 0; //功能任务开关
 static uint8_t parse_task_status = 0;//数据解析任务工作状态标志
 /**
 	* @Data    2019-01-16 18:30
@@ -47,7 +46,6 @@ static uint8_t parse_task_status = 0;//数据解析任务工作状态标志
 void SysInitCreate(void)
 {
 	/* -------- 系统初始化任务创建 --------- */
-	task_on_off = DISABLE;//关闭所有任务
 	osThreadDef(sysInitTask, StartSysInitTask, osPriorityNormal, 0, 400);
 	startSysInitTaskHandle = osThreadCreate(osThread(sysInitTask), NULL);
    
@@ -62,6 +60,7 @@ void SysInitCreate(void)
 	{
     for(;;)
     {
+			taskENTER_CRITICAL();//进入临界区
     /* -------- 模块初始化 --------- */
       DJIDbusInit(&dbus_t, &huart1);//大疆遥控初始化
     /* ----------------- 任务创建 -------------------- */
@@ -72,9 +71,9 @@ void SysInitCreate(void)
 			osThreadDef(ledTask, StartLedTask, osPriorityNormal, 0, 100);
       startLedTaskHandle = osThreadCreate(osThread(ledTask), NULL);
 			ProgressBarLed(LED_GPIO, 500);
-			task_on_off = ENABLE;//开启所有任务
 			/* -------- 删除系统任务 --------- */
 			vTaskDelete(startSysInitTaskHandle);
+			taskEXIT_CRITICAL();//退出临界区
     }
 	}
 	/**
@@ -87,16 +86,9 @@ void StartParseTask(void const *argument)
 {
 	for(;;)
 	{
-		if(task_on_off==ENABLE)
-		{
 			DbusParseData(&dbus_t);
-			
 			parse_task_status = ENABLE;
       osDelay(1);
-		}
-		else
-			parse_task_status = DISABLE;
-			osDelay(1);
 	}
 }
 	/**
@@ -109,10 +101,7 @@ void StartParseTask(void const *argument)
 	{
 		for(;;)
 		{
-			if(task_on_off==ENABLE)
-			{
-					FlashingLed(LED_GPIO,LED_8,2,500);
-			}
+			FlashingLed(LED_GPIO,LED_8,2,500);
 			if(parse_task_status == ENABLE)
 			{
 					FlashingLed(LED_GPIO, LED_1, 2, 500);

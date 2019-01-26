@@ -69,33 +69,34 @@
 /* ============================= RM6623 of end ============================== */
 /* ============================= 3508 of begin ============================== */
 	/**
-		* @Data    2019-01-18 19:59
-		* @brief   RM3508结构体初始化
-		* @param   RM3508电机结构体地址
-		* @retval  void
-		*/
-	void RM3508StructInit(RM3508Struct *RM3508,CAN_HandleTypeDef *hcanx)
+	* @Data    2019-01-19 00:42
+	* @brief   3508数据解析
+	* @param   RM3508Struct 3508结构体指针
+	* @param   *data  接收的数据指针
+	* @retval  void
+	*/
+	void RM3508ParseData(RM3508Struct *RM3508,uint8_t *data)
 	{
-			RM3508->id = 0;
-			RM3508->target = 0;
-			RM3508->real_current = 0;
-			RM3508->real_angle = 0;
-			RM3508->real_speed = 0;
-			RM3508->hcanx = hcanx;
+		RM3508->real_angle=((int16_t)(data[0]<<8)|data[1]);
+		RM3508->real_speed=((int16_t)(data[2]<<8)|data[3]);
+		RM3508->real_current=((int16_t)(data[4]<<8)|data[5]);
 	}
-		/**
-		* @Data    2019-01-19 00:42
-		* @brief   3508数据解析
-		* @param   void
+/* ============================== 3508 of end =============================== */
+/* ============================= M2006 of begin ============================= */
+	/**
+		* @Data    2019-01-26 18:21
+		* @brief   M2006数据解析
+		* @param   M2006truct 2006结构体指针
+		* @param   *data  接收的数据指针
 		* @retval  void
 		*/
-		void RM3508ParseData(RM3508Struct *RM3508,uint8_t *data)
+		void RM2006ParseData(M2006Struct *M2006,uint8_t *data)
 		{
-			RM3508->real_angle=((int16_t)(data[0]<<8)|data[1]);
-			RM3508->real_speed=((int16_t)(data[2]<<8)|data[3]);
-			RM3508->real_current=((int16_t)(data[4]<<8)|data[5]);
+			M2006->real_angle  = ((int16_t)(data[0]<<8)|data[1]);
+    	M2006->real_speed = ((int16_t)(data[2]<<8)|data[3]);
+			M2006->real_current=((int16_t)(data[4]<<8)|data[5]);
 		}
-/* ============================== 3508 of end =============================== */
+/* ============================== M2006 of end ============================== */
 /* ==============================common of begin ============================ */
 	/**
 	* @Data    2019-01-18 20:14

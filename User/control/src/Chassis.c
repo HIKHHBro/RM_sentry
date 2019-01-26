@@ -35,12 +35,28 @@
 	* @param   chassisStruct* css 底盘结构体指针
 	* @retval  void
 	*/
-	void ChassisInit(chassisStruct* css)
+	void ChassisInit(CAN_HandleTypeDef *hcan,chassisStruct *css)
 	{
+		/* ------ 轮子1结构体初始化 ------- */
 		css->pwheel1_t = &wheel1_t;
+		wheel1_t.id = 0;
+		wheel1_t.target = 0;
+		wheel1_t.real_current = 0;
+		wheel1_t.real_angle = 0;
+		wheel1_t.real_speed = 0;
+		wheel1_t.hcanx = hcan;
+		wheel1_t.ppostionPidStruct = NULL;
+		wheel1_t.speedPidStruct = NULL;
+		/* ------ 轮子2结构体初始化 ------- */
 		css->pwheel2_t = &wheel2_t;
-		RM3508StructInit(css->pwheel1_t,&hcan1);
-		RM3508StructInit(css->pwheel2_t,&hcan1);
+		wheel2_t.id = 0;
+		wheel2_t.target = 0;
+		wheel2_t.real_current = 0;
+		wheel2_t.real_angle = 0;
+		wheel2_t.real_speed = 0;
+		wheel2_t.hcanx = hcan;
+		wheel2_t.ppostionPidStruct = NULL;
+		wheel2_t.speedPidStruct = NULL;
 	}
 /**
 	* @Data    2019-01-19 12:01
