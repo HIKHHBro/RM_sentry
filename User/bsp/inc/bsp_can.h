@@ -31,18 +31,20 @@ typedef struct canDataStrcut
 	CAN_TxHeaderTypeDef txMsg;
 	CAN_RxHeaderTypeDef rxMsg;
 	CAN_FilterTypeDef filter;
-	uint8_t txdata[8];
 	uint8_t rxdata[8];
-	xQueueHandle can_queue; //队列句柄
-	char queue_data[16];//队列数据空间
+//	xQueueHandle can_queue; //队列句柄
+//	uint8_t queue_data[12];//队列数据空间
 } canDataStrcut;
 HAL_StatusTypeDef UserCanConfig(CAN_HandleTypeDef *hcanx);
 HAL_StatusTypeDef CanFilterInit(CAN_HandleTypeDef *hcanx);
 HAL_StatusTypeDef CanTxInit(CAN_HandleTypeDef *hcanx);
 HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef *hcanx);
 HAL_StatusTypeDef AllocateCanxSpace(CAN_HandleTypeDef *hcanx);
-canDataStrcut* GetCantAddr(CAN_HandleTypeDef *hcanx);
+canDataStrcut* GetCanAddr(CAN_HandleTypeDef *hcanx);
 HAL_StatusTypeDef CanQueueCreate(canDataStrcut *canx,uint8_t len,uint8_t deep);
+HAL_StatusTypeDef UserCanQueueRX(CAN_HandleTypeDef *hcanx,\
+																		void* const pvBuffer);
+HAL_StatusTypeDef CanTxMsg(CAN_HandleTypeDef* hcanx,int id,uint8_t *message);														
 #endif // __BSP_CAN_H
 
 /*-----------------------------------file of end------------------------------*/

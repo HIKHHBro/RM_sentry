@@ -27,6 +27,7 @@
 /* ----------------- 结构体地址列表 -------------------- */
 canDataStrcut *pcan1_t = NULL;
 canDataStrcut *pcan2_t = NULL;
+uint8_t can1_rx[12] = {0};
 /**
 	* @Data    2019-01-26 12:27
 	* @brief   can配置初始化
@@ -36,25 +37,25 @@ canDataStrcut *pcan2_t = NULL;
 HAL_StatusTypeDef UserCanConfig(CAN_HandleTypeDef* hcanx)   
 {
 	canDataStrcut *addr;
-	addr = GetCantAddr(hcanx);
+	addr = GetCanAddr(hcanx);
 	if(AllocateCanxSpace(hcanx) != HAL_OK)//用户can结构体空间分配
 	{
 		free(addr);
 		return HAL_ERROR;
 	}
-	addr->can_queue = NULL;
+//	addr->can_queue = NULL;
 	if(CanFilterInit(hcanx) != HAL_OK)
 		return HAL_ERROR;
-	if(CanTxInit(hcanx) != HAL_OK)
+	 if(CanTxInit(hcanx) != HAL_OK)
 		return HAL_ERROR;
 	if(CanRxInit(hcanx) != HAL_OK)
 		return HAL_ERROR;
-	if(CanQueueCreate(addr,5,16) != HAL_OK) //创建队列
-	{
-		//添加错误机制
-		free(addr);
-		return HAL_ERROR;
-	}
+//	if(CanQueueCreate(addr,5,12) != HAL_OK) //创建队列
+//	{
+//		//添加错误机制
+//		free(addr);
+//		return HAL_ERROR;
+//	}
 	 HAL_CAN_Start(hcanx);
 	 HAL_CAN_ActivateNotification(hcanx, CAN_IT_RX_FIFO0_MSG_PENDING); //开启中断
 	 return HAL_OK;
@@ -68,7 +69,7 @@ HAL_StatusTypeDef UserCanConfig(CAN_HandleTypeDef* hcanx)
 HAL_StatusTypeDef CanFilterInit(CAN_HandleTypeDef* hcanx)
 {
 	canDataStrcut *addr;
-	addr = GetCantAddr(hcanx);
+	addr = GetCanAddr(hcanx);
 	addr->filter.FilterIdHigh = 0x0000;									 //要过滤的ID高位
 	addr->filter.FilterIdLow = 0x0000;										 //要过滤的ID低位
 	addr->filter.FilterMaskIdHigh = 0x0000;							 //过滤器高16位每位必须匹配
@@ -90,7 +91,7 @@ HAL_StatusTypeDef CanFilterInit(CAN_HandleTypeDef* hcanx)
 HAL_StatusTypeDef CanTxInit(CAN_HandleTypeDef* hcanx)
 {
 	canDataStrcut *addr;
-	addr = GetCantAddr(hcanx);//获取相应用户can结构体地址
+	addr = GetCanAddr(hcanx);//获取相应用户can结构体地址
 	if(addr == NULL)
 	{
 		return HAL_ERROR;
@@ -99,14 +100,6 @@ HAL_StatusTypeDef CanTxInit(CAN_HandleTypeDef* hcanx)
 	addr->txMsg.IDE = CAN_ID_STD; //选择标准id
 	addr->txMsg.RTR = CAN_RTR_DATA; //0为数据帧，1为远程帧
 	addr->txMsg.DLC = 8; //设置数据长度为8个字节
-	addr->txdata[0] = 0x00; //发送数据位都清零
-	addr->txdata[1] = 0x00;
-	addr->txdata[2] = 0x00;
-	addr->txdata[3] = 0x00;
-	addr->txdata[4] = 0x00;
-	addr->txdata[5] = 0x00;
-	addr->txdata[6] = 0x00;
-	addr->txdata[7] = 0x00;
 	return HAL_OK;
 }
 /**
@@ -118,7 +111,7 @@ HAL_StatusTypeDef CanTxInit(CAN_HandleTypeDef* hcanx)
 HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
 {
 		canDataStrcut *addr;
-	  addr = GetCantAddr(hcanx); //获取相应用户can结构体地址
+	  addr = GetCanAddr(hcanx); //获取相应用户can结构体地址
 		if(addr == NULL)
 		{
 			return HAL_ERROR;
@@ -162,11 +155,11 @@ HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
 	}
 /**
 	* @Data    2019-01-16 11:08
-	* @brief   自动判别can类型获取相应用户can结构体地址
+	* @brief   自动判别can 类型获取相应用户can结构体地址
 	* @param   hcanx （x=1,2）
 	* @retval  canDataStrcut* 用户串口结构体指针
 	*/
-	canDataStrcut* GetCantAddr(CAN_HandleTypeDef *hcanx)
+	canDataStrcut* GetCanAddr(CAN_HandleTypeDef *hcanx)
 	{
 		if(hcanx->Instance == CAN1)
 		{
@@ -187,10 +180,12 @@ HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
 	void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 	{
 		canDataStrcut *addr;
-	  addr = GetCantAddr(hcan); //获取相应用户can结构体地址
+	  addr = GetCanAddr(hcan); //获取相应用户can结构体地址
 		HAL_CAN_GetRxMessage(hcan,CAN_RX_FIFO0,&addr->rxMsg,addr->rxdata);
-		 memcpy(addr->queue_data,&addr->rxdata,8);
-		xQueueSendToBackFromISR(addr->can_queue,addr->queue_data, 0);
+//待解决can高速中断造成队列满之后卡死现象
+		MultibyteToByle(addr->rxMsg.StdId,&can1_rx[8]);
+		memcpy(&can1_rx,&addr->rxdata,8);
+//		xQueueOverwriteFromISR(addr->can_queue,addr->queue_data,0);
 	}
 /**
 	* @Data    2019-01-19 00:58
@@ -198,13 +193,13 @@ HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
 	* @param   void
 	* @retval  void
 	*/
-	HAL_StatusTypeDef CanQueueCreate(canDataStrcut *canx,uint8_t len,uint8_t deep)
-	{
-		canx->can_queue = xQueueCreate(len,deep);//创建深度len长度20队列
-		if(canx->can_queue == NULL)
-			return HAL_ERROR;
-		return HAL_OK;
-	}
+//	HAL_StatusTypeDef CanQueueCreate(canDataStrcut *canx,uint8_t len,uint8_t deep)
+//	{
+//		canx->can_queue = xQueueCreate(len,deep);//创建深度len长度12队列
+//		if(canx->can_queue == NULL)
+//			return HAL_ERROR;
+//		return HAL_OK;
+//	}
 /**
 	* @Data    2019-01-16 15:22
 	* @brief   队列接收
@@ -212,20 +207,42 @@ HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
 	* @param 	 pvBuffer 接收数据地址
 	* @retval  HAL Status
 	*/
-	HAL_StatusTypeDef UserCanQueueRX(CAN_HandleTypeDef *hcanx,\
-																		void* const pvBuffer)
-	{
-//				portBASE_TYPE xStatus;
-		canDataStrcut *addr;
-		addr = GetCantAddr(hcanx);
-//				xStatus = 
-		xQueueReceive(addr->can_queue, pvBuffer, 1);
-//				if(pdPASS != xStatus)
-//				{
-//					return HAL_ERROR;
-//				}
-		return HAL_OK;
-	}
+//	HAL_StatusTypeDef UserCanQueueRX(CAN_HandleTypeDef *hcanx,\
+//																		void* const pvBuffer)
+//	{
+////				portBASE_TYPE xStatus;
+//		canDataStrcut *addr;
+//		addr = GetCanAddr(hcanx);
+////				xStatus = 
+	//	xQueueReceive(addr->can_queue, pvBuffer, 1);
+////				if(pdPASS != xStatus)
+////				{
+////					return HAL_ERROR;
+////				}
+//		return HAL_OK;
+//	}
+/**
+	* @Data    2019-02-15 13:40
+	* @brief   can发送函数
+	* @param   void
+	* @retval  void
+	*/
+ HAL_StatusTypeDef CanTxMsg(CAN_HandleTypeDef* hcanx,int id,uint8_t *message)
+ {
+		canDataStrcut *addr = NULL;
+	addr = GetCanAddr(hcanx);
+		if(addr == NULL)
+		{
+			return HAL_ERROR;
+		}//获取相应用户can结构体地址
+		addr->txMsg.StdId = id; //设置id
+		addr->txMsg.IDE = CAN_ID_STD; //选择标准id
+		addr->txMsg.RTR = CAN_RTR_DATA; //0为数据帧，1为远程帧
+		addr->txMsg.DLC = 8; //设置数据长度为8个字节
+   return(HAL_CAN_AddTxMessage(hcanx,&addr->txMsg,message,\
+                                (uint32_t*)CAN_TX_MAILBOX0));
+
+}
 /*-----------------------------------file of end------------------------------*/
 
 

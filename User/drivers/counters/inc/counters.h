@@ -56,7 +56,7 @@
 		float pout;//p输出
 		float iout;//i输出
 		float dout;//k输出
-		int16_t pid_out;//pid输出
+		float pid_out;//pid输出
 	}postionPidStruct;
 	int16_t PostionPid(postionPidStruct *pps, int16_t error);
 /* -------------- 速度式pid ----------------- */
@@ -72,7 +72,7 @@
 		float pout;//p输出
 		float iout;//i输出
 		float dout;//k输出
-		int16_t pid_out;//pid输出
+		float pid_out;//pid输出
 }speedPidStruct;
 int16_t SpeedPid(speedPidStruct *sps, int16_t error);
 #endif	// __COUNTERS_H

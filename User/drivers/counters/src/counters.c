@@ -63,7 +63,7 @@
 	*/
 	int16_t PostionPid(postionPidStruct *pps,int16_t error)
 	{
-		error = pps->error;
+	  pps->error	= error;
 		pps->integral_er += pps->error;
 		pps->pout = pps->kp * pps->error;
 		pps->iout = pps->ki * pps->integral_er;
@@ -81,19 +81,21 @@
 	*/
 	int16_t SpeedPid(speedPidStruct *sps,int16_t error)
 	{
-		error = sps->error;
-		if(ABS(sps->error) < ABS(sps->last_error))
+		sps->error = error;
+		if((ABS(sps->error)) < (ABS(sps->last_error)))
 			sps->last_error = sps->error;
-		if(ABS(sps->last_error) < ABS(sps->before_last_error))
+		if((ABS(sps->last_error)) < (ABS(sps->before_last_error)))
 			sps->before_last_error = sps->last_error;
-		sps->pout = sps->kp * (sps->error - sps->before_last_error);
+		sps->pout = sps->kp * (sps->error - sps->last_error);
 		sps->iout = sps->ki * sps->error;
 		sps->dout = sps->kd * (sps->error - 2*sps->last_error + \
 													 sps->before_last_error);
-		sps->pid_out = sps->pout + sps->iout + sps->dout;
+		sps->pid_out += (int16_t)(sps->pout + sps->iout + sps->dout);
+    sps->pid_out = MAX(sps->pid_out,32766);
+    sps->pid_out = MIN(sps->pid_out,-32766);
 		sps->last_error = sps->error;
 		sps->before_last_error = sps->last_error;
-		return sps->pid_out;
+		return (int16_t)(sps->pid_out);
 	}
 /* ============================ PID¿ØÖÆÆ÷ of end ============================ */
 /*--------------------------------file of end---------------------------------*/

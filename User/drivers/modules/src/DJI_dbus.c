@@ -97,7 +97,20 @@ uint8_t databuff[21];//数据接收
 		dbs->mouse.press_left 	= databuff[12];	// is pressed?
 		dbs->mouse.press_right 	= databuff[13];
 		
-		dbs->keyBoard.key_code 	= databuff[14] | databuff[15] << 8; //key borad code
+		dbs->keyBoard.key_code 	= databuff[14] | databuff[15] << 8; //key broad code
 		}
 	}
+	/**
+		* @Data    2019-02-14 21:06
+		* @brief   遥控防抖
+		* @param   int16_t range 防抖范围
+		* @param 	 int16_t *data 指向数据地址的指针
+		* @retval  void
+		*/
+		int16_t DbusAntiShake(int16_t range,int16_t data)
+		{
+			if(data > -(ABS(range)) && data < (ABS(range)))
+				data = 0;
+			return data;
+		}
 	/*----------------------------------file of end-----------------------------*/

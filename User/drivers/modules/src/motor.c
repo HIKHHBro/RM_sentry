@@ -46,7 +46,6 @@
 		RM6623->tem_angle = 0;		//临时角度
 		RM6623->zero = 0;					//电机零点
 		RM6623->Percentage = 0;		//转换比例（减速前角度:减速后的角度 = x:1）
-		RM6623->hcanx = hcanx;
 		/*根据读取时间间隔，估算最大转过线数p，thresholds = p -s_max_motor_lines */
 		RM6623->thresholds = 1200 - s_max_motor_lines;//1200是瞎给的，别计较
 	}
@@ -86,7 +85,7 @@
 	/**
 		* @Data    2019-01-26 18:21
 		* @brief   M2006数据解析
-		* @param   M2006truct 2006结构体指针
+		* @param   M2006struct 2006结构体指针
 		* @param   *data  接收的数据指针
 		* @retval  void
 		*/

@@ -27,6 +27,7 @@
 #define __USER_TASK_H 
 #include "DJI_dbus.h"
 #include "leds_tip.h" 
+#include "parse.h"
 void SysInitCreate(void);
 #endif	// __USER_TASK_H
 /*----------------------------------file of end-------------------------------*/

@@ -312,7 +312,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>4</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F427xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Drivers/CMSIS/Include;..\User\inc;..\User\drivers\modules\inc;..\User\drivers\counters\inc;..\User\drivers\data_structure\inc;..\User\bsp\inc;..\User\control\inc</IncludePath>
+              <IncludePath>../Inc;     ../Drivers/STM32F4xx_HAL_Driver/Inc;     ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;     ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;     ../Drivers/CMSIS/Device/ST/STM32F4xx/Include;     ../Middlewares/Third_Party/FreeRTOS/Source/include;     ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;     ../Drivers/CMSIS/Include;     ..\User\inc;     ..\User\drivers\modules\inc;     ..\User\drivers\counters\inc;     ..\User\drivers\data_structure\inc;     ..\User\bsp\inc;     ..\User\control\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -617,6 +617,16 @@
               <FileType>5</FileType>
               <FilePath>..\User\drivers\modules\inc\leds_tip.h</FilePath>
             </File>
+            <File>
+              <FileName>counters.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\drivers\counters\src\counters.c</FilePath>
+            </File>
+            <File>
+              <FileName>counters.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\drivers\counters\inc\counters.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -631,6 +641,36 @@
               <FileName>chassis.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\User\control\inc\chassis.h</FilePath>
+            </File>
+            <File>
+              <FileName>gimbal.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\control\inc\gimbal.h</FilePath>
+            </File>
+            <File>
+              <FileName>gimbal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\control\src\gimbal.c</FilePath>
+            </File>
+            <File>
+              <FileName>parse.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\control\src\parse.c</FilePath>
+            </File>
+            <File>
+              <FileName>parse.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\control\inc\parse.h</FilePath>
+            </File>
+            <File>
+              <FileName>send_message.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\control\src\send_message.c</FilePath>
+            </File>
+            <File>
+              <FileName>send_message.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\control\inc\send_message.h</FilePath>
             </File>
           </Files>
         </Group>

@@ -8,41 +8,32 @@
 	|           By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)         |
 	|                    https://github.com/GCUWildwolfteam                      |
 	|----------------------------------------------------------------------------|
-	|--FileName    : gimbal.h                                                
-	|--Version     : v1.0                                                            
-	|--Author      : 海康平头哥                                                       
-	|--Date        : 2019-01-26               
+	|--FileName    : send_message.c                                              
+	|--Version     : v1.0                                                          
+	|--Author      : 海康平头哥                                                     
+	|--Date        : 2019-02-15             
 	|--Libsupports : 
-	|--Description :                                                       
-	|--FunctionList                                                       
-	|-------1. ....                                                       
-	|          <version>:                                                       
+	|--Description :                                                     
+	|--FunctionList                                                     
+	|-------1. ....                                                     
+	|          <version>:                                                     
 	|     <modify staff>:                                                       
 	|             <data>:                                                       
 	|      <description>:                                                        
 	|-------2. ...                                                       
 	|-----------------------------declaration of end-----------------------------|
  **/
-#ifndef __GIMBAL_H 
-#define __GIMBAL_H 
-#include "motor.h"
-#include "DJI_dbus.h" 
-#define GIMBAL_CAN_ID_L 0x204
-#define GIMBAL_CAN_ID_H 0x208
-typedef struct gimbalStruct
-{
-	M2006Struct *prammer_t;
-	CAN_HandleTypeDef *hcanx;
-} gimbalStruct;
-void GimbalStructInit(CAN_HandleTypeDef *hcanx);
-void GimbalParseDate(uint32_t id,uint8_t *data);
-HAL_StatusTypeDef GimbalCanTx(int16_t w1,int16_t w2);
-void GimbalControl(const dbusStruct* dbus);
-#endif // __GIMBAL_H
+#include "send_message.h" 
+	/**
+		* @Data    2019-02-15 13:13
+		* @brief   发送数据到can发送队列
+		* @param   void
+		* @retval  void
+		*/
+		void SendMessageToCanQueue(xQueueHandle canqueue)
+		{
+			
+		}
 /*-----------------------------------file of end------------------------------*/
-
-
-
-
 
 

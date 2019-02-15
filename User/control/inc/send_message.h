@@ -1,17 +1,17 @@
 /**
-	|------------------------------- Copyright ----------------------------------|
+	|--------------------------------- Copyright --------------------------------|
 	|                                                                            |
-	|                       (C) Copyright 2019,海康平头哥,                        |
-	|          1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China       |
-	|                          All Rights Reserved                               |
+	|                      (C) Copyright 2019,海康平头哥,                         |
+	|           1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China      |
+	|                           All Rights Reserved                              |
 	|                                                                            |
 	|           By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)         |
-	|                   https://github.com/GCUWildwolfteam                       |
+	|                    https://github.com/GCUWildwolfteam                      |
 	|----------------------------------------------------------------------------|
-	|--FileName    : chassis.h                                                
+	|--FileName    : send_message.h                                                
 	|--Version     : v1.0                                                            
 	|--Author      : 海康平头哥                                                       
-	|--Date        : 2019-01-19               
+	|--Date        : 2019-02-15               
 	|--Libsupports : 
 	|--Description :                                                       
 	|--FunctionList                                                       
@@ -21,22 +21,12 @@
 	|             <data>:                                                       
 	|      <description>:                                                        
 	|-------2. ...                                                       
-	|------------------------------declaration of end----------------------------|
+	|-----------------------------declaration of end-----------------------------|
  **/
-#ifndef __CHASSIS_H 
-#define __CHASSIS_H 
-#include "motor.h" 
-#include "DJI_dbus.h" 
-typedef struct chassisStruct
-{
-	RM3508Struct *pwheel1_t;
-	RM3508Struct *pwheel2_t;
-	CAN_HandleTypeDef *hcanx;
-}chassisStruct;
-	void ChassisParseDate(uint16_t id);
-	void ChassisCanTx(int16_t w1,int16_t w2);
-#endif	// __CHASSIS_H
-	
+#ifndef __SEND_MESSAGE_H 
+#define __SEND_MESSAGE_H 
+#include "bsp_can.h"
+#endif	// __SEND_MESSAGE_H
 /*-----------------------------------file of end------------------------------*/
 
 

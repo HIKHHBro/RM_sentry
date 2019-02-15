@@ -61,30 +61,20 @@
 
 #define LASER_Pin GPIO_PIN_13
 #define LASER_GPIO_Port GPIOG
-#define POWER1_CTRL_Pin GPIO_PIN_2
-#define POWER1_CTRL_GPIO_Port GPIOH
-#define POWE2_CTRL_Pin GPIO_PIN_3
-#define POWE2_CTRL_GPIO_Port GPIOH
-#define POWE3_CTRL_Pin GPIO_PIN_4
-#define POWE3_CTRL_GPIO_Port GPIOH
-#define LED8_Pin GPIO_PIN_8
-#define LED8_GPIO_Port GPIOG
-#define POWE4_CTRL_Pin GPIO_PIN_5
-#define POWE4_CTRL_GPIO_Port GPIOH
-#define LED7_Pin GPIO_PIN_7
-#define LED7_GPIO_Port GPIOG
-#define LED6_Pin GPIO_PIN_6
-#define LED6_GPIO_Port GPIOG
-#define LED5_Pin GPIO_PIN_5
-#define LED5_GPIO_Port GPIOG
-#define LED4_Pin GPIO_PIN_4
-#define LED4_GPIO_Port GPIOG
-#define LED3_Pin GPIO_PIN_3
-#define LED3_GPIO_Port GPIOG
-#define LED2_Pin GPIO_PIN_2
-#define LED2_GPIO_Port GPIOG
-#define LED1_Pin GPIO_PIN_1
-#define LED1_GPIO_Port GPIOG
+#define LED5_Pin GPIO_PIN_13
+#define LED5_GPIO_Port GPIOE
+#define LED1_Pin GPIO_PIN_9
+#define LED1_GPIO_Port GPIOE
+#define LED3_Pin GPIO_PIN_11
+#define LED3_GPIO_Port GPIOE
+#define LED6_Pin GPIO_PIN_14
+#define LED6_GPIO_Port GPIOE
+#define LED2_Pin GPIO_PIN_10
+#define LED2_GPIO_Port GPIOE
+#define LED4_Pin GPIO_PIN_12
+#define LED4_GPIO_Port GPIOE
+#define LED7_Pin GPIO_PIN_15
+#define LED7_GPIO_Port GPIOE
 
 /* ########################## Assert Selection ############################## */
 /**

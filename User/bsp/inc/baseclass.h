@@ -28,6 +28,9 @@
 /* -------- stm32 库选择 1是开启，0是开闭--------- */
 #define HAL_F1 0
 #define HAL_F4 1
+/* -------------- 调试版本和发行版本选择 ----------------- */
+#define DEBUG_BY_KEIL 1
+#define RELEASE_BY_KEIL 0
 #if HAL_F1 
 	// #include "stm32f1xx_hal.h"
 	// #include <stdlib.h>
@@ -39,7 +42,7 @@
 #endif 
 	#define MAX(X,Y) (X)>(Y)?(Y):(X)  //限做大值
 	#define MIN(X,Y) (X)<(Y)?(Y):(X)  //限做小值
-	#define ABS(X) (X)<0?(-X):(X)    //取绝对值
+	#define ABS(X)   (X)<0?(-X):(X)    //取绝对值
 
 /* ----------------- 标志位变量外部链接 -------------------- */
 	extern unsigned int e_periphera_interface_flag; 	//外设接口使用状态变量定义
@@ -81,7 +84,8 @@
 	void SetNormalflag(int16_t flag);
 	HAL_StatusTypeDef RCREncryption(uint8_t *pdata, uint8_t size);
 	HAL_StatusTypeDef RCRDecryption(uint8_t *pdata, uint8_t size);
-
+	void MultibyteToByle(uint32_t data,uint8_t *pdata);
+	void ByleToMultibyte(uint8_t *pdata,uint32_t *data);
 #endif	// __BASECLASS_H
 	
  /*--------------------------------file of end--------------------------------*/

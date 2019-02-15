@@ -247,11 +247,11 @@ static void MX_CAN1_Init(void)
 {
 
   hcan1.Instance = CAN1;
-  hcan1.Init.Prescaler = 16;
+  hcan1.Init.Prescaler = 9;
   hcan1.Init.Mode = CAN_MODE_NORMAL;
-  hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan1.Init.TimeSeg1 = CAN_BS1_1TQ;
-  hcan1.Init.TimeSeg2 = CAN_BS2_1TQ;
+  hcan1.Init.SyncJumpWidth = CAN_SJW_4TQ;
+  hcan1.Init.TimeSeg1 = CAN_BS1_2TQ;
+  hcan1.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
   hcan1.Init.AutoBusOff = DISABLE;
   hcan1.Init.AutoWakeUp = DISABLE;
@@ -377,32 +377,31 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOE_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOG, LASER_Pin|LED8_Pin|LED7_Pin|LED6_Pin 
-                          |LED5_Pin|LED4_Pin|LED3_Pin|LED2_Pin 
-                          |LED1_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LASER_GPIO_Port, LASER_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOH, POWER1_CTRL_Pin|POWE2_CTRL_Pin|POWE3_CTRL_Pin|POWE4_CTRL_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOE, LED5_Pin|LED1_Pin|LED3_Pin|LED6_Pin 
+                          |LED2_Pin|LED4_Pin|LED7_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pins : LASER_Pin LED8_Pin LED7_Pin LED6_Pin 
-                           LED5_Pin LED4_Pin LED3_Pin LED2_Pin 
-                           LED1_Pin */
-  GPIO_InitStruct.Pin = LASER_Pin|LED8_Pin|LED7_Pin|LED6_Pin 
-                          |LED5_Pin|LED4_Pin|LED3_Pin|LED2_Pin 
-                          |LED1_Pin;
+  /*Configure GPIO pin : LASER_Pin */
+  GPIO_InitStruct.Pin = LASER_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+  HAL_GPIO_Init(LASER_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : POWER1_CTRL_Pin POWE2_CTRL_Pin POWE3_CTRL_Pin POWE4_CTRL_Pin */
-  GPIO_InitStruct.Pin = POWER1_CTRL_Pin|POWE2_CTRL_Pin|POWE3_CTRL_Pin|POWE4_CTRL_Pin;
+  /*Configure GPIO pins : LED5_Pin LED1_Pin LED3_Pin LED6_Pin 
+                           LED2_Pin LED4_Pin LED7_Pin */
+  GPIO_InitStruct.Pin = LED5_Pin|LED1_Pin|LED3_Pin|LED6_Pin 
+                          |LED2_Pin|LED4_Pin|LED7_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOH, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
 }
 
