@@ -1,16 +1,16 @@
 /**
 	|------------------------------- Copyright ----------------------------------|
 	|                                                                            |
-	|                        (C) Copyright 2019,º£¿µÆ½Í·¸ç,                       |
+	|                        (C) Copyright 2019,æµ·åº·å¹³å¤´å“¥,                       |
 	|          1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China       |
 	|                            All Rights Reserved                             |
 	|                                                                            |
-	|           By(GCU The wold of team | »ªÄÏÀí¹¤´óÑ§¹ãÖİÑ§Ôº»úÆ÷ÈËÒ°ÀÇ¶Ó)         |
+	|           By(GCU The wold of team | åå—ç†å·¥å¤§å­¦å¹¿å·å­¦é™¢æœºå™¨äººé‡ç‹¼é˜Ÿ)         |
 	|                    https://github.com/GCUWildwolfteam                      |
 	|----------------------------------------------------------------------------|
 	|--FileName    : chassis.c                                                
 	|--Version     : v1.0                                                            
-	|--Author      : º£¿µÆ½Í·¸ç                                                       
+	|--Author      : æµ·åº·å¹³å¤´å“¥                                                       
 	|--Date        : 2019-01-19               
 	|--Libsupports : 
 	|--Description :                                                       
@@ -25,28 +25,28 @@
  **/
 #include "chassis.h"
 	chassisStruct chassis_t;
-	RM3508Struct wheel1_t;//ÂÖ×Ó1
-	RM3508Struct wheel2_t;//ÂÖ×Ó2
+	RM3508Struct wheel1_t;//è½®å­1
+	RM3508Struct wheel2_t;//è½®å­2
 	#define WHEEL1_ID 0x205
 	#define WHEEL2_ID 0x206
 	#define CHASSIS_CAN_TX_ID 0x200
 /**
 	* @Data    2019-01-19 11:45
-	* @brief   µ×ÅÌÊı¾İ½âÎö
-	* @param   chassisStruct* css µ×ÅÌ½á¹¹ÌåÖ¸Õë
+	* @brief   åº•ç›˜æ•°æ®è§£æ
+	* @param   chassisStruct* css åº•ç›˜ç»“æ„ä½“æŒ‡é’ˆ
 	* @retval  void
 	*/
 	void ChassisInit(CAN_HandleTypeDef *hcan,chassisStruct *css)
 	{
 		css->hcanx = hcan;
-		/* ------ ÂÖ×Ó1½á¹¹Ìå³õÊ¼»¯ ------- */
+		/* ------ è½®å­1ç»“æ„ä½“åˆå§‹åŒ– ------- */
 		css->pwheel1_t = &wheel1_t;
 		wheel1_t.id = 0;
 		wheel1_t.target = 0;
 		wheel1_t.real_current = 0;
 		wheel1_t.real_angle = 0;
 		wheel1_t.real_speed = 0;
-		/* ------ ÂÖ×Ó2½á¹¹Ìå³õÊ¼»¯ ------- */
+		/* ------ è½®å­2ç»“æ„ä½“åˆå§‹åŒ– ------- */
 		css->pwheel2_t = &wheel2_t;
 		wheel2_t.id = 0;
 		wheel2_t.target = 0;
@@ -56,8 +56,8 @@
 	}
 /**
 	* @Data    2019-01-19 12:01
-	* @brief   µ×ÅÌÊı¾İ½âÎö
-	* @param   Peripheral typeÍâÉèÀàĞÍ,´®¿ÚCAN_HandleTypeDef,can µÄCAN_HandleTypeDef
+	* @brief   åº•ç›˜æ•°æ®è§£æ
+	* @param   Peripheral typeå¤–è®¾ç±»å‹,ä¸²å£CAN_HandleTypeDef,can çš„CAN_HandleTypeDef
 	* @retval  void
 	*/
 	void ChassisParseDate(uint16_t id)
@@ -75,7 +75,7 @@
 	}
 /**
 	* @Data    2019-02-15 14:15
-	* @brief   µ×ÅÌcanÊı¾İ·¢ËÍ
+	* @brief   åº•ç›˜canæ•°æ®å‘é€
 	* @param   void
 	* @retval  void
 	*/

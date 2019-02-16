@@ -1,16 +1,16 @@
 /**
 	|------------------------------- Copyright ----------------------------------|
 	|                                                                            |
-	|                       (C) Copyright 2019,∫£øµ∆ΩÕ∑∏Á,                        |
+	|                       (C) Copyright 2019,Êµ∑Â∫∑Âπ≥Â§¥Âì•,                        |
 	|          1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China       |
 	|                          All Rights Reserved                               |
 	|                                                                            |
-	|           By(GCU The wold of team | ª™ƒœ¿Ìπ§¥Û—ßπ„÷›—ß‘∫ª˙∆˜»À“∞¿«∂”)         |
+	|           By(GCU The wold of team | ÂçéÂçóÁêÜÂ∑•Â§ßÂ≠¶ÂπøÂ∑ûÂ≠¶Èô¢Êú∫Âô®‰∫∫ÈáéÁãºÈòü)         |
 	|                   https://github.com/GCUWildwolfteam                       |
 	|----------------------------------------------------------------------------|
 	|--FileName    : chassis.h                                                
 	|--Version     : v1.0                                                            
-	|--Author      : ∫£øµ∆ΩÕ∑∏Á                                                       
+	|--Author      : Êµ∑Â∫∑Âπ≥Â§¥Âì•                                                       
 	|--Date        : 2019-01-19               
 	|--Libsupports : 
 	|--Description :                                                       
