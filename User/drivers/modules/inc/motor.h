@@ -44,7 +44,7 @@
 		int16_t Percentage;//转换比例（减速前角度:减速后的角度 = x:1
 		int16_t thresholds; //电机反转阀值
 		postionPidStruct *ppostionPidStruct;
-		speedPidStruct *speedPidStruct;
+		speedPidStruct *pspeedPidStruct;
 	} RM6623Struct;
 	void RM6623StructInit(RM6623Struct *RM6623,CAN_HandleTypeDef *hcanx);
 	void RM6623ParseData(RM6623Struct*RM6623,uint8_t *data);
@@ -59,7 +59,7 @@
 		int16_t real_speed;//真实速度
 	}RM3508Struct;
 /* ============================== Rm3508 of end ============================= */
-/* =========================== M6620 of begin =========================== */
+/* =========================== M2006 of begin =========================== */
 	typedef struct M2006Struct
 	{
 		uint16_t rx_id;//电机can的 ip
@@ -72,7 +72,7 @@
 		speedPidStruct *pInnerLoop_t;
 	}M2006Struct;
 	void RM2006ParseData(M2006Struct *M2006, uint8_t *data);
-/* =========================== M6620 of end =========================== */
+/* =========================== M2006 of end =========================== */
 	int16_t RatiometricConversion(int16_t real, int16_t threshold, int16_t perce);
 	int16_t zeroArgument(int16_t real, int16_t threshold);
 #endif	// __MOTOR_H
