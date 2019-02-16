@@ -1,13 +1,4 @@
-/Drivers/
-/Middlewares/
-/MDK-ARM/*
-!/MDK-ARM/startup_stm32f427xx.s
-!/MDK-ARM/startup_stm32f427xx.lst
-!/MDK-ARM/rmofos.uvprojx
-!/MDK-ARM/rmofos.uvoptx
-!/MDK-ARM/EventRecorderStub.scvd
-!/MDK-ARM/RTE/
-!/MDK-ARM/
+/MDK-ARM/rmofos/
 ##class file##
 *.com ?
 *.class ?
