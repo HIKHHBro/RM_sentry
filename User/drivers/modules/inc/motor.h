@@ -42,7 +42,7 @@
 		int16_t tem_angle;//临时角度
 		int16_t zero;			 //电机零点
 		int16_t Percentage;//转换比例（减速前角度:减速后的角度 = x:1
-		int16_t thresholds; //电机反转阀值
+    int16_t thresholds; //电机反转阀值
 		postionPidStruct *ppostionPidStruct;
 		speedPidStruct *pspeedPidStruct;
 	} RM6623Struct;

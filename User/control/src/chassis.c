@@ -83,7 +83,7 @@
 	{
 		uint8_t s[8]={0};
 		s[0] = (uint8_t)(w1<<8);
-		s[1] = (uint8_t)w1;
+ 		s[1] = (uint8_t)w1;
 		s[2] = (uint8_t)(w2<<8);
 		s[3] = (uint8_t)w2;
 		CanTxMsg(chassis_t.hcanx,CHASSIS_CAN_TX_ID,s);

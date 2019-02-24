@@ -120,7 +120,7 @@
 		}
 		last_real = real;//缓存现在值
 		tem = real + (s_max_motor_lines* coefficient); //转换总角度
-		return ((int16_t)(tem/(perce)));//换算成上面转一圈
+		return ((int16_t)(tem/((float)perce)));//换算成上面转一圈
 	}
 	/**
 	* @Data    2019-01-18 20:48

@@ -107,7 +107,7 @@ uint8_t databuff[21];//数据接收
 		* @param 	 int16_t *data 指向数据地址的指针
 		* @retval  void
 		*/
-		int16_t DbusAntiShake(int16_t range,int16_t data)
+		int16_t DbusAntiShake(int16_t data,int16_t range)
 		{
 			if(data > -(ABS(range)) && data < (ABS(range)))
 				data = 0;

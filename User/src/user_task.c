@@ -27,6 +27,7 @@
 /* ----------------- 模块对象声明 -------------------- */
 
 extern UART_HandleTypeDef huart1;//串口1
+extern UART_HandleTypeDef huart2;//串口1
 extern CAN_HandleTypeDef hcan1;
 extern dbusStruct dbus_t; //大疆遥控
 /* ----------------- 任务句柄 -------------------- */
