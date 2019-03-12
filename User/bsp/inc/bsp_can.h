@@ -32,8 +32,6 @@ typedef struct canDataStrcut
 	CAN_RxHeaderTypeDef rxMsg;
 	CAN_FilterTypeDef filter;
 	uint8_t rxdata[8];
-//	xQueueHandle can_queue; //队列句柄
-//	uint8_t queue_data[12];//队列数据空间
 } canDataStrcut;
 HAL_StatusTypeDef UserCanConfig(CAN_HandleTypeDef *hcanx);
 HAL_StatusTypeDef CanFilterInit(CAN_HandleTypeDef *hcanx);

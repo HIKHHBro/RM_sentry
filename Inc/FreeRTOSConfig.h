@@ -60,6 +60,7 @@
    #define CHASSIS_HEAP_SIZE     512//底盘任务
    #define GIMBAL_HEAP_SIZE      512//云台任务
    #define LED_TIP_HEAP_SIZE     512//led提示任务
+   #define SYS_DETEC_HEAP_SIZE   512//系统自检和数据校准任务
    #define DEBUG_HEAP_SIZE       1024//硬件仿真任务提示任务
    #define TOTAL_HEAP_SIZE       ((size_t)((SYS_INIT_HEAP_SIZE + PARSE_HEAP_SIZE + CHASSIS_HEAP_SIZE + GIMBAL_HEAP_SIZE + LED_TIP_HEAP_SIZE + DEBUG_HEAP_SIZE) * 7))
 /* USER CODE END 0 */       

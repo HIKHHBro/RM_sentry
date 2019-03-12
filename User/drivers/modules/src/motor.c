@@ -73,6 +73,33 @@
 		last_realdata = real;
 		return (real + (s_max_motor_lines * counter));
 	}
+  /**
+  * @Data    2019-03-13 03:55
+  * @brief   计算PID控制系统误差
+  * @param    int16_t target 目标值
+  * @param   int16_t real 真实值
+  * @param    int16_t max_speed 一个计算周期内的最大速度
+  * @retval  当前误差
+  */
+  int16_t CalculateError(int16_t target,int16_t real,uint16_t max_speed,uint16_t linesnumb)
+  {
+    int16_t error;
+    error = target - real;
+    if((error > -max_speed)&&(error < max_speed))
+    return error;
+    else
+    {
+      if(error <= -max_speed)
+      {
+        error = (linesnumb - real)+target;
+      }
+      if(error >= max_speed)
+      {
+        error = (linesnumb - target) + real;
+      }
+      return error;
+    }
+  }
 /* ============================ common of end =============================== */
 /* ============================= RM6623 of begin ============================ */
 	/**

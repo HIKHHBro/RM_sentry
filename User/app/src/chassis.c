@@ -42,6 +42,7 @@
 	{
 		chassis_t.hcanx = hcan;
     chassis_t.rc_t =  rc;
+    chassis_t.status = 0;
 		/* ------ 轮子1结构体数据初始化 ------- */
 		chassis_t.pwheel1_t = &wheel1_t;
 			wheel1_t.id = WHEEL1_RX_ID;//电机can的 ip
@@ -96,6 +97,8 @@
 				wheel2Speed_t.iout = 0;//i输出
 				wheel2Speed_t.dout = 0;//k输出
 				wheel2Speed_t.pid_out = 0;//pid输出
+
+        SET_BIT(chassis_t.status,INIT_OK);//初始化成功
 	}
 /**
 	* @Data    2019-01-28 11:40
@@ -117,6 +120,7 @@
 			default:
 				break;
 		}
+    SET_BIT(chassis_t.status,RX_OK);//接受成功
 	}
 /**
 	* @Data    2019-02-15 15:10
@@ -153,4 +157,35 @@ const chassisStruct* GetChassisStructAddr(void)
 {
   return &chassis_t;
 }
+  /**
+  * @Data    2019-03-13 03:48
+  * @brief   获取底盘结构体地址 可读写，不能乱调用
+  * @param   void
+  * @retval  void
+  */
+  chassisStruct *RWGetChassisStructAddr(void)
+  {
+    return &chassis_t;
+  }
+  /**
+  * @Data    2019-03-13 01:55
+  * @brief   获取底盘状态
+  * @param   void
+  * @retval  void
+  */
+  uint8_t GetChassisStatus(void)
+  {
+    return chassis_t.status;
+  }
+  /**
+  * @Data    2019-03-13 02:56
+  * @brief   设置电机目标速度
+  * @param   void
+  * @retval  void
+  */
+  void SetMotorTarget(int16_t w1,int16_t w2)
+  {
+    	wheel1_t.target = w1;
+      wheel2_t.target = w2;
+  }
 /*----------------------------------file of end-------------------------------*/

@@ -80,7 +80,7 @@ extern UART_HandleTypeDef huart2;//串口1
 //				rammerInnerLoopPid_t.pid_out = 0;//pid输出
 				// /* ------ 云台消息队列创建 ------- */
 				// gimbal_queue = xQueueCreate(5,3);
-        UserCanConfig(hcanx);
+        UserCanConfig(hcanx);//待添加防重复配置功能
 
 	}
 /**

@@ -105,6 +105,18 @@
 	extern unsigned int e_periphera_interface_flag; 	//外设接口使用状态变量定义
 	extern unsigned int e_periphera_error_flag;		//外设接口错误状态变量定义
 	extern unsigned int e_objects_flag;     //对象使用标志
+/* ----------------- 运行状态位 宏 -------------------- */
+/*
+ * uint8_t status
+ * ----------------------------------------------
+ * |   7~3bit   |  2bit   |   1bit  |   0bit    |
+ * ----------------------------------------------
+ * |    保留    | 接受正常 | 正常运行 | 初始化成功 |
+ * ----------------------------------------------
+ */
+	#define INIT_OK      0x01U//初始化成功
+  #define RUNING_OK    0x02U//正常运行
+  #define RX_OK        0x04U//接受正常
 /* ----------------- 外设使用标志位表  -------------------- */
 	#define USART1_BY_USED    						0x0001U//串口1被使用
 	#define USART2_BY_USED    						0x0002U//串口2被使用

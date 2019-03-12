@@ -132,6 +132,7 @@
 																												uint8_t Ctl1_Ctl2);
 	void MotorInit(CAN_HandleTypeDef *hcanx,uint8_t id,uint8_t mode);
   void MaxionParseData(maxionStruct*maxion,uint8_t *data);
+  int16_t CalculateError(int16_t target,int16_t real,uint16_t max_speed,uint16_t linesnumb);
 /* =========================== maxion of end =========================== */
 
 /* ============================= RM6623 of begin ============================ */

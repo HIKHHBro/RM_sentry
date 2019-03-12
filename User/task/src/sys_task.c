@@ -35,12 +35,14 @@ extern CAN_HandleTypeDef hcan1;
 //	osThreadId startLedTaskHandle;
 	osThreadId startChassisTaskHandle;
 	osThreadId startGimbalTaskHandle;
+  osThreadId startSysDetectTaskHandle;//系统自检，数据校准任务
 /* ----------------- 任务钩子函数 -------------------- */
 	void StartSysInitTask(void const *argument);
 	void StartParseTask(void const *argument);
 //	void StartLedTask(void const *argument);
 	void StartChassisTask(void const *argument);
 	void StartGimbalTask(void const *argument);
+  void StartSysDetectTask(void const *argument);
 /* ----------------- 任务信号量 -------------------- */
 //static uint8_t parse_task_status = 0;//数据解析任务工作状态标志
 uint8_t task_on_off = 0;
@@ -79,8 +81,11 @@ uint8_t task_on_off = 0;
 			/* ------ 云台任务 ------- */
 			osThreadDef(gimbalTask, StartGimbalTask, osPriorityNormal, 0, GIMBAL_HEAP_SIZE);
       startGimbalTaskHandle = osThreadCreate(osThread(gimbalTask), NULL);
-			ProgressBarLed(LED_GPIO, 500);
-      task_on_off = ENABLE;
+      /* ------ 系统自检，数据校准任务 ------- */
+      osThreadDef(sysDetectTask, StartSysDetectTask, osPriorityNormal, 0, SYS_DETEC_HEAP_SIZE);
+      startSysDetectTaskHandle = osThreadCreate(osThread(sysDetectTask), NULL);
+       ProgressBarLed(LED_GPIO, 500);
+       task_on_off = ENABLE;
 			/* -------- 删除系统任务 --------- */
 			vTaskDelete(startSysInitTaskHandle);
     }
@@ -99,7 +104,6 @@ uint8_t task_on_off = 0;
       if(task_on_off == ENABLE)
       {
 				ParseData();
-//				parse_task_status = ENABLE;
 				osDelay(2);
       }
       else osDelay(1);
@@ -142,10 +146,28 @@ uint8_t task_on_off = 0;
 			if(task_on_off == ENABLE)
       {
 				GimbalControl(pRc_t);
-				osDelay(2);
+				osDelay(5);
 			}
 			else osDelay(1);
 		}
 	}
+/*---------------------------------80字符限制-----------------------------------*/
+  /**
+  * @Data    2019-03-13 01:46
+  * @brief   系统自检和数据校准任务
+  * @param   void
+  * @retval  void
+  */
+  void StartSysDetectTask(void const *argument)
+  {
+    const dbusStruct* pRc_t;
+    pRc_t = GetRcStructAddr();
+    SysDetectInit();
+    for(;;)
+    {
+      SysDetectControl(pRc_t);
+      	osDelay(2);
+    }
+  }
 /*----------------------------------file of end-------------------------------*/
   

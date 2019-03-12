@@ -27,7 +27,7 @@
 #define __SYS_TASK_H 
 #include "DJI_dbus.h"
 #include "leds_tip.h" 
-#include "parse.h"
+#include "sys_detect.h" 
 void SysInitCreate(void);
 #endif	// __SYS_TASK_H
 /*----------------------------------file of end-------------------------------*/
