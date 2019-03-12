@@ -148,15 +148,15 @@ extern UART_HandleTypeDef huart2;//串口1
 		s[5] = (uint8_t)rammer;
 		return(CanTxMsg(gimbal_t.hcanx,GIMBAL_CAN_TX_ID,s));
 	}
-/*---------------------------------80字符限制-----------------------------------*/
-  /**
-  * @Data    2019-02-24 23:55
-  * @brief   小电脑数据接收
-  * @param   void
-  * @retval  void
-  */
-  HAL_StatusTypeDef RxPCMsg(void)
-  {
-    return (HAL_UART_Receive(gimbal_t.huartx,pc_data,3,1));
-  }
+// /*---------------------------------80字符限制-----------------------------------*/
+//   /**
+//   * @Data    2019-02-24 23:55
+//   * @brief   小电脑数据接收
+//   * @param   void
+//   * @retval  void
+//   */
+//   HAL_StatusTypeDef RxPCMsg(void)
+//   {
+//     return (HAL_UART_Receive(gimbal_t.huartx,pc_data,3,1));
+//   }
 /*-----------------------------------file of end------------------------------*/
