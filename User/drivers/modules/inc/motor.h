@@ -147,8 +147,9 @@
 		int16_t zero;			 //电机零点
 		int16_t Percentage;//转换比例（减速前角度:减速后的角度 = x:1
 		int16_t thresholds; //电机反转阀值
-		postionPidStruct *ppostionPidStruct;
-		speedPidStruct *speedPidStruct;
+    int16_t error;//当前误差
+    postionPidStruct *ppostionPid_t;
+		speedPidStruct *pspeedPid_t;
 	} RM6623Struct;
 	/* -------------- 公有函数 ----------------- */
 	void RM6623StructInit(RM6623Struct *RM6623,CAN_HandleTypeDef *hcanx);
@@ -158,23 +159,39 @@
 	typedef struct RM3508Struct
 	{
 		uint16_t id;//电机can的 ip
-		int16_t target; //目标值
-		int16_t real_current;//真实电流
+		int16_t target;		 //目标值
+		int16_t tem_target;//临时目标值
+		int16_t real_current; //真实电流
 		int16_t real_angle;//真实角度
-		int16_t real_speed;//真实速度
+		int16_t tem_angle;//临时角度
+    int16_t real_speed;//真实速度
+    int16_t tem_speed;//真实速度
+		int16_t zero;			 //电机零点
+		int16_t Percentage;//转换比例（减速前角度:减速后的角度 = x:1
+		int16_t thresholds; //电机反转阀值
+    int16_t error;//当前误差
+    postionPidStruct *ppostionPid_t;
+		speedPidStruct *pspeedPid_t;
 	}RM3508Struct;
+void RM3508ParseData(RM3508Struct *RM3508,uint8_t *data);
 /* ============================== Rm3508 of end ============================= */
 /* =========================== M6620 of begin =========================== */
 	typedef struct M2006Struct
 	{
-		uint16_t rx_id;//电机can的 ip
-		int16_t target; //目标值
-		int16_t real_current;//真实电流
+		uint16_t id;//电机can的 ip
+		int16_t target;		 //目标值
+		int16_t tem_target;//临时目标值
+		int16_t real_current; //真实电流
 		int16_t real_angle;//真实角度
+		int16_t tem_angle;//临时角度
+		int16_t zero;			 //电机零点
+		int16_t Percentage;//转换比例（减速前角度:减速后的角度 = x:1
+		int16_t thresholds; //电机反转阀值
+    int16_t error;//当前误差
 		int16_t real_speed;//真实速度
-		int16_t error[3];//当前误差
-		postionPidStruct *pOuterLoop_t;
-		speedPidStruct *pInnerLoop_t;
+    int16_t tem_speed;//真实速度
+    postionPidStruct *ppostionPid_t;
+		speedPidStruct *pspeedPid_t;
 	}M2006Struct;
 	void RM2006ParseData(M2006Struct *M2006, uint8_t *data);
 /* =========================== M6620 of end =========================== */

@@ -1,16 +1,16 @@
 /**
 	|------------------------------- Copyright ----------------------------------|
 	|                                                                            |
-	|                        (C) Copyright 2019,æµ·åº·å¹³å¤´å“¥,                       |
+	|                        (C) Copyright 2019,º£¿µÆ½Í·¸ç,                       |
 	|          1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China       |
 	|                            All Rights Reserved                             |
 	|                                                                            |
-	|           By(GCU The wold of team | åå—ç†å·¥å¤§å­¦å¹¿å·å­¦é™¢æœºå™¨äººé‡ç‹¼é˜Ÿ)         |
+	|           By(GCU The wold of team | »ªÄÏÀí¹¤´óÑ§¹ãÖİÑ§Ôº»úÆ÷ÈËÒ°ÀÇ¶Ó)         |
 	|                    https://github.com/GCUWildwolfteam                      |
 	|----------------------------------------------------------------------------|
 	|--FileName    : chassis.c                                                
 	|--Version     : v1.0                                                            
-	|--Author      : æµ·åº·å¹³å¤´å“¥                                                       
+	|--Author      : º£¿µÆ½Í·¸ç                                                       
 	|--Date        : 2019-01-19               
 	|--Libsupports : 
 	|--Description :                                                       
@@ -25,62 +25,102 @@
  **/
 #include "chassis.h"
 	static chassisStruct chassis_t;
-    static RM3508Struct wheel1_t;         //è½®å­1
-      static speedPidStruct pwheel1Speed;
-    static RM3508Struct wheel2_t;         //è½®å­2
-      static speedPidStruct pwheel2Speed;
-	#define WHEEL1_ID 0x205
-	#define WHEEL2_ID 0x206
+    static RM3508Struct wheel1_t;         //ÂÖ×Ó1
+      static speedPidStruct wheel1Speed_t;
+    static RM3508Struct wheel2_t;         //ÂÖ×Ó2
+      static speedPidStruct wheel2Speed_t;
+	#define WHEEL1_RX_ID 0x201
+	#define WHEEL2_RX_ID 0x202
 	#define CHASSIS_CAN_TX_ID 0x200
-/**
-	* @Data    2019-01-19 11:45
-	* @brief   åº•ç›˜æ•°æ®è§£æ
-	* @param   chassisStruct* css åº•ç›˜ç»“æ„ä½“æŒ‡é’ˆ
+	/**
+	* @Data    2019-01-27 17:09
+	* @brief   µ×ÅÌ½á¹¹ÌåÊı¾İ³õÊ¼»¯
+	* @param  CAN_HandleTypeDef* hcanx£¨x=1,2£©
 	* @retval  void
 	*/
-	void ChassisInit(CAN_HandleTypeDef *hcan)
+	void ChassisInit(CAN_HandleTypeDef *hcan,const dbusStruct*rc)
 	{
 		chassis_t.hcanx = hcan;
-		/* ------ è½®å­1ç»“æ„ä½“åˆå§‹åŒ– ------- */
+    chassis_t.rc_t =  rc;
+		/* ------ ÂÖ×Ó1½á¹¹ÌåÊı¾İ³õÊ¼»¯ ------- */
 		chassis_t.pwheel1_t = &wheel1_t;
-      wheel1_t.id = 0;
-      wheel1_t.target = 0;
-      wheel1_t.real_current = 0;
-      wheel1_t.real_angle = 0;
-      wheel1_t.real_speed = 0;
-    chassis_t.pwheel1Speed = &pwheel1Speed;
-      pwheel1Speed.before_last_error = 0;
-		/* ------ è½®å­2ç»“æ„ä½“åˆå§‹åŒ– ------- */
+			wheel1_t.id = WHEEL1_RX_ID;//µç»úcanµÄ ip
+			wheel1_t.target = 0;		 //Ä¿±êÖµ
+			wheel1_t.tem_target = 0;//ÁÙÊ±Ä¿±êÖµ
+			wheel1_t.real_current = 0; //ÕæÊµµçÁ÷
+			wheel1_t.real_angle = 0;//ÕæÊµ½Ç¶È
+			wheel1_t.tem_angle = 0;//ÁÙÊ±½Ç¶È
+  	  wheel1_t.real_speed = 0;//ÕæÊµËÙ¶È
+  	  wheel1_t.tem_speed = 0;//ÕæÊµËÙ¶È
+			wheel1_t.zero = 0;			 //µç»úÁãµã
+			wheel1_t.Percentage = 0;//×ª»»±ÈÀı£¨¼õËÙÇ°½Ç¶È:¼õËÙºóµÄ½Ç¶È = x:1
+			wheel1_t.thresholds = 0; //µç»ú·´×ª·§Öµ
+  	  wheel1_t.error = 0;//µ±Ç°Îó²î
+      wheel1_t.ppostionPid_t = NULL;
+      wheel1_t.pspeedPid_t = &wheel1Speed_t;
+				wheel1Speed_t.kp = 0;
+				wheel1Speed_t.kd = 0;
+				wheel1Speed_t.ki = 0;
+				wheel1Speed_t.error = 0;
+				wheel1Speed_t.last_error = 0;//ÉÏ´ÎÎó²î
+				wheel1Speed_t.before_last_error = 0;//ÉÏÉÏ´ÎÎó²î
+				wheel1Speed_t.integral_er = 0;//Îó²î»ı·Ö
+				wheel1Speed_t.pout = 0;//pÊä³ö
+				wheel1Speed_t.iout = 0;//iÊä³ö
+				wheel1Speed_t.dout = 0;//kÊä³ö
+				wheel1Speed_t.pid_out = 0;//pidÊä³ö
+		/* ------ ÂÖ×Ó2½á¹¹ÌåÊı¾İ³õÊ¼»¯ ------- */
 		chassis_t.pwheel2_t = &wheel2_t;
-      wheel2_t.id = 0;
-      wheel2_t.target = 0;
-      wheel2_t.real_current = 0;
-      wheel2_t.real_angle = 0;
-      wheel2_t.real_speed = 0;
-    chassis_t.pwheel2Speed =  &pwheel2Speed;
+			wheel2_t.id = WHEEL2_RX_ID;//µç»úcanµÄ ip
+			wheel2_t.target = 0;		 //Ä¿±êÖµ
+			wheel2_t.tem_target = 0;//ÁÙÊ±Ä¿±êÖµ
+			wheel2_t.real_current = 0; //ÕæÊµµçÁ÷
+			wheel2_t.real_angle = 0;//ÕæÊµ½Ç¶È
+			wheel2_t.tem_angle = 0;//ÁÙÊ±½Ç¶È
+			wheel2_t.real_speed = 0;//ÕæÊµËÙ¶È
+			wheel2_t.tem_speed = 0;//ÕæÊµËÙ¶È
+			wheel2_t.zero = 0;			 //µç»úÁãµã
+			wheel2_t.Percentage = 0;//×ª»»±ÈÀı£¨¼õËÙÇ°½Ç¶È:¼õËÙºóµÄ½Ç¶È = x:1
+			wheel2_t.thresholds = 0; //µç»ú·´×ª·§Öµ
+			wheel2_t.error = 0;//µ±Ç°Îó²î
+ 			wheel2_t.ppostionPid_t = NULL;
+      wheel2_t.pspeedPid_t = &wheel2Speed_t;
+				wheel2Speed_t.kp = 0;
+				wheel2Speed_t.kd = 0;
+				wheel2Speed_t.ki = 0;
+				wheel2Speed_t.error = 0;
+				wheel2Speed_t.last_error = 0;//ÉÏ´ÎÎó²î
+				wheel2Speed_t.before_last_error = 0;//ÉÏÉÏ´ÎÎó²î
+				wheel2Speed_t.integral_er = 0;//Îó²î»ı·Ö
+				wheel2Speed_t.pout = 0;//pÊä³ö
+				wheel2Speed_t.iout = 0;//iÊä³ö
+				wheel2Speed_t.dout = 0;//kÊä³ö
+				wheel2Speed_t.pid_out = 0;//pidÊä³ö
 	}
 /**
-	* @Data    2019-01-19 12:01
-	* @brief   åº•ç›˜æ•°æ®è§£æ
-	* @param   Peripheral typeå¤–è®¾ç±»å‹,ä¸²å£CAN_HandleTypeDef,can çš„CAN_HandleTypeDef
+	* @Data    2019-01-28 11:40
+	* @brief   µ×ÅÌÊı¾İ½âÎö
+	* @param   void
 	* @retval  void
 	*/
-	void ChassisParseDate(uint16_t id)
+	void ChassisParseDate(uint16_t id,uint8_t *data)
 	{
 		
 		switch (id)
 		{
-			case WHEEL1_ID:
-				// RM3508ParseData();
+			case WHEEL1_RX_ID:
+				RM3508ParseData(&wheel1_t,data);
 				break;
-		
+			case WHEEL2_RX_ID:
+				RM3508ParseData(&wheel2_t,data);
+				break;
 			default:
 				break;
 		}
 	}
 /**
-	* @Data    2019-02-15 14:15
-	* @brief   åº•ç›˜canæ•°æ®å‘é€
+	* @Data    2019-02-15 15:10
+	* @brief   µ×ÅÌÊı¾İ·¢ËÍ
 	* @param   void
 	* @retval  void
 	*/
@@ -93,4 +133,24 @@
 		s[3] = (uint8_t)w2;
 		CanTxMsg(chassis_t.hcanx,CHASSIS_CAN_TX_ID,s);
 	}
+/**
+	* @Data    2019-03-12 16:25
+	* @brief   µ×ÅÌ¿ØÖÆº¯Êı
+	* @param   void
+	* @retval  void
+	*/
+	void ChassisControl(void)
+	{
+		
+	}
+ /*
+* @Data    2019-02-24 11:59
+* @brief   »ñÈ¡µ×ÅÌ½á¹¹ÌåµØÖ·
+* @param   void
+* @retval  void
+*/
+const chassisStruct* GetChassisStructAddr(void)
+{
+  return &chassis_t;
+}
 /*----------------------------------file of end-------------------------------*/

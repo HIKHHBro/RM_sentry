@@ -26,7 +26,7 @@
 #ifndef __BASECLASS_H 
 #define __BASECLASS_H 
 /* -------- stm32 库选择 1是开启，0是开闭--------- */
-#define HAL_F1 0
+// #define HAL_F1 0
 #define HAL_F4 1
 /* -------------- 调试版本和发行版本选择 ----------------- */
 /*发行版请把这行宏定义注释掉*/
@@ -34,7 +34,7 @@
 /* ----------------- 开发板的选择 1是开启，0是开闭-------------------- */
 #define RM_NEW_BOARD 1
 //#define RM_OLD_BOARD 0
-//#define BINGE_BOARD 0 //斌哥的板子
+//#define BINGE_BOARD 1 //斌哥的板子
 #if HAL_F1 
 	// #include "stm32f1xx_hal.h"
 	// #include <stdlib.h>

@@ -653,14 +653,19 @@
           <GroupName>user/task</GroupName>
           <Files>
             <File>
-              <FileName>sysr_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\task\src\sysr_task.c</FilePath>
-            </File>
-            <File>
               <FileName>user.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\task\src\user.c</FilePath>
+            </File>
+            <File>
+              <FileName>sys_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\task\src\sys_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>debug_by_keil.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\task\src\debug_by_keil.c</FilePath>
             </File>
           </Files>
         </Group>

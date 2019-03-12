@@ -50,9 +50,18 @@
 #if defined(__ICCARM__) || defined(__CC_ARM) || defined(__GNUC__)
     #include <stdint.h>
     extern uint32_t SystemCoreClock;
-/* USER CODE BEGIN 0 */   	      
+/* USER CODE BEGIN 0 */  
     extern void configureTimerForRunTimeStats(void);
-    extern unsigned long getRunTimeCounterValue(void);  
+    extern unsigned long getRunTimeCounterValue(void); 
+/* ----------------- 任务堆栈大小设置 -------------------- */
+//切换底盘要记得修改configTOTAL_HEAP_SIZE，
+   #define SYS_INIT_HEAP_SIZE    256//系统初始任务
+   #define PARSE_HEAP_SIZE       256//数据解析任务
+   #define CHASSIS_HEAP_SIZE     512//底盘任务
+   #define GIMBAL_HEAP_SIZE      512//云台任务
+   #define LED_TIP_HEAP_SIZE     512//led提示任务
+   #define DEBUG_HEAP_SIZE       1024//硬件仿真任务提示任务
+   #define TOTAL_HEAP_SIZE       ((size_t)((SYS_INIT_HEAP_SIZE + PARSE_HEAP_SIZE + CHASSIS_HEAP_SIZE + GIMBAL_HEAP_SIZE + LED_TIP_HEAP_SIZE + DEBUG_HEAP_SIZE) * 7))
 /* USER CODE END 0 */       
 #endif
 
@@ -65,7 +74,7 @@
 #define configTICK_RATE_HZ                       ((TickType_t)1000)
 #define configMAX_PRIORITIES                     ( 7 )
 #define configMINIMAL_STACK_SIZE                 ((uint16_t)128)
-#define configTOTAL_HEAP_SIZE                    ((size_t)20480)
+#define configTOTAL_HEAP_SIZE                    TOTAL_HEAP_SIZE
 #define configMAX_TASK_NAME_LEN                  ( 16 )
 #define configGENERATE_RUN_TIME_STATS            1
 #define configUSE_TRACE_FACILITY                 1

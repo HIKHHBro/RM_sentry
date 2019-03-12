@@ -26,25 +26,23 @@
 #include "sys_task.h"
 
 /* ----------------- 模块对象声明 -------------------- */
-
 extern UART_HandleTypeDef huart1;//串口1
 extern UART_HandleTypeDef huart2;//串口1
 extern CAN_HandleTypeDef hcan1;
-extern dbusStruct dbus_t; //大疆遥控
 /* ----------------- 任务句柄 -------------------- */
 	osThreadId startSysInitTaskHandle; 
 	osThreadId startParseTaskHandle;
-	osThreadId startLedTaskHandle;
+//	osThreadId startLedTaskHandle;
 	osThreadId startChassisTaskHandle;
 	osThreadId startGimbalTaskHandle;
 /* ----------------- 任务钩子函数 -------------------- */
 	void StartSysInitTask(void const *argument);
 	void StartParseTask(void const *argument);
-	void StartLedTask(void const *argument);
+//	void StartLedTask(void const *argument);
 	void StartChassisTask(void const *argument);
 	void StartGimbalTask(void const *argument);
 /* ----------------- 任务信号量 -------------------- */
-static uint8_t parse_task_status = 0;//数据解析任务工作状态标志
+//static uint8_t parse_task_status = 0;//数据解析任务工作状态标志
 uint8_t task_on_off = 0;
 /**
 	* @Data    2019-01-16 18:30
@@ -55,7 +53,7 @@ uint8_t task_on_off = 0;
 	void SysInitCreate(void)
 	{
 		/* -------- 系统初始化任务创建 --------- */
-		osThreadDef(sysInitTask, StartSysInitTask, osPriorityNormal, 0, 256);
+		osThreadDef(sysInitTask, StartSysInitTask, osPriorityNormal, 0, SYS_INIT_HEAP_SIZE);
 		startSysInitTaskHandle = osThreadCreate(osThread(sysInitTask), NULL);
 	}
 /**
@@ -70,16 +68,16 @@ uint8_t task_on_off = 0;
     {
       task_on_off = DISABLE;
 			/* -------- 数据分析任务 --------- */
-      osThreadDef(parseTask, StartParseTask, osPriorityRealtime, 0, 256);
+      osThreadDef(parseTask, StartParseTask, osPriorityHigh, 0, PARSE_HEAP_SIZE);
       startParseTaskHandle = osThreadCreate(osThread(parseTask), NULL);	
-			/* -------- led灯提示任务 --------- */
-			osThreadDef(ledTask, StartLedTask, osPriorityNormal, 0,128);
-      startLedTaskHandle = osThreadCreate(osThread(ledTask), NULL);
-//			/* ------ 底盘任务 ------- */
-//			osThreadDef(chassisTask, StartChassisTask, osPriorityNormal, 0, 100);
-//      startChassisTaskHandle = osThreadCreate(osThread(chassisTask), NULL);
+//			/* -------- led灯提示任务 --------- */
+//			osThreadDef(ledTask, StartLedTask, osPriorityNormal, 0,128);
+//      startLedTaskHandle = osThreadCreate(osThread(ledTask), NULL);
+			/* ------ 底盘任务 ------- */
+			osThreadDef(chassisTask, StartChassisTask, osPriorityNormal, 0, CHASSIS_HEAP_SIZE);
+      startChassisTaskHandle = osThreadCreate(osThread(chassisTask), NULL);
 			/* ------ 云台任务 ------- */
-			osThreadDef(gimbalTask, StartGimbalTask, osPriorityNormal, 0, 512);
+			osThreadDef(gimbalTask, StartGimbalTask, osPriorityNormal, 0, GIMBAL_HEAP_SIZE);
       startGimbalTaskHandle = osThreadCreate(osThread(gimbalTask), NULL);
 			ProgressBarLed(LED_GPIO, 500);
       task_on_off = ENABLE;
@@ -95,43 +93,19 @@ uint8_t task_on_off = 0;
 	*/
 	void StartParseTask(void const *argument)
 	{
-    DebugClassInit();
     ParseInit();
 		for(;;)
 		{
       if(task_on_off == ENABLE)
       {
 				ParseData();
-       
-				parse_task_status = ENABLE;
-				osDelay(10);
+//				parse_task_status = ENABLE;
+				osDelay(2);
       }
       else osDelay(1);
 		}
 	}
-	/**
-	* @Data    2019-01-18 11:31
-	* @brief   led灯提示任务钩子函数
-	* @param   argument: Not used
-	* @retval  void
-	*/
-	void StartLedTask(void const *argument)
-	{
-		for(;;)
-		{
-      if(task_on_off == ENABLE)
-      {
-         FlashingLed(LED_GPIO,LED_7,2,100);
-        if(parse_task_status == ENABLE)
-        {
-          FlashingLed(LED_GPIO, LED_1, 2, 100);
-        }
-        else osDelay(1);
-      }
-      else osDelay(1);
-		}
-    
-	}
+
 /**
 	* @Data    2019-01-27 17:54
 	* @brief   底盘任务钩子函数
@@ -140,9 +114,16 @@ uint8_t task_on_off = 0;
 	*/
 	void StartChassisTask(void const *argument)
 	{
+    const dbusStruct* pRc_t;
+    pRc_t = GetRcStructAddr();
+    ChassisInit(&hcan1,pRc_t);
 		for (;;)
 		{
-			osDelay(1);
+      if(task_on_off == ENABLE)
+      {
+        ChassisControl();
+			  osDelay(5);
+      }
 		}
 	}
 /**
@@ -153,12 +134,14 @@ uint8_t task_on_off = 0;
 	*/
 	void StartGimbalTask(void const *argument)
 	{
+    const dbusStruct* pRc_t;
+    pRc_t = GetRcStructAddr();
     GimbalStructInit(&hcan1); 
 		for (;;)
 		{  
 			if(task_on_off == ENABLE)
       {
-				GimbalControl(&dbus_t);
+				GimbalControl(pRc_t);
 				osDelay(2);
 			}
 			else osDelay(1);

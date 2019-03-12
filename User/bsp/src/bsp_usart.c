@@ -199,7 +199,7 @@ HAL_StatusTypeDef AllocateUsartxSpace(UART_HandleTypeDef *huartx)
 				portBASE_TYPE xStatus;
 		usartDataStrcut *addr;
 		addr = GetUsartAddr(huartx);
-xStatus = xQueueReceive(addr->usart_queue, pvBuffer, 1);
+xStatus = xQueueReceive(addr->usart_queue, pvBuffer, 0);
 				if(pdFAIL != xStatus)
 				{
 					return HAL_ERROR;

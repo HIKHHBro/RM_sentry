@@ -69,7 +69,7 @@
 	/**
 	* @Data    2019-01-18 14:25
 	* @brief   进度条等效
-	* @param   GPIO LED_GPIO (详细说明见.h文件)
+	* @param   GPIO LED_GPIO (详细说明见baseclass.h文件)
 	* @param   lag  闪烁时间间隔 单位ms
 	* @retval  void
 	*/

@@ -31,14 +31,15 @@
 typedef struct chassisStruct
 {
 	RM3508Struct *pwheel1_t;
-  speedPidStruct * pwheel1Speed;
 	RM3508Struct *pwheel2_t;
-  speedPidStruct * pwheel2Speed;
+  const dbusStruct   *rc_t;
 	CAN_HandleTypeDef *hcanx;
 }chassisStruct;
-	void ChassisInit(CAN_HandleTypeDef *hcan);
-	void ChassisParseDate(uint16_t id);
+	void ChassisInit(CAN_HandleTypeDef *hcan,const dbusStruct*rc);
+	void ChassisParseDate(uint16_t id,uint8_t *data);
 	void ChassisCanTx(int16_t w1,int16_t w2);
+	void ChassisControl(void);
+const chassisStruct* GetChassisStructAddr(void);
 #endif	// __CHASSIS_H
 	
 /*-----------------------------------file of end------------------------------*/

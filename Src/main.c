@@ -336,7 +336,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 89;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 9999;
+  htim3.Init.Period = 99;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -778,8 +778,8 @@ void StartdefuatTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
-    vTaskDelete(defuatTaskHandle);
+    osDelay(500);
+//    vTaskDelete(defuatTaskHandle);
   }
   /* USER CODE END 5 */ 
 }
@@ -801,7 +801,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
-
+  USER_TIM_PeriodElapsedCallback(htim);
   /* USER CODE END Callback 1 */
 }
 

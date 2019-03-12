@@ -31,8 +31,11 @@
 	* @retval  void
 	*/
 		void SysInit(void)
-		{
+		{ 
 			SysInitCreate();
+#ifdef DEBUG_BY_KEIL //keilµ÷ÊÔ³õÊ¼»¯
+			DebugByKeilInit();
+#endif
 		}
 /*-----------------------------------file of end------------------------------*/
  

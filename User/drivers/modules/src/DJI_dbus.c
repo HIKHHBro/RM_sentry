@@ -77,8 +77,10 @@ uint8_t databuff[21];//数据接收
 	{
 //    &&RCRDecryption\
 //		(databuff,dbs->a_frame_len) == HAL_OK
+//          taskENTER_CRITICAL();
 		if(UserUsartQueueRX(dbs->huartx,databuff) == HAL_OK)
 		{
+
 		dbs->ch1 = (databuff[0] | databuff[1]<<8) & 0x07FF;
 		dbs->ch1 -= 1024;
     dbs->ch1 = DbusAntiShake(20,dbs->ch1);
@@ -103,6 +105,7 @@ uint8_t databuff[21];//数据接收
 		dbs->mouse.press_right 	= databuff[13];
 		
 		dbs->keyBoard.key_code 	= databuff[14] | databuff[15] << 8; //key broad code
+
 //      lostdata = *dbs;
 		}
 		else
@@ -124,6 +127,7 @@ uint8_t databuff[21];//数据接收
 //		dbs->mouse.press_right	= 0;
 //		dbs->keyBoard.key_code	= 0;
 		}
+//        taskEXIT_CRITICAL()	;
 	}
 	/**
 		* @Data    2019-02-14 21:06

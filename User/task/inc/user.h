@@ -25,6 +25,10 @@
 #ifndef __USER_H 
 #define __USER_H
 #include "sys_task.h"
+#ifdef DEBUG_BY_KEIL //keilµ÷ÊÔ³õÊ¼»¯
+			#include "debug_by_keil.h" 
+#endif
+
 void SysInit(void);
 #endif // __USER_H
 

@@ -31,10 +31,10 @@
 	#define GIMBAL_CAN_TX_ID 0x1ff
 /* -------------- 结构体声明 ----------------- */
 	gimbalStruct gimbal_t;//云台结构体
-	M2006Struct rammer_t;//拨弹电机结构体
-	postionPidStruct rammerOuterLoopPid_t;//拨弹电机外环pid
-	speedPidStruct rammerInnerLoopPid_t;//拨弹电机内环pid
-	xQueueHandle gimbal_queue;
+//	M2006Struct rammer_t;//拨弹电机结构体
+//	postionPidStruct rammerOuterLoopPid_t;//拨弹电机外环pid
+//	speedPidStruct rammerInnerLoopPid_t;//拨弹电机内环pid
+//	xQueueHandle gimbal_queue;
 	/**
 	* @Data    2019-01-27 17:09
 	* @brief   云台结构体初始化
@@ -45,40 +45,38 @@
 	{
 		gimbal_t.hcanx = hcanx;
 		/* ------ 拨弹电机初始化 ------- */
-			gimbal_t.prammer_t = &rammer_t;
-			rammer_t.rx_id = RAMMER_RX_ID;//电机can的 ip
-		  rammer_t.target = 0; //目标值
-		  rammer_t.real_current = 0;//真实电流
-		  rammer_t.real_angle = 0;//真实角度
-		  rammer_t.real_speed = 0;//真实速度
-			rammer_t.error[0] = 0;
-			rammer_t.error[1] = 0;
-			rammer_t.error[2] = 0;
-			/* ------ 外环pid参数 ------- */
-				rammer_t.pOuterLoop_t = &rammerOuterLoopPid_t;
-				rammerOuterLoopPid_t.kp = 0;
-				rammerOuterLoopPid_t.kd = 0;
-				rammerOuterLoopPid_t.ki = 0;
-				rammerOuterLoopPid_t.error = 0;
-				rammerOuterLoopPid_t.last_error = 0;//上次误差
-				rammerOuterLoopPid_t.integral_er = 0;//误差积分
-				rammerOuterLoopPid_t.pout = 0;//p输出
-				rammerOuterLoopPid_t.iout = 0;//i输出
-				rammerOuterLoopPid_t.dout = 0;//k输出
-				rammerOuterLoopPid_t.pid_out = 0;//pid输出
-			/* ------ 内环pid参数 ------- */
-				rammer_t.pInnerLoop_t = &rammerInnerLoopPid_t;
-				rammerInnerLoopPid_t.kp = 0;
-				rammerInnerLoopPid_t.kd = 0;
-				rammerInnerLoopPid_t.ki = 0;
-				rammerInnerLoopPid_t.error = 0;
-				rammerInnerLoopPid_t.last_error = 0;//上次误差
-				rammerInnerLoopPid_t.before_last_error = 0;//上上次误差
-				rammerInnerLoopPid_t.integral_er = 0;//误差积分
-				rammerInnerLoopPid_t.pout = 0;//p输出
-				rammerInnerLoopPid_t.iout = 0;//i输出
-				rammerInnerLoopPid_t.dout = 0;//k输出
-				rammerInnerLoopPid_t.pid_out = 0;//pid输出
+//			gimbal_t.prammer_t = &rammer_t;
+//			rammer_t.id = RAMMER_RX_ID;//电机can的 ip
+//		  rammer_t.target = 0; //目标值
+//		  rammer_t.real_current = 0;//真实电流
+//		  rammer_t.real_angle = 0;//真实角度
+//		  rammer_t.real_speed = 0;//真实速度
+//			rammer_t.error = 0;
+//			/* ------ 外环pid参数 ------- */
+//				rammer_t.ppostionPid_t = &rammerOuterLoopPid_t;
+//				rammerOuterLoopPid_t.kp = 0;
+//				rammerOuterLoopPid_t.kd = 0;
+//				rammerOuterLoopPid_t.ki = 0;
+//				rammerOuterLoopPid_t.error = 0;
+//				rammerOuterLoopPid_t.last_error = 0;//上次误差
+//				rammerOuterLoopPid_t.integral_er = 0;//误差积分
+//				rammerOuterLoopPid_t.pout = 0;//p输出
+//				rammerOuterLoopPid_t.iout = 0;//i输出
+//				rammerOuterLoopPid_t.dout = 0;//k输出
+//				rammerOuterLoopPid_t.pid_out = 0;//pid输出
+//			/* ------ 内环pid参数 ------- */
+//				rammer_t.pspeedPid_t = &rammerInnerLoopPid_t;
+//				rammerInnerLoopPid_t.kp = 0;
+//				rammerInnerLoopPid_t.kd = 0;
+//				rammerInnerLoopPid_t.ki = 0;
+//				rammerInnerLoopPid_t.error = 0;
+//				rammerInnerLoopPid_t.last_error = 0;//上次误差
+//				rammerInnerLoopPid_t.before_last_error = 0;//上上次误差
+//				rammerInnerLoopPid_t.integral_er = 0;//误差积分
+//				rammerInnerLoopPid_t.pout = 0;//p输出
+//				rammerInnerLoopPid_t.iout = 0;//i输出
+//				rammerInnerLoopPid_t.dout = 0;//k输出
+//				rammerInnerLoopPid_t.pid_out = 0;//pid输出
 				// /* ------ 云台消息队列创建 ------- */
 				// gimbal_queue = xQueueCreate(5,3);
         UserCanConfig(hcanx);
@@ -95,7 +93,7 @@
 		switch (id)
 		{
 			case RAMMER_RX_ID:
-				RM2006ParseData(&rammer_t,data);
+//				RM2006ParseData(&rammer_t,data);
 				break;
 		
 			default:
@@ -111,13 +109,13 @@
 	*/
 	void GimbalControl(const dbusStruct* dbus)
 	{
-		int16_t pid_out = -500;
-		rammer_t.target = 3*(DbusAntiShake(20,dbus->ch1)); //目标值
-		rammer_t.error[0] = rammer_t.target - rammer_t.real_speed;
-		pid_out = SpeedPid(&rammerInnerLoopPid_t,rammer_t.error[0]);
-		pid_out = MAX(pid_out,2000); //限做大值
-	  pid_out = MIN(pid_out,-2000); //限做小值
-		GimbalCanTx(pid_out,0);
+//		int16_t pid_out = -500;
+//		rammer_t.target = 3*(DbusAntiShake(20,dbus->ch1)); //目标值
+//		rammer_t.error = rammer_t.target - rammer_t.real_speed;
+//		pid_out = SpeedPid(&rammerInnerLoopPid_t,rammer_t.error);
+//		pid_out = MAX(pid_out,2000); //限做大值
+//	  pid_out = MIN(pid_out,-2000); //限做小值
+//		GimbalCanTx(pid_out,0);
 	}
 /**
 	* @Data    2019-02-15 15:10

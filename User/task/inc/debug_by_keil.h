@@ -8,10 +8,10 @@
 	|           By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)         |
 	|                    https://github.com/GCUWildwolfteam                      |
 	|----------------------------------------------------------------------------|
-	|--FileName    : parse.h                                                
+	|--FileName    : debug_by_keil.h                                                
 	|--Version     : v1.0                                                            
 	|--Author      : 海康平头哥                                                       
-	|--Date        : 2019-02-02               
+	|--Date        : 2019-02-23               
 	|--Libsupports : 
 	|--Description :                                                       
 	|--FunctionList                                                       
@@ -23,14 +23,23 @@
 	|-------2. ...                                                       
 	|-----------------------------declaration of end-----------------------------|
  **/
-#ifndef __PARSE_H 
-#define __PARSE_H 
- #include "chassis.h"
- #include "gimbal.h"  
- void ParseInit(void);
- void ParseData(void);
- 	const dbusStruct* GetRcStructAddr(void);
-#endif	// __PARSE_H
+#ifndef __DEBUG_BY_KEIL_H 
+#define __DEBUG_BY_KEIL_H 
+#include "baseclass.h" 
+#ifdef DEBUG_BY_KEIL
+#include "leds_tip.h" 
+#include "parse.h" 
+
+typedef struct debugByKeilStruct
+{
+// const dbusStruct* d_rc;
+  const chassisStruct* d_pchassis_t;
+}debugByKeilStruct;
+void DebugByKeilInit(void);
+void USER_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
+extern debugByKeilStruct pdebug_t;
+#endif 
+#endif	// __DEBUG_BY_KEIL_H
 /*-----------------------------------file of end------------------------------*/
 
 

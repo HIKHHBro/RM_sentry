@@ -25,7 +25,7 @@
  **/
 #include "parse.h" 
 /* -------------- 结构体 ----------------- */
-  dbusStruct dbus_t; //大疆遥控
+ dbusStruct dbus_t; //大疆遥控
 /* -------------- 外部链接 ----------------- */
 extern UART_HandleTypeDef huart1;//串口1
 extern uint8_t can1_rx[12];
@@ -48,10 +48,12 @@ void ParseInit(void)
 	*/
 	void ParseData(void)
 	{
-//		uint32_t can_id = 0;
-//		ByleToMultibyte(&can1_rx[8],&can_id);
-//		ChassisParseDate(can_id,can1_rx);
-    DbusParseData(&dbus_t);//遥控解析
+		uint32_t can_id = 0;
+//    taskENTER_CRITICAL();
+		ByleToMultibyte(&can1_rx[8],&can_id);
+		ChassisParseDate(can_id,can1_rx);
+    DbusParseData(&dbus_t);//
+//        taskEXIT_CRITICAL();
 	}
  /*
 	* @Data    2019-02-24 11:59
@@ -59,7 +61,7 @@ void ParseInit(void)
 	* @param   void
 	* @retval  void
 	*/
-	const dbusStruct* GetRcStructAdd(void)
+	const dbusStruct* GetRcStructAddr(void)
 	{
 		return &dbus_t;
 	}
