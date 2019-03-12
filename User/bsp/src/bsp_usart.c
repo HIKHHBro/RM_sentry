@@ -196,15 +196,14 @@ HAL_StatusTypeDef AllocateUsartxSpace(UART_HandleTypeDef *huartx)
 	HAL_StatusTypeDef UserUsartQueueRX(UART_HandleTypeDef *huartx,\
 																		 void* const pvBuffer)
 	{
-//				portBASE_TYPE xStatus;
+				portBASE_TYPE xStatus;
 		usartDataStrcut *addr;
 		addr = GetUsartAddr(huartx);
-//				xStatus = 
-		xQueueReceive(addr->usart_queue, pvBuffer, 1);
-//				if(pdPASS != xStatus)
-//				{
-//					return HAL_ERROR;
-//				}
+xStatus = xQueueReceive(addr->usart_queue, pvBuffer, 1);
+				if(pdFAIL != xStatus)
+				{
+					return HAL_ERROR;
+				}
 		return HAL_OK;
 	}
 /*-----------------------------------file of end------------------------------*/

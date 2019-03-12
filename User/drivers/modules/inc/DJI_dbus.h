@@ -42,7 +42,7 @@
 #define KEY_A		0x0004
 #define KEY_S		0x0002
 #define KEY_W		0x0001
-	typedef struct 
+	typedef struct dbusStruct
 	{
 		int16_t ch1;	//each ch value from -660 -- +660
 		int16_t ch2;

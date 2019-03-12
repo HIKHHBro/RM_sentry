@@ -44,6 +44,7 @@
 	#define LIMIT_MAX									0x0DU     //最大限幅
 	#define LIMIT_MIN									0x0EU     //最小限幅
 	float Bezier(int x,int y);
+	int16_t GetLengthForTwopoint(const int16_t *Q1,const int16_t *Q2);
 /* -------------- 位置式pid ----------------- */
 	typedef struct postionPidStruct
 	{
@@ -75,6 +76,24 @@
 		float pid_out;//pid输出
 }speedPidStruct;
 int16_t SpeedPid(speedPidStruct *sps, int16_t error);
+/* =========================== 贝塞尔曲线 of begin =========================== */
+	typedef struct BezierStruct
+	{
+		uint32_t *coordinate_x;
+		uint32_t *coordinate_y;
+		uint8_t n;
+		uint32_t point_x[8];
+		uint32_t point_y[8];
+		uint32_t precision;
+		// void(*SetPoint)(uint32_t x,uint32_t y);//设置控制点
+		// void(*SetPrecision)(uint32_t precision);//设置曲线精度
+		// void(*SetPow)(uint8_t n);//设置贝塞尔阶数
+	}bezierStruct;
+	HAL_StatusTypeDef CreateDataSpace(bezierStruct* bs);
+	uint32_t QuadTo(const uint8_t n,const uint32_t *point,float t);
+/* =========================== 贝塞尔曲线 of end =========================== */
+
+
 #endif	// __COUNTERS_H
 	
 /*--------------------------------file of end---------------------------------*/

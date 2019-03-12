@@ -29,8 +29,12 @@
 #define HAL_F1 0
 #define HAL_F4 1
 /* -------------- 调试版本和发行版本选择 ----------------- */
-#define DEBUG_BY_KEIL 1
-#define RELEASE_BY_KEIL 0
+/*发行版请把这行宏定义注释掉*/
+#define DEBUG_BY_KEIL
+/* ----------------- 开发板的选择 1是开启，0是开闭-------------------- */
+#define RM_NEW_BOARD 1
+//#define RM_OLD_BOARD 0
+//#define BINGE_BOARD 0 //斌哥的板子
 #if HAL_F1 
 	// #include "stm32f1xx_hal.h"
 	// #include <stdlib.h>
@@ -39,7 +43,60 @@
 		#include "cmsis_os.h"
 		#include <stdlib.h>
     #include <string.h>
+    #include <stdio.h>
 #endif 
+/* ----------------- led引脚宏定义定义 -------------------- */
+#if RM_NEW_BOARD //新板引脚宏定义
+	#define LED_1 GPIO_PIN_1
+	#define LED_2 GPIO_PIN_2
+	#define LED_3 GPIO_PIN_3
+	#define LED_4 GPIO_PIN_4
+	#define LED_5 GPIO_PIN_5
+	#define LED_6 GPIO_PIN_6
+	#define LED_7 GPIO_PIN_7
+	#define LED_8 GPIO_PIN_8
+	#define LED_GPIO GPIOG
+  #define LED_TOTAL 8 //led等个数
+  #define LED_ORIGIN_PIN 1  //灯GPIO起点引脚
+  
+  #define RED_LED GPIO_PIN_11//PE11
+  #define GREEN_LED GPIO_PIN_14//PE14
+  #define COLOR_LED_GPIO GPIOE
+/* ----------------- 激光引脚宏定义定义 -------------------- */  
+  #define LASER GPIO_PIN_12//PG13
+  #define LASER_GPIO GPIOG
+/* -----------------电源管理引脚宏定义定义 -------------------- */   
+  #define POWER1 GPIO_PIN_2//PH2
+  #define POWER2 GPIO_PIN_3//PH3
+  #define POWER3 GPIO_PIN_4//PH4
+  #define POWER4 GPIO_PIN_5//PH5
+  #define POWER_GPIO GPIOH
+/* -----------------蜂鸣器引脚宏定义定义 -------------------- */     
+  #define BUZZER GPIO_PIN_6//PH6  TIM12_CH1
+  #define BUZZER_GPIO GPIOH
+#elif BINGE_BOARD
+	#define LED_1 GPIO_PIN_9
+	#define LED_2 GPIO_PIN_10
+	#define LED_3 GPIO_PIN_11
+	#define LED_4 GPIO_PIN_12
+	#define LED_5 GPIO_PIN_13
+	#define LED_6 GPIO_PIN_14
+	#define LED_7 GPIO_PIN_15
+	#define LED_GPIO GPIOE
+  #define LED_TOTAL 7 //led等个数
+  #define LED_ORIGIN_PIN 9  //灯GPIO起点引脚
+#elif RM_OLD_BOARD
+	#define LED_1 0
+	#define LED_2 0
+	#define LED_3 0
+	#define LED_4 0
+	#define LED_5 0
+	#define LED_6 0
+	#define LED_7 0
+	#define LED_GPIO0G  0
+  #define LED_TOTAL 0 //led等个数
+  #define LED_ORIGIN_PIN 0  //灯GPIO起点引脚
+#endif
 	#define MAX(X,Y) (X)>(Y)?(Y):(X)  //限做大值
 	#define MIN(X,Y) (X)<(Y)?(Y):(X)  //限做小值
 	#define ABS(X)   (X)<0?(-X):(X)    //取绝对值
@@ -86,6 +143,8 @@
 	HAL_StatusTypeDef RCRDecryption(uint8_t *pdata, uint8_t size);
 	void MultibyteToByle(uint32_t data,uint8_t *pdata);
 	void ByleToMultibyte(uint8_t *pdata,uint32_t *data);
+	void TwobyteToByle(int16_t data,uint8_t *pdata);
+	void DataFilling(uint8_t *pdata,uint8_t s,uint8_t size);
 #endif	// __BASECLASS_H
 	
  /*--------------------------------file of end--------------------------------*/

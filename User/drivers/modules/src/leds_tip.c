@@ -36,6 +36,9 @@
 		*/
 		void FlashingLed(GPIO_TypeDef* GPIO,uint16_t ledx,uint8_t times,uint32_t lag)
 		{
+		#if RM_OLD_BOARD
+		#elif BINGE_BOARD
+			UNUSED(GPIO);
 			uint8_t i = 0;
 			for (i = 0; i < times;i++)
 			{
@@ -43,6 +46,7 @@
           osDelay(lag);
 					HAL_GPIO_WritePin(GPIO,ledx,GPIO_PIN_SET);
 			}
+		#endif
 		}
 	/*---------------------------------80×Ö·ûÏÞÖÆ-----------------------------------*/
 		/**
@@ -71,6 +75,9 @@
 	*/
 	void ProgressBarLed(GPIO_TypeDef* GPIO,uint32_t lag)
 	{
+		#if RM_OLD_BOARD
+		  UNUSED(GPIO);
+		#elif (BINGE_BOARD|RM_NEW_BOARD)
 		uint8_t i = 0;
 		uint16_t tem_pin=0;
 		for (i = 0; i < LED_TOTAL; i++)
@@ -80,6 +87,7 @@
 			osDelay(lag);
 		}
 		HAL_GPIO_WritePin(GPIO, tem_pin, GPIO_PIN_SET);
+	#endif
 	}
 /*------------------------------------file of end-------------------------------*/
 

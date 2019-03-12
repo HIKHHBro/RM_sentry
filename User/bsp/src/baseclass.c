@@ -179,12 +179,25 @@ HAL_StatusTypeDef RCREncryption(uint8_t* pdata,uint8_t size)
 		void MultibyteToByle(uint32_t data,uint8_t *pdata)
 		{
 			unsigned char *p;
-			p=(unsigned char *)&data;
 			p = (unsigned char *)&data;
 			*pdata = (unsigned char)*(p + 3);//高八位
 			*(pdata+1)= (unsigned char)*(p + 2);
 			*(pdata + 2) = (unsigned char)*(p + 1);
 			*(pdata + 3) = (unsigned char)*p;//低八位
+		}
+		/**
+		* @Data    2019-02-14 15:09
+		* @brief   两个字节类型转单字节类型,高位在前
+		* @param   uint32_t 四个字节
+		* @param	 uint8_t *单字节指针 
+		* @retval  void
+		*/
+		void TwobyteToByle(int16_t data,uint8_t *pdata)
+		{
+			unsigned char *p;
+			p = (unsigned char *)&data;
+			*pdata = (unsigned char)*(p + 1);//高八位
+			*(pdata+1)= (unsigned char)*p;//低八位
 		}
 	/**
 		* @Data    2019-02-14 15:45
@@ -197,5 +210,19 @@ HAL_StatusTypeDef RCREncryption(uint8_t* pdata,uint8_t size)
 		{
 			*data = (uint32_t)((*pdata << 24) | (*(pdata + 1) << 16) | \
 							(*(pdata + 2) << 8) |(*(pdata + 3)));
+		}
+	/**
+		* @Data    2019-02-16 13:42
+		* @brief   顺序数据填充
+		* @param   uint8_t size 数组的长度
+		* @retval  void
+		*/
+		void DataFilling(uint8_t *pdata,uint8_t s,uint8_t size)
+		{
+			uint8_t i;
+			for(i = 0; i < size; i++)
+			{
+				*(pdata+i) = s;
+			}
 		}
 /*--------------------------------file of end-------------------------------*/

@@ -50,12 +50,6 @@ HAL_StatusTypeDef UserCanConfig(CAN_HandleTypeDef* hcanx)
 		return HAL_ERROR;
 	if(CanRxInit(hcanx) != HAL_OK)
 		return HAL_ERROR;
-//	if(CanQueueCreate(addr,5,12) != HAL_OK) //创建队列
-//	{
-//		//添加错误机制
-//		free(addr);
-//		return HAL_ERROR;
-//	}
 	 HAL_CAN_Start(hcanx);
 	 HAL_CAN_ActivateNotification(hcanx, CAN_IT_RX_FIFO0_MSG_PENDING); //开启中断
 	 return HAL_OK;
