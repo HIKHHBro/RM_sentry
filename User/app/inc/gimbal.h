@@ -32,12 +32,16 @@
 typedef struct gimbalStruct
 {
 	M2006Struct *prammer_t;
+  RM6623Struct *pYaw_t;
+    RM6623Struct *pPitch_t;
 	CAN_HandleTypeDef *hcanx;
+  UART_HandleTypeDef *huartx;
 } gimbalStruct;
 void GimbalStructInit(CAN_HandleTypeDef *hcanx);
 void GimbalParseDate(uint32_t id,uint8_t *data);
-HAL_StatusTypeDef GimbalCanTx(int16_t w1,int16_t w2);
+HAL_StatusTypeDef GimbalCanTx(int16_t yaw,int16_t pitch,int16_t rammer);
 void GimbalControl(const dbusStruct* dbus);
+ HAL_StatusTypeDef RxPCMsg(void);
 #endif // __GIMBAL_H
 /*-----------------------------------file of end------------------------------*/
 

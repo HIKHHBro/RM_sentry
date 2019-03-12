@@ -81,7 +81,7 @@
 	} dbusStruct;
 	HAL_StatusTypeDef DJIDbusInit(dbusStruct *dbs, UART_HandleTypeDef *huartx);
 	void DbusParseData(dbusStruct *dbs);
-	int16_t DbusAntiShake(int16_t range,int16_t data);
+int16_t DbusAntiShake(int16_t data,int16_t range);
 #endif // __DJI_DBUS_H
 
 /*----------------------------------file of end-------------------------------*/

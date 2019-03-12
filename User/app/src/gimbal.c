@@ -24,10 +24,11 @@
 	|-----------------------------declaration of end-----------------------------|
  **/
 #include "gimbal.h" 
+extern UART_HandleTypeDef huart2;//串口1
 /* -------------- 私有宏定义 ----------------- */
 	#define RAMMER_RX_ID	  0x207
-	#define YAW_RX_ID 			0
-	#define PITCH_RX_ID 		0
+	#define YAW_RX_ID 			0x205
+	#define PITCH_RX_ID 		0x206
 	#define GIMBAL_CAN_TX_ID 0x1ff
 /* -------------- 结构体声明 ----------------- */
 	gimbalStruct gimbal_t;//云台结构体
@@ -95,6 +96,19 @@
 			case RAMMER_RX_ID:
 //				RM2006ParseData(&rammer_t,data);
 				break;
+			case YAW_RX_ID:
+				RM6623ParseData(gimbal_t.pYaw_t,data);
+        /* -------- 比例转换 --------- */
+        gimbal_t.pYaw_t->real_angle = RatiometricConversion  \
+        (gimbal_t.pYaw_t->real_angle,gimbal_t.pYaw_t->thresholds,gimbal_t.pYaw_t->Percentage);
+        /* -------- 过零处理 --------- */
+         zeroArgument(gimbal_t.pYaw_t->real_angle,gimbal_t.pYaw_t->thresholds); 
+				break;
+			case PITCH_RX_ID:
+				RM6623ParseData(gimbal_t.pPitch_t,data);
+        /* -------- 过零处理 --------- */
+         zeroArgument(gimbal_t.pPitch_t->real_angle,gimbal_t.pPitch_t->thresholds); 
+				break;
 		
 			default:
 				break;
@@ -123,13 +137,26 @@
 	* @param   void
 	* @retval  void
 	*/
-	HAL_StatusTypeDef GimbalCanTx(int16_t w1,int16_t w2)
+	HAL_StatusTypeDef GimbalCanTx(int16_t yaw,int16_t pitch,int16_t rammer)
 	{
 		uint8_t s[8]={0};
-		s[4] = (uint8_t)(w1>>8);
-		s[5] = (uint8_t)w1;
-		s[6] = (uint8_t)(w2>>8);
-		s[7] = (uint8_t)w2;
+    s[0] = (uint8_t)(yaw>>8);
+    s[1] = (uint8_t)yaw;
+    s[2] = (uint8_t)(pitch>>8);
+    s[3] = (uint8_t)pitch;
+		s[4] = (uint8_t)(rammer>>8);
+		s[5] = (uint8_t)rammer;
 		return(CanTxMsg(gimbal_t.hcanx,GIMBAL_CAN_TX_ID,s));
 	}
+/*---------------------------------80字符限制-----------------------------------*/
+  /**
+  * @Data    2019-02-24 23:55
+  * @brief   小电脑数据接收
+  * @param   void
+  * @retval  void
+  */
+  HAL_StatusTypeDef RxPCMsg(void)
+  {
+    return (HAL_UART_Receive(gimbal_t.huartx,pc_data,3,1));
+  }
 /*-----------------------------------file of end------------------------------*/
