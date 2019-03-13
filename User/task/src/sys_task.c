@@ -45,7 +45,6 @@ extern CAN_HandleTypeDef hcan1;
   void StartSysDetectTask(void const *argument);
 /* ----------------- 任务信号量 -------------------- */
 //static uint8_t parse_task_status = 0;//数据解析任务工作状态标志
-uint8_t task_on_off = 0;
 /**
 	* @Data    2019-01-16 18:30
 	* @brief   系统初始化任务
@@ -68,7 +67,6 @@ uint8_t task_on_off = 0;
 	{
     for(;;)
     {
-      task_on_off = DISABLE;
 			/* -------- 数据分析任务 --------- */
       osThreadDef(parseTask, StartParseTask, osPriorityHigh, 0, PARSE_HEAP_SIZE);
       startParseTaskHandle = osThreadCreate(osThread(parseTask), NULL);	
@@ -82,10 +80,9 @@ uint8_t task_on_off = 0;
 			osThreadDef(gimbalTask, StartGimbalTask, osPriorityNormal, 0, GIMBAL_HEAP_SIZE);
       startGimbalTaskHandle = osThreadCreate(osThread(gimbalTask), NULL);
       /* ------ 系统自检，数据校准任务 ------- */
-      osThreadDef(sysDetectTask, StartSysDetectTask, osPriorityNormal, 0, SYS_DETEC_HEAP_SIZE);
+      osThreadDef(sysDetectTask, StartSysDetectTask, osPriorityAboveNormal, 0, SYS_DETEC_HEAP_SIZE);
       startSysDetectTaskHandle = osThreadCreate(osThread(sysDetectTask), NULL);
        ProgressBarLed(LED_GPIO, 500);
-       task_on_off = ENABLE;
 			/* -------- 删除系统任务 --------- */
 			vTaskDelete(startSysInitTaskHandle);
     }
@@ -99,14 +96,11 @@ uint8_t task_on_off = 0;
 	void StartParseTask(void const *argument)
 	{
     ParseInit();
+		vTaskSuspend(startParseTaskHandle);
 		for(;;)
 		{
-      if(task_on_off == ENABLE)
-      {
 				ParseData();
 				osDelay(2);
-      }
-      else osDelay(1);
 		}
 	}
 
@@ -121,13 +115,11 @@ uint8_t task_on_off = 0;
     const dbusStruct* pRc_t;
     pRc_t = GetRcStructAddr();
     ChassisInit(&hcan1,pRc_t);
+		vTaskSuspend(startChassisTaskHandle);
 		for (;;)
 		{
-      if(task_on_off == ENABLE)
-      {
         ChassisControl();
 			  osDelay(5);
-      }
 		}
 	}
 /**
@@ -141,14 +133,11 @@ uint8_t task_on_off = 0;
     const dbusStruct* pRc_t;
     pRc_t = GetRcStructAddr();
     GimbalStructInit(&hcan1); 
+		vTaskSuspend(startGimbalTaskHandle);
 		for (;;)
 		{  
-			if(task_on_off == ENABLE)
-      {
 				GimbalControl(pRc_t);
 				osDelay(5);
-			}
-			else osDelay(1);
 		}
 	}
 /*---------------------------------80字符限制-----------------------------------*/

@@ -184,6 +184,7 @@
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
             <RvdsVP>2</RvdsVP>
+            <RvdsMve>0</RvdsMve>
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -645,6 +646,11 @@
               <FileName>send_message.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\app\src\send_message.c</FilePath>
+            </File>
+            <File>
+              <FileName>sys_detect.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\app\src\sys_detect.c</FilePath>
             </File>
           </Files>
         </Group>

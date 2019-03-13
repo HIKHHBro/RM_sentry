@@ -129,6 +129,8 @@
 	*/
 	int16_t SpeedPid(speedPidStruct *sps,int16_t error)
 	{
+		if(sps==NULL)
+		 return 0;
 		sps->error = error;
 		if((ABS(sps->error)) < (ABS(sps->last_error)))
 			sps->last_error = sps->error;
@@ -139,8 +141,8 @@
 		sps->dout = sps->kd * (sps->error - 2*sps->last_error + \
 													 sps->before_last_error);
 		sps->pid_out += (int16_t)(sps->pout + sps->iout + sps->dout);
-    sps->pid_out = MAX(sps->pid_out,32766);
-    sps->pid_out = MIN(sps->pid_out,-32766);
+    sps->pid_out = MAX(sps->pid_out,sps->limiting);
+    sps->pid_out = MIN(sps->pid_out,(-sps->limiting));
 		sps->last_error = sps->error;
 		sps->before_last_error = sps->last_error;
 		return (int16_t)(sps->pid_out);

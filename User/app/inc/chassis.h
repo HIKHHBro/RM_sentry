@@ -35,7 +35,9 @@ typedef struct chassisStruct
   const dbusStruct   *rc_t;
 	CAN_HandleTypeDef *hcanx;
   uint8_t status;
+
 }chassisStruct;
+#define CAL_ERROR(target,real) (CalculateError((target),(real),6000,(8192)))
 	void ChassisInit(CAN_HandleTypeDef *hcan,const dbusStruct*rc);
 	void ChassisParseDate(uint16_t id,uint8_t *data);
 	void ChassisCanTx(int16_t w1,int16_t w2);
@@ -44,6 +46,7 @@ const chassisStruct* GetChassisStructAddr(void);
  chassisStruct *RWGetChassisStructAddr(void);
  uint8_t GetChassisStatus(void);
    void SetMotorTarget(int16_t w1,int16_t w2);
+	 
 #endif	// __CHASSIS_H
 	
 /*-----------------------------------file of end------------------------------*/

@@ -65,6 +65,16 @@ void ParseInit(void)
 	{
 		return &dbus_t;
 	}
+	/**
+	* @Data    2019-03-13 15:30
+	* @brief   
+	* @param   void
+	* @retval  void
+	*/
+	uint8_t GetRcStatus(void)
+	{
+		return (dbus_t.status);
+	}
 /*-----------------------------------file of end------------------------------*/
 
 

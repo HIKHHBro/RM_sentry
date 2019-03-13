@@ -63,8 +63,10 @@ uint8_t databuff[21];//数据接收
 		/* -------- 初始化开启串口数据接收 --------- */
 		if(UsartAndDMAInit(huartx, dbs->a_frame_len,ENABLE) != HAL_OK)
 		{
+			dbs->status = 0;
 			return HAL_ERROR;
 		}
+		SET_BIT(dbs->status,INIT_OK);
 		return HAL_OK;
 	}
 /**

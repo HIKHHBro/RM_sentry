@@ -30,6 +30,7 @@
  void ParseInit(void);
  void ParseData(void);
  	const dbusStruct* GetRcStructAddr(void);
+	 	uint8_t GetRcStatus(void);
 #endif	// __PARSE_H
 /*-----------------------------------file of end------------------------------*/
 

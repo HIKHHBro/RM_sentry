@@ -32,6 +32,8 @@
 	#define WHEEL1_RX_ID 0x201
 	#define WHEEL2_RX_ID 0x202
 	#define CHASSIS_CAN_TX_ID 0x200
+	#define W1_LIMIT_SPEED  3000  //轮子1速度限幅
+	#define W2_LIMIT_SPEED  3000  //轮子2速度限幅
 	/**
 	* @Data    2019-01-27 17:09
 	* @brief   底盘结构体数据初始化
@@ -59,7 +61,7 @@
   	  wheel1_t.error = 0;//当前误差
       wheel1_t.ppostionPid_t = NULL;
       wheel1_t.pspeedPid_t = &wheel1Speed_t;
-				wheel1Speed_t.kp = 0;
+				wheel1Speed_t.kp = 1;
 				wheel1Speed_t.kd = 0;
 				wheel1Speed_t.ki = 0;
 				wheel1Speed_t.error = 0;
@@ -70,6 +72,7 @@
 				wheel1Speed_t.iout = 0;//i输出
 				wheel1Speed_t.dout = 0;//k输出
 				wheel1Speed_t.pid_out = 0;//pid输出
+				wheel1Speed_t.limiting = W1_LIMIT_SPEED;//轮子1速度限幅
 		/* ------ 轮子2结构体数据初始化 ------- */
 		chassis_t.pwheel2_t = &wheel2_t;
 			wheel2_t.id = WHEEL2_RX_ID;//电机can的 ip
@@ -86,7 +89,7 @@
 			wheel2_t.error = 0;//当前误差
  			wheel2_t.ppostionPid_t = NULL;
       wheel2_t.pspeedPid_t = &wheel2Speed_t;
-				wheel2Speed_t.kp = 0;
+				wheel2Speed_t.kp = 1;
 				wheel2Speed_t.kd = 0;
 				wheel2Speed_t.ki = 0;
 				wheel2Speed_t.error = 0;
@@ -97,7 +100,7 @@
 				wheel2Speed_t.iout = 0;//i输出
 				wheel2Speed_t.dout = 0;//k输出
 				wheel2Speed_t.pid_out = 0;//pid输出
-
+				wheel2Speed_t.limiting = W2_LIMIT_SPEED;//轮子2速度限幅
         SET_BIT(chassis_t.status,INIT_OK);//初始化成功
 	}
 /**

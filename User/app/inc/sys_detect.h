@@ -27,7 +27,8 @@
 #define __SYS_DETECT_H 
 #include "parse.h" 
   void SysDetectInit(void);
-  void SysDetectControl(dbusStruct* rc);
+  void SysDetectControl(const dbusStruct* rc);
+    void DetectControlMode(void);
 #endif	// __SYS_DETECT_H
   
  /*------------------------------------file of end-------------------------------*/

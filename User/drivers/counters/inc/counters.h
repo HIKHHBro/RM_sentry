@@ -74,6 +74,7 @@
 		float iout;//i输出
 		float dout;//k输出
 		float pid_out;//pid输出
+		uint16_t limiting;
 }speedPidStruct;
 int16_t SpeedPid(speedPidStruct *sps, int16_t error);
 /* =========================== 贝塞尔曲线 of begin =========================== */
