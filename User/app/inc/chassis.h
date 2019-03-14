@@ -28,11 +28,13 @@
 #include "motor.h" 
 #include "DJI_dbus.h" 
 #include "usart_debug.h" 
+#include "enconder.h" 
 typedef struct chassisStruct
 {
 	RM3508Struct *pwheel1_t;
 	RM3508Struct *pwheel2_t;
   const dbusStruct   *rc_t;
+	incrementalEnconderStruct* pchassisEnconder_t;
 	CAN_HandleTypeDef *hcanx;
   uint8_t status;
 

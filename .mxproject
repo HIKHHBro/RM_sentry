@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=C:/Users/HIKpingtouge/Desktop/RM_sentry/RM_sentry/Inc
+HeaderPath=E:/user/Desktop/2019Sentry/RM_sentry/Inc
 HeaderFiles=FreeRTOSConfig.h;stm32f4xx_it.h;stm32f4xx_hal_conf.h;main.h;
-SourcePath=C:/Users/HIKpingtouge/Desktop/RM_sentry/RM_sentry/Src
+SourcePath=E:/user/Desktop/2019Sentry/RM_sentry/Src
 SourceFiles=freertos.c;stm32f4xx_it.c;stm32f4xx_hal_msp.c;stm32f4xx_hal_timebase_tim.c;main.c;
 
 [PreviousLibFiles]

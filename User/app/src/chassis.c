@@ -24,16 +24,28 @@
 	|-------------------------------declaration of end---------------------------|
  **/
 #include "chassis.h"
+/* -------------- 外部链接 ----------------- */
+extern TIM_HandleTypeDef htim5;
+/* -------------- 静态变量 ----------------- */
 	static chassisStruct chassis_t;
     static RM3508Struct wheel1_t;         //轮子1
       static speedPidStruct wheel1Speed_t;
     static RM3508Struct wheel2_t;         //轮子2
       static speedPidStruct wheel2Speed_t;
-	#define WHEEL1_RX_ID 0x201
-	#define WHEEL2_RX_ID 0x202
-	#define CHASSIS_CAN_TX_ID 0x200
-	#define W1_LIMIT_SPEED  3000  //轮子1速度限幅
-	#define W2_LIMIT_SPEED  3000  //轮子2速度限幅
+/*-------------------------------------------------------
+  |       型号     |  线数 |  brown | bule  |black|while|
+  -------------------------------------------------------
+  |欧姆龙 E6A2-CW3C|500P/R |5to12VDC|0V(GND)|OUT A|OUT B|
+ -------------------------------------------------------*/
+		static incrementalEnconderStruct chassisEnconder_t; //编码器结构体
+/* -------------- 私有宏 ----------------- */
+	#define WHEEL1_RX_ID       0x201
+	#define WHEEL2_RX_ID       0x202
+	#define CHASSIS_CAN_TX_ID  0x200
+	#define W1_LIMIT_SPEED     3000  //轮子1速度限幅
+	#define W2_LIMIT_SPEED     3000  //轮子2速度限幅
+	#define RADIUS             30    //编码器轮子半径单位 mm
+	#define ENCONDER_POLES     500 
 	/**
 	* @Data    2019-01-27 17:09
 	* @brief   底盘结构体数据初始化
@@ -101,6 +113,9 @@
 				wheel2Speed_t.dout = 0;//k输出
 				wheel2Speed_t.pid_out = 0;//pid输出
 				wheel2Speed_t.limiting = W2_LIMIT_SPEED;//轮子2速度限幅
+				/* ------ 编码器初始化 ------- */
+		chassis_t.pchassisEnconder_t = &chassisEnconder_t;
+		EnconderInit(&chassisEnconder_t,&htim5,RADIUS,ENCONDER_POLES);
         SET_BIT(chassis_t.status,INIT_OK);//初始化成功
 	}
 /**

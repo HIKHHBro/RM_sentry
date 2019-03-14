@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F427xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;    ../Drivers/STM32F4xx_HAL_Driver/Inc;    ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;    ../Middlewares/Third_Party/FreeRTOS/Source/include;    ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;    ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;    ../Drivers/CMSIS/Device/ST/STM32F4xx/Include;    ../Drivers/CMSIS/Include;    ..\User\app\inc;    ..\User\bsp\inc;    ..\User\drivers\counters\inc;    ..\User\drivers\modules\inc;    ..\User\task\inc</IncludePath>
+              <IncludePath>../Inc;      ../Drivers/STM32F4xx_HAL_Driver/Inc;      ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;      ../Middlewares/Third_Party/FreeRTOS/Source/include;      ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;      ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;      ../Drivers/CMSIS/Device/ST/STM32F4xx/Include;      ../Drivers/CMSIS/Include;      ..\User\app\inc;      ..\User\bsp\inc;      ..\User\drivers\counters\inc;      ..\User\drivers\modules\inc;      ..\User\task\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -621,6 +621,16 @@
               <FileName>usart_debug.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\drivers\modules\src\usart_debug.c</FilePath>
+            </File>
+            <File>
+              <FileName>enconder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\drivers\modules\src\enconder.c</FilePath>
+            </File>
+            <File>
+              <FileName>enconder.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\drivers\modules\inc\enconder.h</FilePath>
             </File>
           </Files>
         </Group>

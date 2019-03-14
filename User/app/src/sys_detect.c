@@ -35,6 +35,8 @@ extern	osThreadId startChassisTaskHandle;
   static void DetectControlMode(void);
 static chassisStruct *pchassis_t = NULL;
 static uint8_t detect_flag =0;
+/* -------------- 临时变量 ----------------- */
+	uint32_t temp11 = 0;
   /**
   * @Data    2019-03-13 02:44
   * @brief   系统自检任务初始化
@@ -81,6 +83,7 @@ void SysDetectControl(const dbusStruct* rc)
   */
   void RcControlMode(const dbusStruct* rc)
   {
+    temp11 = GetPosition(pchassis_t->pchassisEnconder_t);
 		pchassis_t->pwheel1_t->error = CAL_ERROR(rc->ch1,pchassis_t->pwheel1_t->real_speed);
 		pchassis_t->pwheel2_t->error = CAL_ERROR(rc->ch2,pchassis_t->pwheel2_t->real_speed);
     SpeedPid(pchassis_t->pwheel1_t->pspeedPid_t,pchassis_t->pwheel1_t->error);
