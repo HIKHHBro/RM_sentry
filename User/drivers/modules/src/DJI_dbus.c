@@ -82,7 +82,6 @@ uint8_t databuff[21];//数据接收
 //          taskENTER_CRITICAL();
 		if(UserUsartQueueRX(dbs->huartx,databuff) == HAL_OK)
 		{
-
 		dbs->ch1 = (databuff[0] | databuff[1]<<8) & 0x07FF;
 		dbs->ch1 -= 1024;
     dbs->ch1 = DbusAntiShake(20,dbs->ch1);
@@ -107,7 +106,7 @@ uint8_t databuff[21];//数据接收
 		dbs->mouse.press_right 	= databuff[13];
 		
 		dbs->keyBoard.key_code 	= databuff[14] | databuff[15] << 8; //key broad code
-
+    SET_BIT(dbs->status,RX_OK);
 //      lostdata = *dbs;
 		}
 		else

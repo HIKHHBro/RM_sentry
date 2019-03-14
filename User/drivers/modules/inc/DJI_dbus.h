@@ -73,7 +73,7 @@
 			uint16_t key_code;              //原始键值
 					uint16_t jumpkey_code;          //跳变后的键值
 		}keyBoard;
-     uint8_t status;//状态
+     uint32_t status;//状态
 		uint32_t state_flag;//标志位
 		uint8_t a_frame_len;//一帧数据长度
 		uint8_t check_byte;//帧尾校验

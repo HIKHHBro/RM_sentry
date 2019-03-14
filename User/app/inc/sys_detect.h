@@ -28,7 +28,8 @@
 #include "parse.h" 
   void SysDetectInit(void);
   void SysDetectControl(const dbusStruct* rc);
-    void DetectControlMode(void);
+   void DetectControlMode(void);
+   HAL_StatusTypeDef SystemSelfChecking(void);
 #endif	// __SYS_DETECT_H
   
  /*------------------------------------file of end-------------------------------*/

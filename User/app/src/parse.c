@@ -71,7 +71,7 @@ void ParseInit(void)
 	* @param   void
 	* @retval  void
 	*/
-	uint8_t GetRcStatus(void)
+	uint32_t GetRcStatus(void)
 	{
 		return (dbus_t.status);
 	}

@@ -30,7 +30,7 @@ extern	osThreadId startParseTaskHandle;
 //extern	osThreadId startLedTaskHandle;
 extern	osThreadId startChassisTaskHandle;
 	extern osThreadId startGimbalTaskHandle;
- extern osThreadId startSysDetectTaskHandle;//系统自检，数据校准任务
+ extern osThreadId startSysDetectTaskHandle;//数据校准任务
   static void RcControlMode(const dbusStruct* rc);
   static void DetectControlMode(void);
 static chassisStruct *pchassis_t = NULL;
@@ -92,22 +92,65 @@ void SysDetectControl(const dbusStruct* rc)
   }
   /**
   * @Data    2019-03-13 03:21
-  * @brief   自检和校验数据模式
+  * @brief   校验数据模式
   * @param   void
   * @retval  void
   */
- void DetectControlMode(void)
- {
- // if(GetChassisStatus() == (RX_OK|INIT_OK))
- // {
- //   //if()//激光判断间距大小，缓慢移动至边缘，可以遥控移动，
- //   //碰到轻触开关，编码器校准，
- //   //慢反向运动，校验超声波以及激光测距，判断用哪个
+// void DetectControlMode(void)
+// {
+// // if(GetChassisStatus() == (RX_OK|INIT_OK))
+// // {
+// //   //if()//激光判断间距大小，缓慢移动至边缘，可以遥控移动，
+// //   //碰到轻触开关，编码器校准，
+// //   //慢反向运动，校验超声波以及激光测距，判断用哪个
 
- //   // ProgressBarLed(LED_GPIO, 500);
- //   // task_on_off = ENABLE;
- // }
- }
+// //   // ProgressBarLed(LED_GPIO, 500);
+// //   // task_on_off = ENABLE;
+// // }
+// }
+   /**
+   * @Data    2019-03-15 00:49
+   * @brief   系统自检
+   * @param   void
+   * @retval  void
+   */
+   HAL_StatusTypeDef SystemSelfChecking(void)
+   {
+     uint32_t temp1,temp2;
+    /* -------- 各任务初始化判断 --------- */
+    temp1 = GetRcStatus();
+    temp2 = GetChassisStatus();
+    while((temp1&temp2&INIT_OK) != INIT_OK)
+    {
+        //添加警报机制
+      temp1 = GetRcStatus();
+      temp2 = GetChassisStatus();
+        osDelay(5);
+    }
+    /* -------- 重启解析任务 --------- */
+    vTaskResume(startParseTaskHandle);
+    temp1 = GetRcStatus();
+    temp2 = GetChassisStatus();
+    while((temp1&temp2&RX_OK) != RX_OK)
+    {
+        //添加警报机制
+      temp1 = GetRcStatus();
+      temp2 = GetChassisStatus();
+        osDelay(5);
+    }
+    /* -------- 重启数据校准任务 --------- */
+    
+   /* -------- 重启底盘任务任务 --------- */
+    vTaskResume(startChassisTaskHandle);
+    temp1 = GetChassisStatus();
+    while((temp1&RUNING_OK) != RUNING_OK)
+    {
+       //进一步判断错误
+    temp1 = GetChassisStatus();
+        osDelay(5);
+    }
+    return HAL_OK;
+   }
 /*------------------------------------file of end-------------------------------*/
 
 

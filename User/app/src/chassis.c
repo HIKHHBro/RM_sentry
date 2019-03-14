@@ -113,10 +113,15 @@ extern TIM_HandleTypeDef htim5;
 				wheel2Speed_t.dout = 0;//k输出
 				wheel2Speed_t.pid_out = 0;//pid输出
 				wheel2Speed_t.limiting = W2_LIMIT_SPEED;//轮子2速度限幅
-				/* ------ 编码器初始化 ------- */
+    /* -------- can配置 --------- */
+      if(UserCanConfig(hcan)!= HAL_OK)
+        while(1){}//待添加防重复配置功能
+		/* ------ 编码器初始化 ------- */
 		chassis_t.pchassisEnconder_t = &chassisEnconder_t;
-		EnconderInit(&chassisEnconder_t,&htim5,RADIUS,ENCONDER_POLES);
-        SET_BIT(chassis_t.status,INIT_OK);//初始化成功
+		  if(EnconderInit(&chassisEnconder_t,&htim5,RADIUS,ENCONDER_POLES) !=HAL_OK)
+        while(1){}
+    /* -------- 底盘模块初始化判断 --------- */
+      SET_BIT(chassis_t.status,INIT_OK);//初始化成功
 	}
 /**
 	* @Data    2019-01-28 11:40
@@ -163,7 +168,7 @@ extern TIM_HandleTypeDef htim5;
 	*/
 	void ChassisControl(void)
 	{
-		
+		SET_BIT(chassis_t.status,RUNING_OK);
 	}
  /*
 * @Data    2019-02-24 11:59
@@ -191,7 +196,7 @@ const chassisStruct* GetChassisStructAddr(void)
   * @param   void
   * @retval  void
   */
-  uint8_t GetChassisStatus(void)
+  uint32_t GetChassisStatus(void)
   {
     return chassis_t.status;
   }
