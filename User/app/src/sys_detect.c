@@ -96,19 +96,18 @@ void SysDetectControl(const dbusStruct* rc)
   * @param   void
   * @retval  void
   */
-//  void DetectControlMode(void)
-//  {
-//  //       if(GetChassisStatus() == (RX_OK|INIT_OK))
-//  // {
+ void DetectControlMode(void)
+ {
+ // if(GetChassisStatus() == (RX_OK|INIT_OK))
+ // {
+ //   //if()//激光判断间距大小，缓慢移动至边缘，可以遥控移动，
+ //   //碰到轻触开关，编码器校准，
+ //   //慢反向运动，校验超声波以及激光测距，判断用哪个
 
-//  //   //if()//激光判断间距大小，缓慢移动至边缘，可以遥控移动，
-//  //   //碰到轻触开关，编码器校准，
-//  //   //慢反向运动，校验超声波以及激光测距，判断用哪个
-
-//  //   // ProgressBarLed(LED_GPIO, 500);
-//  //   // task_on_off = ENABLE;
-//  // }
-//  }
+ //   // ProgressBarLed(LED_GPIO, 500);
+ //   // task_on_off = ENABLE;
+ // }
+ }
 /*------------------------------------file of end-------------------------------*/
 
 
