@@ -56,6 +56,7 @@ can|can中断+消息队列接收
 遥控|大疆遥控dbus
 陀螺仪|GY555
 上位机|匿名v2.6 平衡小车之家
+编码器|增量AB相欧姆龙 E6A2-CW3C
 
 ## 数据结构和算法（data_struture，counters）
 
