@@ -53,7 +53,7 @@
 	}
 	/**
 		* @Data    2019-03-14 19:09
-		* @brief   获取当前位置
+		* @brief   获取当前位置// 待增加过零之后变负数，增加冗余，要不过零点在返回会改变零点
 		* @param   incrementalEnconderStruct* ies
 		* @retval  uint32_t 当前位置，单位mm
 		*/
