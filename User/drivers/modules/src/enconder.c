@@ -34,21 +34,17 @@
 	* @param   int16_t radius 装在编码器上的轮子的半径 单位mm
 	* @retval  void
 	*/
-	HAL_StatusTypeDef EnconderInit(incrementalEnconderStruct* ies, \
-											TIM_HandleTypeDef* htim, uint16_t radius, int16_t poles)
+	HAL_StatusTypeDef EnconderInit(incrementalEnconderStruct* ies,uint16_t radius, int16_t poles)
 	{
-		if(htim==NULL)
-		return HAL_ERROR;
 		float temp1,tem2p;
 		temp1 = (float)(poles * 4);
 	  tem2p = (float)(radius * 2 * 3.14F);
 		ies->coefficient = tem2p/temp1;
     ies->counter = 0;
-    ies->htim = htim;
     ies->last_data = 0;
-		__HAL_TIM_SET_AUTORELOAD(htim,(USE_ARR-1));
+		__HAL_TIM_SET_AUTORELOAD(ENCOER_TIM,(USE_ARR-1));
 	/* ------   编码器初始化及使能编码器模式   ------- */
-    HAL_TIM_Encoder_Start(htim, TIM_CHANNEL_ALL);
+    HAL_TIM_Encoder_Start(ENCOER_TIM, TIM_CHANNEL_ALL);
 		return HAL_OK;
 	}
 	/**
@@ -60,14 +56,14 @@
 		uint32_t GetPosition(incrementalEnconderStruct* ies)
 		{
 			uint32_t temp =0;
-			temp = ies->htim->Instance->CNT;//(__HAL_TIM_GET_COUNTER(ies->htim));
+			temp = ENCOER_TIM->Instance->CNT;//(__HAL_TIM_GET_COUNTER(ies->htim));
 			if(((int32_t)(temp - ies->last_data)) < -THRESHILD)
 			{
         ies->counter++;
 				if(ies->counter > 254)
 				{
 					ies->counter = 0;
-					__HAL_TIM_SET_COUNTER(ies->htim,0);
+					__HAL_TIM_SET_COUNTER(ENCOER_TIM,0);
           ies->last_data = 0;
 					return 0;
 				}
@@ -78,7 +74,7 @@
 				if(ies->counter <0)
 				{
 					ies->counter =0;
-					__HAL_TIM_SET_COUNTER(ies->htim,0);
+					__HAL_TIM_SET_COUNTER(ENCOER_TIM,0);
           ies->last_data = 0;
 					return 0 ;
 				}

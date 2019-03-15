@@ -47,7 +47,8 @@ typedef struct chassisStruct
 const chassisStruct* GetChassisStructAddr(void);
  chassisStruct *RWGetChassisStructAddr(void);
  uint32_t GetChassisStatus(void);
-   void SetMotorTarget(int16_t w1,int16_t w2);
+  void SetMotorTarget(int16_t w1,int16_t w2);
+   void RcControlMode(void);
 	 
 #endif	// __CHASSIS_H
 	

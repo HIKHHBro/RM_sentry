@@ -25,7 +25,7 @@
  **/
 #ifndef __BSP_CAN_H 
 #define __BSP_CAN_H 
-#include "baseclass.h"
+#include "userdriverconfig.h "
 typedef struct canDataStrcut
 {
 	CAN_TxHeaderTypeDef txMsg;

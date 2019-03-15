@@ -37,15 +37,15 @@
 		void FlashingLed(GPIO_TypeDef* GPIO,uint16_t ledx,uint8_t times,uint32_t lag)
 		{
 		#if RM_OLD_BOARD
-		#elif BINGE_BOARD
-			UNUSED(GPIO);
+    	UNUSED(GPIO);
+		#elif (BINGE_BOARD|RM_NEW_BOARD)
 			uint8_t i = 0;
-			for (i = 0; i < times;i++)
+			for (i = 0; i < times*2;i++)
 			{
 					HAL_GPIO_TogglePin(GPIO, ledx);
           osDelay(lag);
-					HAL_GPIO_WritePin(GPIO,ledx,GPIO_PIN_SET);
 			}
+  	HAL_GPIO_WritePin(GPIO,ledx,GPIO_PIN_SET);
 		#endif
 		}
 	/*---------------------------------80字符限制-----------------------------------*/
@@ -65,7 +65,6 @@
 
 		// 	}
 		// }
-/*---------------------------------80字符限制-----------------------------------*/
 	/**
 	* @Data    2019-01-18 14:25
 	* @brief   进度条等效
@@ -89,6 +88,59 @@
 		HAL_GPIO_WritePin(GPIO, tem_pin, GPIO_PIN_SET);
 	#endif
 	}
+  /**
+  * @Data    2019-03-16 01:26
+  * @brief   流水往返灯效
+  * @param   void 
+  * @retval  void
+  */
+//   void WaterfallLight(uint32_t times,uint8_t speed)
+//   {
+// #if RM_OLD_BOARD
+// 		  UNUSED(GPIO);
+// #elif (BINGE_BOARD|RM_NEW_BOARD)
+// 		uint8_t i = 0;
+// 		uint32_t tem_pin=0;
+//     uint16_t tem_pin1;
+//     uint16_t x ;
+   
+//     for( x= (uint16_t)(times/speed);x<1;x--)
+//     {
+// 	  	for (i = 0; i < LED_TOTAL; i++)
+//       {
+//         tem_pin = 7 << (i+LED_ORIGIN_PIN+7);
+//         tem_pin1 = (uint16_t)(tem_pin >>8);
+//         HAL_GPIO_WritePin(LED_GPIO, tem_pin1, GPIO_PIN_RESET);
+//         osDelay(speed);
+//       }
+//     }
+
+// 		HAL_GPIO_WritePin(LED_GPIO, tem_pin, GPIO_PIN_SET);
+// #endif
+//   }
+  /**
+  * @Data    2019-03-16 02:07
+  * @brief   闪烁警告灯
+  * @param   void
+  * @retval  void
+  */
+  void WarningLed(uint8_t times,uint16_t lag)
+  {
+    uint16_t temp;
+    temp = (LED_1|LED_2 |LED_3 |LED_4 |LED_5 |LED_6 |LED_7 |LED_8);
+    FlashingLed(LED_GPIO,temp,times,lag);
+  }
+    /**
+    * @Data    2019-03-16 02:24
+    * @brief   递增等效
+    * @param   void
+    * @retval  void
+    */
+    void SetpUpLED(void)
+    {
+      uint8_t i;
+      HAL_GPIO_WritePin(LED_GPIO, i, GPIO_PIN_RESET);
+    }
 /*------------------------------------file of end-------------------------------*/
 
 

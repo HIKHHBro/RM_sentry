@@ -26,10 +26,13 @@
 #ifndef __SYS_DETECT_H 
 #define __SYS_DETECT_H 
 #include "parse.h" 
-  void SysDetectInit(void);
-  void SysDetectControl(const dbusStruct* rc);
-   void DetectControlMode(void);
-   HAL_StatusTypeDef SystemSelfChecking(void);
+#include "leds_tip.h" 
+typedef struct sysDetectStruct 
+{
+  chassisStruct* psys_chassis_t;
+  gimbalStruct* psys_gimbal_t;
+}sysDetectStruct; 
+void SystemSelfChecking(void);
 #endif	// __SYS_DETECT_H
   
  /*------------------------------------file of end-------------------------------*/

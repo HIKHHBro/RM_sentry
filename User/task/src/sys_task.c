@@ -35,14 +35,12 @@ extern CAN_HandleTypeDef hcan1;
 //	osThreadId startLedTaskHandle;
 	osThreadId startChassisTaskHandle;
 	osThreadId startGimbalTaskHandle;
-  osThreadId startSysDetectTaskHandle;//数据校准任务
 /* ----------------- 任务钩子函数 -------------------- */
 	void StartSysInitTask(void const *argument);
 	void StartParseTask(void const *argument);
 //	void StartLedTask(void const *argument);
 	void StartChassisTask(void const *argument);
 	void StartGimbalTask(void const *argument);
-  void StartSysDetectTask(void const *argument);
 /* ----------------- 任务信号量 -------------------- */
 //static uint8_t parse_task_status = 0;//数据解析任务工作状态标志
 /**
@@ -79,12 +77,9 @@ extern CAN_HandleTypeDef hcan1;
 			/* ------ 云台任务 ------- */
 			osThreadDef(gimbalTask, StartGimbalTask, osPriorityNormal, 0, GIMBAL_HEAP_SIZE);
       startGimbalTaskHandle = osThreadCreate(osThread(gimbalTask), NULL);
-      /* ------ 数据校准任务 ------- */
-      osThreadDef(sysDetectTask, StartSysDetectTask, osPriorityAboveNormal, 0, SYS_DETEC_HEAP_SIZE);
-      startSysDetectTaskHandle = osThreadCreate(osThread(sysDetectTask), NULL);
       /* -------- 系统模块自检 --------- */
         ProgressBarLed(LED_GPIO, 500);
-      SystemSelfChecking();
+        SystemSelfChecking();
 			/* -------- 删除系统任务 --------- */
 			vTaskDelete(startSysInitTaskHandle);
     }
@@ -142,23 +137,5 @@ extern CAN_HandleTypeDef hcan1;
 				osDelay(5);
 		}
 	}
-/*---------------------------------80字符限制-----------------------------------*/
-  /**
-  * @Data    2019-03-13 01:46
-  * @brief   和数据校准任务
-  * @param   void
-  * @retval  void
-  */
-  void StartSysDetectTask(void const *argument)
-  {
-    const dbusStruct* pRc_t;
-    pRc_t = GetRcStructAddr();
-    SysDetectInit();
-    for(;;)
-    {
-      SysDetectControl(pRc_t);
-      	osDelay(2);
-    }
-  }
 /*----------------------------------file of end-------------------------------*/
   

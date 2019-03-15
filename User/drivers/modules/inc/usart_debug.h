@@ -1,6 +1,6 @@
 #ifndef __NIMING_H
 #define __NIMING_H
-#include "baseclass.h"
+#include "userdriverconfig.h "
 #ifdef DEBUG_BY_KEIL
 typedef struct 
 {

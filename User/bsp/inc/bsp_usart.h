@@ -25,7 +25,7 @@
  **/
 #ifndef __BSP_USART_H 
 #define __BSP_USART_H 
-#include "baseclass.h"
+#include "userdriverconfig.h "
 typedef struct usartDataStrcut
 {
 	uint8_t a_frame_len;//一帧的长度

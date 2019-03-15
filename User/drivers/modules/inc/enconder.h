@@ -25,17 +25,17 @@
  **/
 #ifndef __ENCONDER_H 
 #define __ENCONDER_H 
-#include "baseclass.h"
+#include "userdriverconfig.h "
 typedef struct incrementalEnconderStruct
 {
 	uint32_t last_data;//记录上次的CNT值
 	int16_t counter;
-	TIM_HandleTypeDef* htim;//获取定时器地址指针
 	float coefficient;//每毫米的脉冲数的倒数
 }incrementalEnconderStruct;
-	HAL_StatusTypeDef EnconderInit(incrementalEnconderStruct* ies, \
-											TIM_HandleTypeDef* htim, uint16_t radius, int16_t poles);
+	HAL_StatusTypeDef EnconderInit(incrementalEnconderStruct* ies,uint16_t radius, int16_t poles);
 	uint32_t GetPosition(incrementalEnconderStruct* ies);
+  void SetEncoderZeroPoint(incrementalEnconderStruct* ies,uint32_t zero);
+  #define SET_ENCODER_ZERO(__zero)  (ENCOER_TIM->Instance->CNT = (__zero))
 #endif	// __ENCONDER_H
 /*-----------------------------------file of end------------------------------*/
 

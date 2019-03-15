@@ -184,7 +184,6 @@
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
             <RvdsVP>2</RvdsVP>
-            <RvdsMve>0</RvdsMve>
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -592,6 +591,11 @@
               <FileType>1</FileType>
               <FilePath>..\User\bsp\src\bsp_usart.c</FilePath>
             </File>
+            <File>
+              <FileName>userdriverconfig.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\bsp\inc\userdriverconfig.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -641,6 +645,16 @@
               <FileName>ultrasonic.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\User\drivers\modules\inc\ultrasonic.h</FilePath>
+            </File>
+            <File>
+              <FileName>laser_ranging.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\drivers\modules\src\laser_ranging.c</FilePath>
+            </File>
+            <File>
+              <FileName>laser_ranging.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\task\inc\laser_ranging.h</FilePath>
             </File>
           </Files>
         </Group>

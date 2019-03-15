@@ -25,7 +25,7 @@
  **/
 #ifndef __MOTION_MODEL_H 
 #define __MOTION_MODEL_H 
-#include "baseclass.h" 
+#include "userdriverconfig.h " 
 	void GetThreeMotionModeData(uint8_t radius,float theta);
 	void ThreeWheelMotionModel(int16_t *motorspeed,const int16_t vx,const \
                                                   int16_t vy,const int16_t w);

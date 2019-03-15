@@ -118,7 +118,7 @@ extern TIM_HandleTypeDef htim5;
         while(1){}//待添加防重复配置功能
 		/* ------ 编码器初始化 ------- */
 		chassis_t.pchassisEnconder_t = &chassisEnconder_t;
-		  if(EnconderInit(&chassisEnconder_t,&htim5,RADIUS,ENCONDER_POLES) !=HAL_OK)
+		  if(EnconderInit(&chassisEnconder_t,RADIUS,ENCONDER_POLES) !=HAL_OK)
         while(1){}
     /* -------- 底盘模块初始化判断 --------- */
       SET_BIT(chassis_t.status,INIT_OK);//初始化成功
@@ -210,5 +210,19 @@ const chassisStruct* GetChassisStructAddr(void)
   {
     	wheel1_t.target = w1;
       wheel2_t.target = w2;
+  }
+  /**
+  * @Data    2019-03-13 03:19
+  * @brief   遥控模式
+  * @param   void
+  * @retval  void
+  */
+  void RcControlMode(void)
+  {
+		chassis_t.pwheel1_t->error = CAL_ERROR(chassis_t.rc_t->ch1,chassis_t.pwheel1_t->real_speed);
+		chassis_t.pwheel2_t->error = CAL_ERROR(chassis_t.rc_t->ch2,chassis_t.pwheel2_t->real_speed);
+    SpeedPid(chassis_t.pwheel1_t->pspeedPid_t,chassis_t.pwheel1_t->error);
+		SpeedPid(chassis_t.pwheel2_t->pspeedPid_t,chassis_t.pwheel2_t->error);
+		ChassisCanTx(chassis_t.pwheel1_t->pspeedPid_t->pid_out,chassis_t.pwheel2_t->pspeedPid_t->pid_out);
   }
 /*----------------------------------file of end-------------------------------*/

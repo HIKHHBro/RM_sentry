@@ -28,7 +28,7 @@
  **/
 #ifndef __MOTOR_H 
 #define __MOTOR_H
-	#include "baseclass.h"
+	#include "userdriverconfig.h "
 	#include "bsp_can.h" 
 	#include "counters.h" 
 /* =========================== common of begin =========================== */

@@ -23,7 +23,7 @@
 	|-------2. ...                                                       
 	|------------------------------declaration of end----------------------------|
  **/
-#include "baseclass.h" 
+#include "baseclass.h " 
 /* ----------------- 标志位变量定义 -------------------- */
 	unsigned int e_periphera_interface_flag = 0; 	//外设接口状态变量定义
 	unsigned int e_periphera_error_flag = 0;		//外设接口错误状态变量定义

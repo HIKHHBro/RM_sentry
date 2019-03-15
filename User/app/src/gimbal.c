@@ -158,4 +158,24 @@ extern UART_HandleTypeDef huart2;//串口1
 //   {
 //     return (HAL_UART_Receive(gimbal_t.huartx,pc_data,3,1));
 //   }
+  /**
+  * @Data    2019-03-15 23:14
+  * @brief   获取云台状态
+  * @param   void
+  * @retval  void
+  */
+  uint32_t GetGimbalStatus(void)
+  {
+    return gimbal_t.status;
+  }
+  /**
+  * @Data    2019-03-13 03:48
+  * @brief   获取云台结构体地址 可读写，不能乱调用
+  * @param   void
+  * @retval  void
+  */
+  gimbalStruct *RWGetgimbalStructAddr(void)
+  {
+    return &gimbal_t;
+  }
 /*-----------------------------------file of end------------------------------*/

@@ -25,7 +25,7 @@
  **/
 #ifndef __ULTRASONIC_H 
 #define __ULTRASONIC_H 
-#include "baseclass.h"
+#include "userdriverconfig.h "
 /* ===========================  HCSR-04 of begin =========================== */
 	
 /* ===========================  HCSR-04 of end =========================== */

@@ -25,28 +25,32 @@
  **/
 #include "sys_detect.h" 
 /* ----------------- 任务句柄 -------------------- */
+osThreadId startSysDetectTaskHandle;//数据校准任务
+  void StartSysDetectTask(void const *argument);
+/* ----------------- 外部链接 -------------------- */
 extern	osThreadId startSysInitTaskHandle; 
 extern	osThreadId startParseTaskHandle;
 //extern	osThreadId startLedTaskHandle;
 extern	osThreadId startChassisTaskHandle;
-	extern osThreadId startGimbalTaskHandle;
- extern osThreadId startSysDetectTaskHandle;//数据校准任务
-  static void RcControlMode(const dbusStruct* rc);
-  static void DetectControlMode(void);
-static chassisStruct *pchassis_t = NULL;
-static uint8_t detect_flag =0;
+extern osThreadId startGimbalTaskHandle;
+/* ----------------- 私有函数 -------------------- */ 
+//  static void DetectControlMode(void);
+  static void RcCalibratorMode(sysDetectStruct* sds);
+  static void SysDetectControl(sysDetectStruct* sds);
+  static void SysDetectInit(sysDetectStruct* sds);
+//  static void DetectControlMode(void);
 /* -------------- 临时变量 ----------------- */
-	uint32_t temp11 = 0;
+	// uint32_t temp11 = 0;
   /**
   * @Data    2019-03-13 02:44
   * @brief   系统自检任务初始化
   * @param   void
   * @retval  void
   */
-  void SysDetectInit(void)
+  void SysDetectInit(sysDetectStruct* sds)
   {
-    pchassis_t = RWGetChassisStructAddr();
-		detect_flag = ENABLE;
+    sds->psys_chassis_t = RWGetChassisStructAddr();
+    sds->psys_gimbal_t = RWGetgimbalStructAddr();
   }
 /**
 * @Data    2019-03-13 02:45
@@ -54,41 +58,56 @@ static uint8_t detect_flag =0;
 * @param   void
 * @retval  void
 */
-void SysDetectControl(const dbusStruct* rc)
+void SysDetectControl(sysDetectStruct* sds)
 {
-	if((GetRcStatus() == INIT_OK)&&detect_flag)
-	{
-		vTaskResume(startParseTaskHandle);
-	}
-	// if((GetChassisStatus() == (RX_OK|INIT_OK))&&detect_flag)
-	// {
-	// 	detect_flag = DISABLE;
-	// }
-  switch (rc->switch_left)
+  switch (sds->psys_chassis_t->rc_t->switch_left)
   {
     case 1:
-      RcControlMode(rc);
+      RcCalibratorMode(sds);
       break;
-      case 3:
+    case 3:
       break;
     default:
       break;
   }
 }
   /**
-  * @Data    2019-03-13 03:19
-  * @brief   遥控模式
+  * @Data    2019-03-16 00:09
+  * @brief   手动遥控校准模式
   * @param   void
   * @retval  void
   */
-  void RcControlMode(const dbusStruct* rc)
+  void RcCalibratorMode(sysDetectStruct* sds)
   {
-    temp11 = GetPosition(pchassis_t->pchassisEnconder_t);
-		pchassis_t->pwheel1_t->error = CAL_ERROR(rc->ch1,pchassis_t->pwheel1_t->real_speed);
-		pchassis_t->pwheel2_t->error = CAL_ERROR(rc->ch2,pchassis_t->pwheel2_t->real_speed);
-    SpeedPid(pchassis_t->pwheel1_t->pspeedPid_t,pchassis_t->pwheel1_t->error);
-		SpeedPid(pchassis_t->pwheel2_t->pspeedPid_t,pchassis_t->pwheel2_t->error);
-		ChassisCanTx(pchassis_t->pwheel1_t->pspeedPid_t->pid_out,pchassis_t->pwheel2_t->pspeedPid_t->pid_out);
+    static uint8_t zero_init_flag = 0;
+    static uint8_t crtl_mode_flag = 0;
+    if( (sds->psys_chassis_t->rc_t->ch1 == -660) && \
+        (sds->psys_chassis_t->rc_t->ch2 == -600) && \
+        (sds->psys_chassis_t->rc_t->ch3 ==  660) && \
+        (sds->psys_chassis_t->rc_t->ch3 == -660) )//内八设置编码器零点
+    {
+       crtl_mode_flag =1;
+      if(zero_init_flag == 30)
+      {
+        zero_init_flag =35;
+         SET_ENCODER_ZERO(0);
+        ProgressBarLed(LED_GPIO, 200);
+      }
+      zero_init_flag++;
+    }
+    if(zero_init_flag == 35)
+    {
+      if( (sds->psys_chassis_t->rc_t->ch1 == 0) && \
+      (sds->psys_chassis_t->rc_t->ch2 == 0) && \
+      (sds->psys_chassis_t->rc_t->ch3 == 0) && \
+      (sds->psys_chassis_t->rc_t->ch3 == 0) )//回零防抖
+      {
+        WarningLed(5,100);
+      }
+    }
+    if(crtl_mode_flag==0)
+       RcControlMode();
+    else crtl_mode_flag = 0;
   }
   /**
   * @Data    2019-03-13 03:21
@@ -114,43 +133,68 @@ void SysDetectControl(const dbusStruct* rc)
    * @param   void
    * @retval  void
    */
-   HAL_StatusTypeDef SystemSelfChecking(void)
+   void SystemSelfChecking(void)
    {
      uint32_t temp1,temp2;
     /* -------- 各任务初始化判断 --------- */
     temp1 = GetRcStatus();
     temp2 = GetChassisStatus();
-    while((temp1&temp2&INIT_OK) != INIT_OK)
+    //temp3 = GetGimbalStatus();
+    while((temp1&temp2&INIT_OK) != INIT_OK)//加云台
     {
         //添加警报机制
       temp1 = GetRcStatus();
       temp2 = GetChassisStatus();
+      //temp3 = GetGimbalStatus();
+      //增加等待时间超时进入报错模式，蜂鸣器长响，
         osDelay(5);
     }
     /* -------- 重启解析任务 --------- */
     vTaskResume(startParseTaskHandle);
     temp1 = GetRcStatus();
     temp2 = GetChassisStatus();
+    //temp3 = GetGimbalStatus();
     while((temp1&temp2&RX_OK) != RX_OK)
     {
         //添加警报机制
       temp1 = GetRcStatus();
       temp2 = GetChassisStatus();
+      //temp3 = GetGimbalStatus();
+      //判断是什么模块离线
         osDelay(5);
-    }
-    /* -------- 重启数据校准任务 --------- */
-    
-   /* -------- 重启底盘任务任务 --------- */
-    vTaskResume(startChassisTaskHandle);
-    temp1 = GetChassisStatus();
-    while((temp1&RUNING_OK) != RUNING_OK)
-    {
-       //进一步判断错误
-    temp1 = GetChassisStatus();
-        osDelay(5);
-    }
-    return HAL_OK;
+    } 
+    /* ------ 数据校准任务 ------- */
+  osThreadDef(sysDetectTask, StartSysDetectTask, osPriorityAboveNormal, 0, SYS_DETEC_HEAP_SIZE);
+  startSysDetectTaskHandle = osThreadCreate(osThread(sysDetectTask), NULL);
    }
+  /**
+  * @Data    2019-03-13 01:46
+  * @brief   数据校准任务
+  * @param   void
+  * @retval  void
+  */
+  void StartSysDetectTask(void const *argument)
+  {
+    sysDetectStruct sysDetect_t;
+    SysDetectInit(&sysDetect_t);
+    for(;;)
+    {
+      SysDetectControl(&sysDetect_t);
+      osDelay(2);
+    }
+  }
+    //  /* -------- 重启底盘和云台任务 --------- */
+  //   vTaskResume(startChassisTaskHandle);
+  //   vTaskResume(startGimbalTaskHandle);
+  //   temp1 = GetChassisStatus();
+  //   //temp3 = GetGimbalStatus();
+  //   while((temp1&RUNING_OK) != RUNING_OK)
+  //   {
+  //      //进一步判断错误
+  //      temp1 = GetChassisStatus();
+  //      //temp3 = GetGimbalStatus();
+  //       osDelay(5);
+  //   }
 /*------------------------------------file of end-------------------------------*/
 
 
