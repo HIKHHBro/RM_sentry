@@ -19,7 +19,7 @@
 
 ## 库说明
 
-STM32CubeF4 Firmware Package V1.21.0 / 23-February-2018
+STM32CubeF4 Firmware Package V1.24.0
 
 ## 系统支持
 
