@@ -28,14 +28,14 @@ FreeRTOS
 
 RM新板,RM旧板,彬哥第一代板（f427IIHx）
 
-## BSP层接口支持
-外设|引脚宏接口
+## BSP层接口支持(baseclass.h)
+外设|引脚宏接口|端口接口
 -|-
-LED|LED_x(x=1,2,3…)
-蜂鸣器|BUZZER
-电源管理|POWER_x(x=1,2,3…)
-KEY|KEY_x(x=1,2,3…)
-激光|LASER
+LED|LED_x(x=1,2,3…)|LED_GPIO
+蜂鸣器|BUZZER|BUZZER_GPIO
+电源管理|POWER_x(x=1,2,3…)|POWER_GPIO
+KEY|KEY_x(x=1,2,3…)|KEY_GPIO
+激光|LASER|LASER_GPIO
 ## 代码命名规则说明
 
 类型|命名规则|示例
