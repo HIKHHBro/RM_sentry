@@ -83,8 +83,8 @@ extern CAN_HandleTypeDef hcan1;
       osThreadDef(sysDetectTask, StartSysDetectTask, osPriorityAboveNormal, 0, SYS_DETEC_HEAP_SIZE);
       startSysDetectTaskHandle = osThreadCreate(osThread(sysDetectTask), NULL);
       /* -------- 系统模块自检 --------- */
+        ProgressBarLed(LED_GPIO, 500);
       SystemSelfChecking();
-      //  ProgressBarLed(LED_GPIO, 500);
 			/* -------- 删除系统任务 --------- */
 			vTaskDelete(startSysInitTaskHandle);
     }

@@ -86,6 +86,8 @@ void Error_Handler(void);
 #define LED2_GPIO_Port GPIOG
 #define LED1_Pin GPIO_PIN_1
 #define LED1_GPIO_Port GPIOG
+#define SONIC_Pin GPIO_PIN_1
+#define SONIC_GPIO_Port GPIOA
 #define redLED_Pin GPIO_PIN_11
 #define redLED_GPIO_Port GPIOE
 #define greenLED_Pin GPIO_PIN_14
