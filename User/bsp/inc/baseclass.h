@@ -1,16 +1,16 @@
 /**
 	|-------------------------------- Copyright |--------------------------------|
 	|                                                                            |
-	|                        (C) Copyright 2018,º£¿µÆ½Í·¸ç,                       |
+	|                        (C) Copyright 2018,æµ·åº·å¹³å¤´å“¥,                       |
 	|         1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China        |
 	|                         All Rights Reserved                                |
 	|                                                                            |
-	|          By(GCU The wold of team | »ªÄÏÀí¹¤´óÑ§¹ãÖİÑ§Ôº»úÆ÷ÈËÒ°ÀÇ¶Ó)          |
+	|          By(GCU The wold of team | åå—ç†å·¥å¤§å­¦å¹¿å·å­¦é™¢æœºå™¨äººé‡ç‹¼é˜Ÿ)          |
 	|                   https://github.com/GCUWildwolfteam                       |
 	|----------------------------------------------------------------------------|
 	|--FileName    : baseclass.h
 	|--Version     : v1.0
-	|--Author      : º£¿µÆ½Í·¸ç
+	|--Author      : æµ·åº·å¹³å¤´å“¥
 	|--Date        : 2018-11-27 
 	|-- Libsupports:           
 	|--Description :
@@ -25,16 +25,16 @@
  **/
 #ifndef __BASECLASS_H 
 #define __BASECLASS_H 
-/* -------- stm32 ¿âÑ¡Ôñ 1ÊÇ¿ªÆô£¬0ÊÇ¿ª±Õ--------- */
+/* -------- stm32 åº“é€‰æ‹© 1æ˜¯å¼€å¯ï¼Œ0æ˜¯å¼€é—­--------- */
 // #define HAL_F1 0
 #define HAL_F4 1
-/* -------------- µ÷ÊÔ°æ±¾ºÍ·¢ĞĞ°æ±¾Ñ¡Ôñ ----------------- */
-/*·¢ĞĞ°æÇë°ÑÕâĞĞºê¶¨Òå×¢ÊÍµô*/
+/* -------------- è°ƒè¯•ç‰ˆæœ¬å’Œå‘è¡Œç‰ˆæœ¬é€‰æ‹© ----------------- */
+/*å‘è¡Œç‰ˆè¯·æŠŠè¿™è¡Œå®å®šä¹‰æ³¨é‡Šæ‰*/
 #define DEBUG_BY_KEIL
-/* ----------------- ¿ª·¢°åµÄÑ¡Ôñ 1ÊÇ¿ªÆô£¬0ÊÇ¿ª±Õ-------------------- */
+/* ----------------- å¼€å‘æ¿çš„é€‰æ‹© 1æ˜¯å¼€å¯ï¼Œ0æ˜¯å¼€é—­-------------------- */
 #define RM_NEW_BOARD 1
 //#define RM_OLD_BOARD 0
-//#define BINGE_BOARD 1 //±ó¸çµÄ°å×Ó
+//#define BINGE_BOARD 1 //æ–Œå“¥çš„æ¿å­
 #if HAL_F1 
 	// #include "stm32f1xx_hal.h"
 	// #include <stdlib.h>
@@ -45,8 +45,8 @@
     #include <string.h>
     #include <stdio.h>
 #endif 
-/* ----------------- ledÒı½Åºê¶¨Òå¶¨Òå -------------------- */
-#if RM_NEW_BOARD //ĞÂ°åÒı½Åºê¶¨Òå
+/* ----------------- ledå¼•è„šå®å®šä¹‰å®šä¹‰ -------------------- */
+#if RM_NEW_BOARD //æ–°æ¿å¼•è„šå®å®šä¹‰
 	#define LED_1 GPIO_PIN_1
 	#define LED_2 GPIO_PIN_2
 	#define LED_3 GPIO_PIN_3
@@ -56,22 +56,22 @@
 	#define LED_7 GPIO_PIN_7
 	#define LED_8 GPIO_PIN_8
 	#define LED_GPIO GPIOG
-  #define LED_TOTAL 8 //ledµÈ¸öÊı
-  #define LED_ORIGIN_PIN 1  //µÆGPIOÆğµãÒı½Å
+  #define LED_TOTAL 8 //ledç­‰ä¸ªæ•°
+  #define LED_ORIGIN_PIN 1  //ç¯GPIOèµ·ç‚¹å¼•è„š
   
   #define RED_LED GPIO_PIN_11//PE11
   #define GREEN_LED GPIO_PIN_14//PE14
   #define COLOR_LED_GPIO GPIOE
-/* ----------------- ¼¤¹âÒı½Åºê¶¨Òå¶¨Òå -------------------- */  
+/* ----------------- æ¿€å…‰å¼•è„šå®å®šä¹‰å®šä¹‰ -------------------- */  
   #define LASER GPIO_PIN_12//PG13
   #define LASER_GPIO GPIOG
-/* -----------------µçÔ´¹ÜÀíÒı½Åºê¶¨Òå¶¨Òå -------------------- */   
-  #define POWER1 GPIO_PIN_2//PH2
-  #define POWER2 GPIO_PIN_3//PH3
-  #define POWER3 GPIO_PIN_4//PH4
-  #define POWER4 GPIO_PIN_5//PH5
+/* -----------------ç”µæºç®¡ç†å¼•è„šå®å®šä¹‰å®šä¹‰ -------------------- */   
+  #define POWER_1 GPIO_PIN_2//PH2
+  #define POWER_2 GPIO_PIN_3//PH3
+  #define POWER_3 GPIO_PIN_4//PH4
+  #define POWER_4 GPIO_PIN_5//PH5
   #define POWER_GPIO GPIOH
-/* -----------------·äÃùÆ÷Òı½Åºê¶¨Òå¶¨Òå -------------------- */     
+/* -----------------èœ‚é¸£å™¨å¼•è„šå®å®šä¹‰å®šä¹‰ -------------------- */     
   #define BUZZER GPIO_PIN_6//PH6  TIM12_CH1
   #define BUZZER_GPIO GPIOH
 #elif BINGE_BOARD
@@ -83,8 +83,8 @@
 	#define LED_6 GPIO_PIN_14
 	#define LED_7 GPIO_PIN_15
 	#define LED_GPIO GPIOE
-  #define LED_TOTAL 7 //ledµÈ¸öÊı
-  #define LED_ORIGIN_PIN 9  //µÆGPIOÆğµãÒı½Å
+  #define LED_TOTAL 7 //ledç­‰ä¸ªæ•°
+  #define LED_ORIGIN_PIN 9  //ç¯GPIOèµ·ç‚¹å¼•è„š
 #elif RM_OLD_BOARD
 	#define LED_1 0
 	#define LED_2 0
@@ -94,66 +94,66 @@
 	#define LED_6 0
 	#define LED_7 0
 	#define LED_GPIO0G  0
-  #define LED_TOTAL 0 //ledµÈ¸öÊı
-  #define LED_ORIGIN_PIN 0  //µÆGPIOÆğµãÒı½Å
+  #define LED_TOTAL 0 //ledç­‰ä¸ªæ•°
+  #define LED_ORIGIN_PIN 0  //ç¯GPIOèµ·ç‚¹å¼•è„š
 #endif
-	#define MAX(X,Y) (X)>(Y)?(Y):(X)  //ÏŞ×ö´óÖµ
-	#define MIN(X,Y) (X)<(Y)?(Y):(X)  //ÏŞ×öĞ¡Öµ
-	#define ABS(X)   (X)<0?(-X):(X)    //È¡¾ø¶ÔÖµ
+	#define MAX(X,Y) (X)>(Y)?(Y):(X)  //é™åšå¤§å€¼
+	#define MIN(X,Y) (X)<(Y)?(Y):(X)  //é™åšå°å€¼
+	#define ABS(X)   (X)<0?(-X):(X)    //å–ç»å¯¹å€¼
 
-/* ----------------- ±êÖ¾Î»±äÁ¿Íâ²¿Á´½Ó -------------------- */
-	extern unsigned int e_periphera_interface_flag; 	//ÍâÉè½Ó¿ÚÊ¹ÓÃ×´Ì¬±äÁ¿¶¨Òå
-	extern unsigned int e_periphera_error_flag;		//ÍâÉè½Ó¿Ú´íÎó×´Ì¬±äÁ¿¶¨Òå
-	extern unsigned int e_objects_flag;     //¶ÔÏóÊ¹ÓÃ±êÖ¾
-/* ----------------- ÔËĞĞ×´Ì¬Î» ºê -------------------- */
+/* ----------------- æ ‡å¿—ä½å˜é‡å¤–éƒ¨é“¾æ¥ -------------------- */
+	extern unsigned int e_periphera_interface_flag; 	//å¤–è®¾æ¥å£ä½¿ç”¨çŠ¶æ€å˜é‡å®šä¹‰
+	extern unsigned int e_periphera_error_flag;		//å¤–è®¾æ¥å£é”™è¯¯çŠ¶æ€å˜é‡å®šä¹‰
+	extern unsigned int e_objects_flag;     //å¯¹è±¡ä½¿ç”¨æ ‡å¿—
+/* ----------------- è¿è¡ŒçŠ¶æ€ä½ å® -------------------- */
 
-/* uint32_t status(0´ú±í×îµÍµØÎ»£¬31´ú±í×î¸ßÎ»)£¨ÎªÁË·½±ãÌí¼ÓÆäËû±êÖ¾Î»£©
+/* uint32_t status(0ä»£è¡¨æœ€ä½åœ°ä½ï¼Œ31ä»£è¡¨æœ€é«˜ä½)ï¼ˆä¸ºäº†æ–¹ä¾¿æ·»åŠ å…¶ä»–æ ‡å¿—ä½ï¼‰
  * -------------------------------------------------
- *ÈÎÎñÊı |   0bit   |   1bit   |  2bit   |  7~3bit |
- *¾İ³õÊ¼--------------------------------------------
- *»¯Î»   | ³õÊ¼»¯³É¹¦| Õı³£ÔËĞĞ | ½ÓÊÜÕı³£ |    ±£Áô  |
+ *ä»»åŠ¡æ•° |   0bit   |   1bit   |  2bit   |  7~3bit |
+ *æ®åˆå§‹--------------------------------------------
+ *åŒ–ä½   | åˆå§‹åŒ–æˆåŠŸ| æ­£å¸¸è¿è¡Œ | æ¥å—æ­£å¸¸ |    ä¿ç•™  |
  * ----------------------------------------------------------------
- * ÍâÉè| 8bit | 9bit | 10bit  | 11bit  | 12bit  | 13bit | 14~15bit | 
- * ³õÊ¼-------------------------------------------------------------
- * »¯Î»| can1 | CAN2 | UASRT1 | UASRT3 | UASRT6 | UART7 |   ±£Áô    | 
+ * å¤–è®¾| 8bit | 9bit | 10bit  | 11bit  | 12bit  | 13bit | 14~15bit | 
+ * åˆå§‹-------------------------------------------------------------
+ * åŒ–ä½| can1 | CAN2 | UASRT1 | UASRT3 | UASRT6 | UART7 |   ä¿ç•™    | 
  * -----------------------------------------------------------------
  */
-	#define INIT_OK                     0x00000001U//³õÊ¼»¯³É¹¦
-  #define RUNING_OK                   0x00000002U//Õı³£ÔËĞĞ
-  #define RX_OK                       0x00000004U//½ÓÊÜÕı³£
-  #define CAN1_INIT_OK                0x00000100U//can1Õı³£
-  #define CAN2_INIT_OK	              0x00000200U//can2Õı³£
-  #define UASRT1_INIT_OK	            0x00000400U//UASRT1Õı³£
-/* ----------------- ÍâÉèÊ¹ÓÃ±êÖ¾Î»±í  -------------------- */
-	#define USART1_BY_USED    						0x0001U//´®¿Ú1±»Ê¹ÓÃ
-	#define USART2_BY_USED    						0x0002U//´®¿Ú2±»Ê¹ÓÃ
-	#define USART3_BY_USED    						0x0004U//´®¿Ú3±»Ê¹ÓÃ
-	#define UART4_BY_USED    							0x0008U//´®¿Ú4±»Ê¹ÓÃ
-	#define UART5_BY_USED    							0x0010U//´®¿Ú5±»Ê¹ÓÃ
-	#define UART6_BY_USED    							0x0020U//´®¿Ú6±»Ê¹ÓÃ
-	#define USART1_DMA_BY_USED    						0x0040U//´®¿Ú1±»Ê¹ÓÃ
-	#define USART2_DMA_BY_USED    						0x0080U//´®¿Ú2±»Ê¹ÓÃ
-	#define USART3_DMA_BY_USED    						0x0100U//´®¿Ú3±»Ê¹ÓÃ
-	#define UART4_DMA_BY_USED    							0x0200U//´®¿Ú4±»Ê¹ÓÃ
-	#define UART5_DMA_BY_USED    							0x0400U//´®¿Ú5±»Ê¹ÓÃ
-	#define UART6_DMA_BY_USED    							0x0800U//´®¿Ú6±»Ê¹ÓÃ
-	#define CAN1_BY_USED      						0x01000U//can1±»Ê¹ÓÃ
-	#define CAN2_BY_USED      						0x02000U//can2±»Ê¹ÓÃ
-	#define WHOLEPOSITOM_CLEAN							0x04000U//È«³¡¶¨Î»ÇåÀí³É¹¦
-/* ----------------- ÍâÉè½Ó¿Ú´íÎó×´Ì¬±äÁ¿¶¨Òå -------------------- */
+	#define INIT_OK                     0x00000001U//åˆå§‹åŒ–æˆåŠŸ
+  #define RUNING_OK                   0x00000002U//æ­£å¸¸è¿è¡Œ
+  #define RX_OK                       0x00000004U//æ¥å—æ­£å¸¸
+  #define CAN1_INIT_OK                0x00000100U//can1æ­£å¸¸
+  #define CAN2_INIT_OK	              0x00000200U//can2æ­£å¸¸
+  #define UASRT1_INIT_OK	            0x00000400U//UASRT1æ­£å¸¸
+/* ----------------- å¤–è®¾ä½¿ç”¨æ ‡å¿—ä½è¡¨  -------------------- */
+	#define USART1_BY_USED    						0x0001U//ä¸²å£1è¢«ä½¿ç”¨
+	#define USART2_BY_USED    						0x0002U//ä¸²å£2è¢«ä½¿ç”¨
+	#define USART3_BY_USED    						0x0004U//ä¸²å£3è¢«ä½¿ç”¨
+	#define UART4_BY_USED    							0x0008U//ä¸²å£4è¢«ä½¿ç”¨
+	#define UART5_BY_USED    							0x0010U//ä¸²å£5è¢«ä½¿ç”¨
+	#define UART6_BY_USED    							0x0020U//ä¸²å£6è¢«ä½¿ç”¨
+	#define USART1_DMA_BY_USED    						0x0040U//ä¸²å£1è¢«ä½¿ç”¨
+	#define USART2_DMA_BY_USED    						0x0080U//ä¸²å£2è¢«ä½¿ç”¨
+	#define USART3_DMA_BY_USED    						0x0100U//ä¸²å£3è¢«ä½¿ç”¨
+	#define UART4_DMA_BY_USED    							0x0200U//ä¸²å£4è¢«ä½¿ç”¨
+	#define UART5_DMA_BY_USED    							0x0400U//ä¸²å£5è¢«ä½¿ç”¨
+	#define UART6_DMA_BY_USED    							0x0800U//ä¸²å£6è¢«ä½¿ç”¨
+	#define CAN1_BY_USED      						0x01000U//can1è¢«ä½¿ç”¨
+	#define CAN2_BY_USED      						0x02000U//can2è¢«ä½¿ç”¨
+	#define WHOLEPOSITOM_CLEAN							0x04000U//å…¨åœºå®šä½æ¸…ç†æˆåŠŸ
+/* ----------------- å¤–è®¾æ¥å£é”™è¯¯çŠ¶æ€å˜é‡å®šä¹‰ -------------------- */
 	#define NO_ERROR   														 0x0000U
 	#define FRAME_DROP  													 0x0001U
 	#define RX_ERROR    													0x0002U
 	#define GET_USART_ADDR_FAIL													0x0004U
 	#define GET_CAN_ADDR_FAIL													0x0004U
-/* ----------------- ¶ÔÏóÊ¹ÓÃ±êÖ¾±í -------------------- */
-	#define NO_CREATE_OBJECTS_OF_WHOLEPOSITION        0x0000U //ÉêÇëÈ«³¡¶¨Î»µÄ¶ÔÏó
-	#define CREATE_OBJECTS_OF_WHOLEPOSITION        0x0001U //ÉêÇëÈ«³¡¶¨Î»µÄ¶ÔÏó
-	#define CREATE_OBJECTS_OF_CHASSIS 						0x0002U //ÉêÇëµ×ÅÌµÄ¶ÔÏó
-	/* --ÕâÁ½¸öºêÒ»¶¨ÒªÒ»ÆğÓÃ£¬»º´æÖ®ºóÒ»¶¨ÒªÊÍ·Å -- */
-	#define CACHE_ADDR(CACHES,ADDRS) 	(CACHES = ADDRS) //»º´æµØÖ·
-	#define FREE_ADDR(CACHES) 	(CACHES = NULL)		//ÊÍ·ÅµØÖ·  
-/* -------------- º¯Êı¶¨Òå ----------------- */
+/* ----------------- å¯¹è±¡ä½¿ç”¨æ ‡å¿—è¡¨ -------------------- */
+	#define NO_CREATE_OBJECTS_OF_WHOLEPOSITION        0x0000U //ç”³è¯·å…¨åœºå®šä½çš„å¯¹è±¡
+	#define CREATE_OBJECTS_OF_WHOLEPOSITION        0x0001U //ç”³è¯·å…¨åœºå®šä½çš„å¯¹è±¡
+	#define CREATE_OBJECTS_OF_CHASSIS 						0x0002U //ç”³è¯·åº•ç›˜çš„å¯¹è±¡
+	/* --è¿™ä¸¤ä¸ªå®ä¸€å®šè¦ä¸€èµ·ç”¨ï¼Œç¼“å­˜ä¹‹åä¸€å®šè¦é‡Šæ”¾ -- */
+	#define CACHE_ADDR(CACHES,ADDRS) 	(CACHES = ADDRS) //ç¼“å­˜åœ°å€
+	#define FREE_ADDR(CACHES) 	(CACHES = NULL)		//é‡Šæ”¾åœ°å€  
+/* -------------- å‡½æ•°å®šä¹‰ ----------------- */
 	UART_HandleTypeDef* RecognizeUSARTType(UART_HandleTypeDef* huartx);
   CAN_HandleTypeDef* RecognizeCanType(CAN_HandleTypeDef* hcanx);
 	void SetFrameDropflag(int16_t flag);
