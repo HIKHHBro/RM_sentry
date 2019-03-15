@@ -7,13 +7,12 @@
 * MDK-ARM （keil工程文件和编译文件）
 * User（用户层）
   + bsp (用户底层配置层)
-    + drivers（用户模块设备层）
+  + drivers（用户模块设备层）
     - counters(控制器等算法)
     - data_struture(用户自定义数据结构)
     - modules（模块和外设）
-  + control（控制层）
-  + inc（应用层头文件）
-  + src（应用层源文件）
+  + app（用户层控制层）
+  + task(用户任务层)
 * Inc（主函数和中断层头文件）
 * Src（主函数和中断层源文件）
 
@@ -29,6 +28,14 @@ FreeRTOS
 
 RM新板,RM旧板,彬哥第一代板（f427IIHx）
 
+## BSP层接口支持
+外设|引脚宏接口
+-|-
+LED|LED_x(x=1,2,3…)
+蜂鸣器|BUZZER
+电源管理|POWER_x(x=1,2,3…)
+KEY|KEY_x(x=1,2,3…)
+激光|LASER
 ## 代码命名规则说明
 
 类型|命名规则|示例
