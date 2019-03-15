@@ -30,7 +30,7 @@ RM新板,RM旧板,彬哥第一代板（f427IIHx）
 
 ## BSP层接口支持(baseclass.h)
 外设|引脚宏接口|端口接口
--|-
+-|-|-
 LED|LED_x(x=1,2,3…)|LED_GPIO
 蜂鸣器|BUZZER|BUZZER_GPIO
 电源管理|POWER_x(x=1,2,3…)|POWER_GPIO
