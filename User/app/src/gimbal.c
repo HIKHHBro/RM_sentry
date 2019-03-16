@@ -58,7 +58,10 @@
 		{
 			case RAMMER_RX_ID:
 				RM2006ParseData(gimbal_t.prammer_t,data);
-				RatiometricConversion(gimbal_t.prammer_t->real_angle,RAMMER_REDUCTION,M2006_THRESHOLD);
+				gimbal_t.prammer_t->real_angle = RatiometricConversion(gimbal_t.prammer_t->real_angle,RAMMER_REDUCTION,M2006_THRESHOLD);
+  #ifdef ANTI_CLOCK_WISE  //逆时针为正方向
+        AntiRM2006ParseData(gimbal_t.prammer_t,data);
+  #endif
 				break;
 			case YAW_RX_ID:
 				// RM6623ParseData(gimbal_t.pYaw_t,data);

@@ -156,7 +156,7 @@
 /* ============================= M2006 of begin ============================= */
 	/**
 		* @Data    2019-01-26 18:21
-		* @brief   M2006数据解析
+		* @brief   基准方向顺时针M2006数据解析
 		* @param   M2006struct 2006结构体指针
 		* @param   *data  接收的数据指针
 		* @retval  void
@@ -167,6 +167,22 @@
     	M2006->real_speed = ((int16_t)(data[2]<<8)|data[3]);
 			M2006->real_current=((int16_t)(data[4]<<8)|data[5]);
 		}
+ /**
+  * @Data    2019-01-26 18:21
+  * @brief   基准方向逆时针M2006数据解析
+  * @param   M2006struct 2006结构体指针
+  * @param   *data  接收的数据指针
+  * @retval  void
+  */
+  void AntiRM2006ParseData(M2006Struct *M2006,uint8_t *data)
+  {
+    M2006->real_angle  = M2006_POLES - ((int16_t)(data[0]<<8)|data[1]);
+    M2006->real_speed = -((int16_t)(data[2]<<8)|data[3]);
+    M2006->real_current= - ((int16_t)(data[4]<<8)|data[5]);
+    if(M2006->real_angle == 8192)
+    M2006->real_angle = 0;
+  }
+
 /* ============================== M2006 of end ============================== */
 /* =======================-===== maxion of begin ============================ */
 	/**

@@ -29,7 +29,6 @@
 /* -------------- 宏定义 ----------------- */
 #define GIMBAL_CAN_ID_L 0x204
 #define GIMBAL_CAN_ID_H 0x208
-	#define RAMMER_RX_ID	 					  0x207//拨弹电机接收id
 	#define YAW_RX_ID 								0x205//YAW轴电机接收 id
 	#define PITCH_RX_ID 							0x206//PITCH轴电机接收 id
 	#define GIMBAL_CAN_TX_ID 					0x1ff//云台电机发送id

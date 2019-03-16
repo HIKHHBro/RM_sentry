@@ -28,7 +28,8 @@
 	postionPidStruct rammerOuterLoopPid_t;//拨弹电机外环pid
 	speedPidStruct rammerInnerLoopPid_t;//拨弹电机内环pid
 /* -------------- 变量声明 ----------------- */
-	static int16_t stuct_count = 1;
+	static int16_t stuct_lock_count = 0;
+  static int16_t stuct_count = 0;
 	M2006Struct* RammerInit(void)
 	{
 				/* ------ 拨弹电机初始化 ------- */
@@ -73,23 +74,32 @@
 	*/
 	void RammerControl(void)
 	{
-		if(rammer_t.real_current > STUCK_BULLET_THRE)
-		{
-			if(stuct_count > -RAMMER_SPEED*5)//500ms
-				stuct_count --;
-		}
-		if((stuct_count < RAMMER_SPEED) && (stuct_count > 0))//500ms
-	  	stuct_count ++;
-		if(stuct_count > RAMMER_SPEED)
-		{
-		rammer_t.real_angle = PCycleNumerical(rammer_t.real_angle);
-		stuct_count =0;
-		}
-		else if(stuct_count < -RAMMER_SPEED*5)
-		{
-	  	rammer_t.real_angle = MCycleNumerical(rammer_t.real_angle);
-			stuct_count =0;
-		}
+     if((rammer_t.real_current < STUCK_BULLET_THRE) &&(rammer_t.real_current >=0))
+      {
+        if(stuct_count < RAMMER_TIME)//500ms
+        stuct_count ++;
+        stuct_lock_count =0;
+      } 
+     else if(rammer_t.real_current > STUCK_BULLET_THRE )
+      {
+        if(stuct_lock_count > -LOCK_ROTOT_TIME)//500ms
+        stuct_lock_count --;
+      }
+     else if(rammer_t.real_current < -STUCK_BULLET_THRE)
+     {
+       RammerShake();
+     }
+    if(stuct_count >= RAMMER_TIME)
+      {
+        rammer_t.real_angle = PCycleNumerical(rammer_t.real_angle);
+        stuct_count =0;
+      }
+      else if(stuct_lock_count <= -LOCK_ROTOT_TIME)
+      {
+        rammer_t.real_angle = MCycleNumerical(rammer_t.real_angle);
+        stuct_lock_count =0;
+      }
+
 //		int16_t pid_out = -500;
 //		rammer_t.target = 3*(DbusAntiShake(20,dbus->ch1)); //目标值
 //		rammer_t.error = rammer_t.target - rammer_t.real_speed;
@@ -110,7 +120,7 @@
 		}
 	/**
 		* @Data    2019-03-16 19:43
-		* @brief   正数数值反向循环，软件重转载
+		* @brief   正数数值反向循环，软件重转载//看M2006_POLES应该取什么
 		* @param   void
 		* @retval  void
 		*/
@@ -118,6 +128,31 @@
 		{
 			return (M2006_POLES - ((M2006_POLES-data) + 2000) % M2006_POLES);
 		}
+  // /**
+  // * @Data    2019-03-17 00:49
+  // * @brief   拨弹大力气抖动
+  // * @param   void
+  // * @retval  void
+  // */
+  // void RammerShake(void)
+  // {
+  //   static int16_t icr=0,i=0;
+  //   icr = icr*10;
+  //   while (i) 
+  //   {
+      
+  //   }
+  //   if((rammer_t.real_current >STUCK_BULLET_THRE) || (rammer_t.real_current < -STUCK_BULLET_THRE))
+  //   {
+  //     if(i == 0)
+  //      rammer_t.real_angle = PCycleNumerical(rammer_t.real_angle);
+  //     else
+  //     {
+  //       rammer_t.real_angle = MCycleNumerical(rammer_t.real_angle);
+  //     }
+      
+  //   }
+  // }
 /*-----------------------------------file of end------------------------------*/
 
 

@@ -195,7 +195,8 @@ void RM3508ParseData(RM3508Struct *RM3508,uint8_t *data);
 		speedPidStruct *pspeedPid_t;
 	}M2006Struct;
 	void RM2006ParseData(M2006Struct *M2006, uint8_t *data);
-	#define M2006_THRESHOLD 7000
+  void AntiRM2006ParseData(M2006Struct *M2006,uint8_t *data);
+	#define M2006_THRESHOLD 6000
 	#define M2006_POLES  8192
 /* =========================== M2006 of end =========================== */
 /* =========================== PWM控制的电机 of begin ======================== */
