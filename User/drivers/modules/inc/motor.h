@@ -28,7 +28,7 @@
  **/
 #ifndef __MOTOR_H 
 #define __MOTOR_H
-	#include "userdriverconfig.h "
+	#include "baseclass.h "
 	#include "bsp_can.h" 
 	#include "counters.h" 
 /* =========================== common of begin =========================== */
@@ -176,7 +176,7 @@
 	}RM3508Struct;
 void RM3508ParseData(RM3508Struct *RM3508,uint8_t *data);
 /* ============================== Rm3508 of end ============================= */
-/* =========================== M6620 of begin =========================== */
+/* =========================== M2006 of begin =========================== */
 	typedef struct M2006Struct
 	{
 		uint16_t id;//电机can的 ip
@@ -195,7 +195,17 @@ void RM3508ParseData(RM3508Struct *RM3508,uint8_t *data);
 		speedPidStruct *pspeedPid_t;
 	}M2006Struct;
 	void RM2006ParseData(M2006Struct *M2006, uint8_t *data);
-/* =========================== M6620 of end =========================== */
+	#define M2006_THRESHOLD 7000
+	#define M2006_POLES  8192
+/* =========================== M2006 of end =========================== */
+/* =========================== PWM控制的电机 of begin ======================== */
+	void BrushlessMotorInit(void);
+	 #define SET_FRICTIONGEAR_SPEED(__V_)															 \
+				do{                                                  				\
+						__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,__V_);  \
+						__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,__V_);  \
+					} while(0U)//设置摩擦轮速度
+/* =========================== PWM控制的电机 of end ========================== */
 #endif	// __MOTOR_H
 /*---------------------------------file of end--------------------------------*/
 

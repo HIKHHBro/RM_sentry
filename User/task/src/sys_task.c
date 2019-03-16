@@ -52,7 +52,7 @@ extern CAN_HandleTypeDef hcan1;
 	void SysInitCreate(void)
 	{
 		/* -------- 系统初始化任务创建 --------- */
-		osThreadDef(sysInitTask, StartSysInitTask, osPriorityNormal, 0, SYS_INIT_HEAP_SIZE);
+		osThreadDef(sysInitTask, StartSysInitTask, osPriorityRealtime, 0, SYS_INIT_HEAP_SIZE);
 		startSysInitTaskHandle = osThreadCreate(osThread(sysInitTask), NULL);
 	}
 /**
@@ -129,11 +129,11 @@ extern CAN_HandleTypeDef hcan1;
 	{
     const dbusStruct* pRc_t;
     pRc_t = GetRcStructAddr();
-    GimbalStructInit(&hcan1); 
+    GimbalStructInit(pRc_t); 
 		vTaskSuspend(startGimbalTaskHandle);
 		for (;;)
 		{  
-				GimbalControl(pRc_t);
+				GimbalControl();
 				osDelay(5);
 		}
 	}

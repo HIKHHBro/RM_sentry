@@ -27,7 +27,7 @@
  **/
 #ifndef __LEDS_TIP_H 
 #define __LEDS_TIP_H 
-#include "userdriverconfig.h "
+#include "baseclass.h "
 	void FlashingLed(GPIO_TypeDef *GPIO, uint16_t ledx, uint8_t times, uint32_t lag);
 	void ProgressBarLed(GPIO_TypeDef *GPIO, uint32_t lag);
    void WarningLed(uint8_t times,uint16_t lag);

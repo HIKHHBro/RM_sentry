@@ -25,7 +25,7 @@
  **/
 #ifndef __ENCONDER_H 
 #define __ENCONDER_H 
-#include "userdriverconfig.h "
+#include "baseclass.h "
 typedef struct incrementalEnconderStruct
 {
 	uint32_t last_data;//记录上次的CNT值

@@ -24,63 +24,27 @@
 	|-----------------------------declaration of end-----------------------------|
  **/
 #include "gimbal.h" 
-extern UART_HandleTypeDef huart2;//串口1
-/* -------------- 私有宏定义 ----------------- */
-	#define RAMMER_RX_ID	  0x207
-	#define YAW_RX_ID 			0x205
-	#define PITCH_RX_ID 		0x206
-	#define GIMBAL_CAN_TX_ID 0x1ff
 /* -------------- 结构体声明 ----------------- */
 	gimbalStruct gimbal_t;//云台结构体
-//	M2006Struct rammer_t;//拨弹电机结构体
-//	postionPidStruct rammerOuterLoopPid_t;//拨弹电机外环pid
-//	speedPidStruct rammerInnerLoopPid_t;//拨弹电机内环pid
-//	xQueueHandle gimbal_queue;
+/* -------------- 任务句柄 ----------------- */
+		osThreadId startRammerTaskHandle; 
+/* ----------------- 任务钩子函数 -------------------- */
+	void StartRammerTask(void const *argument);
 	/**
 	* @Data    2019-01-27 17:09
 	* @brief   云台结构体初始化
 	* @param  CAN_HandleTypeDef* hcanx（x=1,2）
 	* @retval  void
 	*/
-	void GimbalStructInit(CAN_HandleTypeDef *hcanx)
+	void GimbalStructInit(const dbusStruct* pRc_t)
 	{
-		gimbal_t.hcanx = hcanx;
-		/* ------ 拨弹电机初始化 ------- */
-//			gimbal_t.prammer_t = &rammer_t;
-//			rammer_t.id = RAMMER_RX_ID;//电机can的 ip
-//		  rammer_t.target = 0; //目标值
-//		  rammer_t.real_current = 0;//真实电流
-//		  rammer_t.real_angle = 0;//真实角度
-//		  rammer_t.real_speed = 0;//真实速度
-//			rammer_t.error = 0;
-//			/* ------ 外环pid参数 ------- */
-//				rammer_t.ppostionPid_t = &rammerOuterLoopPid_t;
-//				rammerOuterLoopPid_t.kp = 0;
-//				rammerOuterLoopPid_t.kd = 0;
-//				rammerOuterLoopPid_t.ki = 0;
-//				rammerOuterLoopPid_t.error = 0;
-//				rammerOuterLoopPid_t.last_error = 0;//上次误差
-//				rammerOuterLoopPid_t.integral_er = 0;//误差积分
-//				rammerOuterLoopPid_t.pout = 0;//p输出
-//				rammerOuterLoopPid_t.iout = 0;//i输出
-//				rammerOuterLoopPid_t.dout = 0;//k输出
-//				rammerOuterLoopPid_t.pid_out = 0;//pid输出
-//			/* ------ 内环pid参数 ------- */
-//				rammer_t.pspeedPid_t = &rammerInnerLoopPid_t;
-//				rammerInnerLoopPid_t.kp = 0;
-//				rammerInnerLoopPid_t.kd = 0;
-//				rammerInnerLoopPid_t.ki = 0;
-//				rammerInnerLoopPid_t.error = 0;
-//				rammerInnerLoopPid_t.last_error = 0;//上次误差
-//				rammerInnerLoopPid_t.before_last_error = 0;//上上次误差
-//				rammerInnerLoopPid_t.integral_er = 0;//误差积分
-//				rammerInnerLoopPid_t.pout = 0;//p输出
-//				rammerInnerLoopPid_t.iout = 0;//i输出
-//				rammerInnerLoopPid_t.dout = 0;//k输出
-//				rammerInnerLoopPid_t.pid_out = 0;//pid输出
-				// /* ------ 云台消息队列创建 ------- */
-				// gimbal_queue = xQueueCreate(5,3);
-
+		gimbal_t.pRc_t = pRc_t;
+    gimbal_t.prammer_t =RammerInit();
+  /* ------ 开启摩擦轮 ------- */
+		BrushlessMotorInit();
+ /* ------ 创建拨弹任务 ------- */
+	osThreadDef(startRammerTask,StartRammerTask,osPriorityNormal,0,RAMMER_HEAP_SIZE);
+	startRammerTaskHandle = osThreadCreate(osThread(startRammerTask),NULL);
 	}
 /**
 	* @Data    2019-01-28 11:40
@@ -93,20 +57,21 @@ extern UART_HandleTypeDef huart2;//串口1
 		switch (id)
 		{
 			case RAMMER_RX_ID:
-//				RM2006ParseData(&rammer_t,data);
+				RM2006ParseData(gimbal_t.prammer_t,data);
+				RatiometricConversion(gimbal_t.prammer_t->real_angle,RAMMER_REDUCTION,M2006_THRESHOLD);
 				break;
 			case YAW_RX_ID:
-				RM6623ParseData(gimbal_t.pYaw_t,data);
-        /* -------- 比例转换 --------- */
-        gimbal_t.pYaw_t->real_angle = RatiometricConversion  \
-        (gimbal_t.pYaw_t->real_angle,gimbal_t.pYaw_t->thresholds,gimbal_t.pYaw_t->Percentage);
+				// RM6623ParseData(gimbal_t.pYaw_t,data);
+        // /* -------- 比例转换 --------- */
+        // gimbal_t.pYaw_t->real_angle = RatiometricConversion  \
+        // (gimbal_t.pYaw_t->real_angle,gimbal_t.pYaw_t->thresholds,gimbal_t.pYaw_t->Percentage);
         /* -------- 过零处理 --------- */
-         zeroArgument(gimbal_t.pYaw_t->real_angle,gimbal_t.pYaw_t->thresholds); 
+        //  zeroArgument(gimbal_t.pYaw_t->real_angle,gimbal_t.pYaw_t->thresholds); 
 				break;
 			case PITCH_RX_ID:
-				RM6623ParseData(gimbal_t.pPitch_t,data);
+				// RM6623ParseData(gimbal_t.pPitch_t,data);
         /* -------- 过零处理 --------- */
-         zeroArgument(gimbal_t.pPitch_t->real_angle,gimbal_t.pPitch_t->thresholds); 
+        //  zeroArgument(gimbal_t.pPitch_t->real_angle,gimbal_t.pPitch_t->thresholds); 
 				break;
 		
 			default:
@@ -120,8 +85,11 @@ extern UART_HandleTypeDef huart2;//串口1
 	* @param   void
 	* @retval  void
 	*/
-	void GimbalControl(const dbusStruct* dbus)
+	void GimbalControl(void)
 	{
+		if(gimbal_t.pRc_t->switch_right == 1)
+		SET_FRICTIONGEAR_SPEED(FRICTIONGEAR_SPEED);
+		
 //		int16_t pid_out = -500;
 //		rammer_t.target = 3*(DbusAntiShake(20,dbus->ch1)); //目标值
 //		rammer_t.error = rammer_t.target - rammer_t.real_speed;
@@ -145,7 +113,7 @@ extern UART_HandleTypeDef huart2;//串口1
     s[3] = (uint8_t)pitch;
 		s[4] = (uint8_t)(rammer>>8);
 		s[5] = (uint8_t)rammer;
-		return(CanTxMsg(gimbal_t.hcanx,GIMBAL_CAN_TX_ID,s));
+		return(CanTxMsg(GIMBAL_CAN,GIMBAL_CAN_TX_ID,s));
 	}
 // /*---------------------------------80字符限制-----------------------------------*/
 //   /**
@@ -178,4 +146,18 @@ extern UART_HandleTypeDef huart2;//串口1
   {
     return &gimbal_t;
   }
+/**
+	* @Data    2019-03-16 18:04
+	* @brief   拨弹电机任务
+	* @param   void
+	* @retval  void
+	*/
+	void StartRammerTask(void const *argument)
+	{
+		for(;;)
+		{
+
+			osDelay(10);
+		}
+	}
 /*-----------------------------------file of end------------------------------*/

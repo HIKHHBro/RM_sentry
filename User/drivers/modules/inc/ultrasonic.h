@@ -25,9 +25,11 @@
  **/
 #ifndef __ULTRASONIC_H 
 #define __ULTRASONIC_H 
-#include "userdriverconfig.h "
+#include "baseclass.h "
 /* ===========================  HCSR-04 of begin =========================== */
-	
+		void  HCSR04Init(void);
+		uint32_t GetDistance(uint8_t Channel);
+			void HCSR04RxMsg(void);
 /* ===========================  HCSR-04 of end =========================== */
 #endif	// __ULTRASONIC_H
 /*-----------------------------------file of end------------------------------*/

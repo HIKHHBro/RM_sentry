@@ -24,11 +24,11 @@
   |---------------------------------declaration of end----------------------------|
  **/
 #include "sys_detect.h" 
+ sysDetectStruct sysDetect_t;
 /* ----------------- 任务句柄 -------------------- */
 osThreadId startSysDetectTaskHandle;//数据校准任务
   void StartSysDetectTask(void const *argument);
 /* ----------------- 外部链接 -------------------- */
-extern	osThreadId startSysInitTaskHandle; 
 extern	osThreadId startParseTaskHandle;
 //extern	osThreadId startLedTaskHandle;
 extern	osThreadId startChassisTaskHandle;
@@ -52,6 +52,46 @@ extern osThreadId startGimbalTaskHandle;
     sds->psys_chassis_t = RWGetChassisStructAddr();
     sds->psys_gimbal_t = RWGetgimbalStructAddr();
   }
+ /**
+ * @Data    2019-03-15 00:49
+ * @brief   系统自检
+ * @param   void
+ * @retval  void
+ */
+ void SystemSelfChecking(void)
+ {
+   uint32_t temp1,temp2;
+  /* -------- 各任务初始化判断 --------- */
+  temp1 = GetRcStatus();
+  temp2 = GetChassisStatus();
+  //temp3 = GetGimbalStatus();
+  while((temp1&temp2&INIT_OK) != INIT_OK)//加云台
+  {
+      //添加警报机制
+//    temp1 = GetRcStatus();
+//    temp2 = GetChassisStatus();
+//    //temp3 = GetGimbalStatus();
+//    //增加等待时间超时进入报错模式，蜂鸣器长响，
+//      osDelay(5);
+  }
+  /* -------- 重启解析任务 --------- */
+  vTaskResume(startParseTaskHandle);
+//  temp1 = GetRcStatus();
+//  temp2 = GetChassisStatus();
+//  //temp3 = GetGimbalStatus();
+//  while((temp1&temp2&RX_OK) != RX_OK)
+//  {
+//      //添加警报机制
+//    temp1 = GetRcStatus();
+//    temp2 = GetChassisStatus();
+//    //temp3 = GetGimbalStatus();
+//    //判断是什么模块离线
+//      osDelay(5);
+//  } 
+  /* ------ 数据校准任务 ------- */
+osThreadDef(sysDetectTask, StartSysDetectTask, osPriorityAboveNormal, 0, SYS_DETEC_HEAP_SIZE);
+startSysDetectTaskHandle = osThreadCreate(osThread(sysDetectTask), NULL);
+ }
 /**
 * @Data    2019-03-13 02:45
 * @brief   系统自检任务控制函数
@@ -63,7 +103,7 @@ void SysDetectControl(sysDetectStruct* sds)
   switch (sds->psys_chassis_t->rc_t->switch_left)
   {
     case 1:
-      RcCalibratorMode(sds);
+     RcCalibratorMode(sds);
       break;
     case 3:
       break;
@@ -79,34 +119,51 @@ void SysDetectControl(sysDetectStruct* sds)
   */
   void RcCalibratorMode(sysDetectStruct* sds)
   {
+//    uint32_t temp1;
     static uint8_t zero_init_flag = 0;
     static uint8_t crtl_mode_flag = 0;
-    if( (sds->psys_chassis_t->rc_t->ch1 == -660) && \
-        (sds->psys_chassis_t->rc_t->ch2 == -600) && \
-        (sds->psys_chassis_t->rc_t->ch3 ==  660) && \
-        (sds->psys_chassis_t->rc_t->ch3 == -660) )//内八设置编码器零点
+    if( (sds->psys_chassis_t->rc_t->ch1 < -600) && \
+        (sds->psys_chassis_t->rc_t->ch2 <-600) && \
+        (sds->psys_chassis_t->rc_t->ch3 >600) && \
+        (sds->psys_chassis_t->rc_t->ch4 <-600) )//内八设置编码器零点
     {
        crtl_mode_flag =1;
       if(zero_init_flag == 30)
       {
-        zero_init_flag =35;
+        zero_init_flag =30;
          SET_ENCODER_ZERO(0);
         ProgressBarLed(LED_GPIO, 200);
       }
       zero_init_flag++;
     }
-    if(zero_init_flag == 35)
+    if(zero_init_flag == 31)
     {
       if( (sds->psys_chassis_t->rc_t->ch1 == 0) && \
       (sds->psys_chassis_t->rc_t->ch2 == 0) && \
       (sds->psys_chassis_t->rc_t->ch3 == 0) && \
-      (sds->psys_chassis_t->rc_t->ch3 == 0) )//回零防抖
+      (sds->psys_chassis_t->rc_t->ch4 == 0) )//回零防抖
       {
+  /* -------- 重启底盘和云台任务 --------- */
+   vTaskResume(startChassisTaskHandle);
+   vTaskResume(startGimbalTaskHandle);
+//   temp1 = GetChassisStatus();
+   //temp3 = GetGimbalStatus();
+//   while((temp1&RUNING_OK) != RUNING_OK)
+//   {
+//      //进一步判断错误
+//      temp1 = GetChassisStatus();
+//      //temp3 = GetGimbalStatus();
+//       osDelay(5);
+//   }
         WarningLed(5,100);
+     /* -------- 删除校准任务 --------- */
+			vTaskDelete(startSysDetectTaskHandle);
       }
+      zero_init_flag =30;
     }
     if(crtl_mode_flag==0)
-       RcControlMode();
+      crtl_mode_flag = 0;
+//       RcControlMode();
     else crtl_mode_flag = 0;
   }
   /**
@@ -127,46 +184,6 @@ void SysDetectControl(sysDetectStruct* sds)
 // //   // task_on_off = ENABLE;
 // // }
 // }
-   /**
-   * @Data    2019-03-15 00:49
-   * @brief   系统自检
-   * @param   void
-   * @retval  void
-   */
-   void SystemSelfChecking(void)
-   {
-     uint32_t temp1,temp2;
-    /* -------- 各任务初始化判断 --------- */
-    temp1 = GetRcStatus();
-    temp2 = GetChassisStatus();
-    //temp3 = GetGimbalStatus();
-    while((temp1&temp2&INIT_OK) != INIT_OK)//加云台
-    {
-        //添加警报机制
-      temp1 = GetRcStatus();
-      temp2 = GetChassisStatus();
-      //temp3 = GetGimbalStatus();
-      //增加等待时间超时进入报错模式，蜂鸣器长响，
-        osDelay(5);
-    }
-    /* -------- 重启解析任务 --------- */
-    vTaskResume(startParseTaskHandle);
-    temp1 = GetRcStatus();
-    temp2 = GetChassisStatus();
-    //temp3 = GetGimbalStatus();
-    while((temp1&temp2&RX_OK) != RX_OK)
-    {
-        //添加警报机制
-      temp1 = GetRcStatus();
-      temp2 = GetChassisStatus();
-      //temp3 = GetGimbalStatus();
-      //判断是什么模块离线
-        osDelay(5);
-    } 
-    /* ------ 数据校准任务 ------- */
-  osThreadDef(sysDetectTask, StartSysDetectTask, osPriorityAboveNormal, 0, SYS_DETEC_HEAP_SIZE);
-  startSysDetectTaskHandle = osThreadCreate(osThread(sysDetectTask), NULL);
-   }
   /**
   * @Data    2019-03-13 01:46
   * @brief   数据校准任务
@@ -175,26 +192,13 @@ void SysDetectControl(sysDetectStruct* sds)
   */
   void StartSysDetectTask(void const *argument)
   {
-    sysDetectStruct sysDetect_t;
-    SysDetectInit(&sysDetect_t);
+     SysDetectInit(&sysDetect_t);
     for(;;)
     {
       SysDetectControl(&sysDetect_t);
-      osDelay(2);
+      osDelay(4);
     }
   }
-    //  /* -------- 重启底盘和云台任务 --------- */
-  //   vTaskResume(startChassisTaskHandle);
-  //   vTaskResume(startGimbalTaskHandle);
-  //   temp1 = GetChassisStatus();
-  //   //temp3 = GetGimbalStatus();
-  //   while((temp1&RUNING_OK) != RUNING_OK)
-  //   {
-  //      //进一步判断错误
-  //      temp1 = GetChassisStatus();
-  //      //temp3 = GetGimbalStatus();
-  //       osDelay(5);
-  //   }
 /*------------------------------------file of end-------------------------------*/
 
 

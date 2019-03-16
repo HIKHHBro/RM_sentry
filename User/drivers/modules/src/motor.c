@@ -53,7 +53,7 @@
 		}
 		last_real = real;//缓存现在值
 		tem = real + (s_max_motor_lines* coefficient); //转换总角度
-		return ((int16_t)(tem/(perce)));//换算成上面转一圈
+		return ((int16_t)((float)tem/((float)perce)));//换算成上面转一圈
 	}
 	/**
 	* @Data    2019-01-18 20:48
@@ -289,6 +289,21 @@
 			osDelay(500);//等待500ms
 		}
 /* ============================= maxion of end ============================== */
+/* =========================== PWM控制的电机 of begin ======================== */
+/**
+	* @Data    2019-03-16 16:47
+	* @brief   
+	* @param   void
+	* @retval  void
+	*/
+	void BrushlessMotorInit(void)
+	{
+		HAL_TIM_PWM_Start(FRICTIONGEAR,FRICTIONGEAR_1);
+		HAL_TIM_PWM_Start(FRICTIONGEAR,FRICTIONGEAR_2);
+		__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_1_START_V);
+		__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_2_START_V);
+	}
+/* =========================== PWM控制的电机 of end ========================== */
 
 
 /*---------------------------------file of end--------------------------------*/

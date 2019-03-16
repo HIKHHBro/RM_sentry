@@ -25,7 +25,7 @@
  **/
 #ifndef __DEBUG_BY_KEIL_H 
 #define __DEBUG_BY_KEIL_H 
-#include "userdriverconfig.h " 
+#include "baseclass.h " 
 #ifdef DEBUG_BY_KEIL
 #include "leds_tip.h" 
 #include "parse.h" 

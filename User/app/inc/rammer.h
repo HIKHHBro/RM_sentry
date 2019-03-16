@@ -8,10 +8,10 @@
 	|           By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)         |
 	|                    https://github.com/GCUWildwolfteam                      |
 	|----------------------------------------------------------------------------|
-	|--FileName    : gimbal.h                                                
+	|--FileName    : rammer.h                                                
 	|--Version     : v1.0                                                            
 	|--Author      : 海康平头哥                                                       
-	|--Date        : 2019-01-26               
+	|--Date        : 2019-03-16               
 	|--Libsupports : 
 	|--Description :                                                       
 	|--FunctionList                                                       
@@ -23,37 +23,19 @@
 	|-------2. ...                                                       
 	|-----------------------------declaration of end-----------------------------|
  **/
-#ifndef __GIMBAL_H 
-#define __GIMBAL_H 
-#include "rammer.h" 
-/* -------------- 宏定义 ----------------- */
-#define GIMBAL_CAN_ID_L 0x204
-#define GIMBAL_CAN_ID_H 0x208
-	#define RAMMER_RX_ID	 					  0x207//拨弹电机接收id
-	#define YAW_RX_ID 								0x205//YAW轴电机接收 id
-	#define PITCH_RX_ID 							0x206//PITCH轴电机接收 id
-	#define GIMBAL_CAN_TX_ID 					0x1ff//云台电机发送id
-	#define FRICTIONGEAR_SPEED 				(17U)	//摩擦轮速度
-typedef struct gimbalStruct
-{
-  uint32_t status;
-	M2006Struct *prammer_t;
-  RM6623Struct *pYaw_t;
-    RM6623Struct *pPitch_t;
-	const dbusStruct* pRc_t;
-} gimbalStruct;
-	void GimbalStructInit(const dbusStruct* pRc_t);
-void GimbalParseDate(uint32_t id,uint8_t *data);
-HAL_StatusTypeDef GimbalCanTx(int16_t yaw,int16_t pitch,int16_t rammer);
-void GimbalControl(void);
- HAL_StatusTypeDef RxPCMsg(void);
- uint32_t GetGimbalStatus(void);
-gimbalStruct *RWGetgimbalStructAddr(void);
-#endif // __GIMBAL_H
+#ifndef __RAMMER_H 
+#define __RAMMER_H 
+#include "motor.h"
+#include "DJI_dbus.h" 
+	#define RAMMER_ANGER_COE         (0.0012F)//拨弹电机角度转换系数
+	#define RAMMER_REDUCTION         (36U)//减速比
+	#define STUCK_BULLET_THRE        3000//卡弹电流阀值
+	#define RAMMER_SPEED             50//单位10ms
+	M2006Struct* RammerInit(void);
+	void RammerControl(void);
+		int16_t PCycleNumerical(int16_t data);
+		int16_t MCycleNumerical(int16_t data);
+#endif	// __RAMMER_H
 /*-----------------------------------file of end------------------------------*/
-
-
-
-
 
 

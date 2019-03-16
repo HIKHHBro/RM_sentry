@@ -25,7 +25,7 @@
  **/
 #ifndef __DATASTRUCTURE_H 
 #define __DATASTRUCTURE_H 
-#include "userdriverconfig.h "
+#include "baseclass.h "
 #define MAXSIZE    8
 typedef struct SqQueue{
 	float data[MAXSIZE];

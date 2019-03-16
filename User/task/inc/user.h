@@ -12,7 +12,8 @@
 	|--Version     : v1.0                                                            
 	|--Author      : 海康平头哥                                                       
 	|--Date        : 2018-11-27               
-	|--Description :                                                       
+	|--Description : 此头文件放在cube生成的math.c
+  |                stm32F4xx_it.c的用户代码区                                                       
 	|--FunctionList                                                       
 	|-------1. ....                                                       
 	|          <version>:                                                       

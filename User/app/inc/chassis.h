@@ -29,6 +29,7 @@
 #include "DJI_dbus.h" 
 #include "usart_debug.h" 
 #include "enconder.h" 
+#include "ultrasonic.h" 
 typedef struct chassisStruct
 {
 	RM3508Struct *pwheel1_t;

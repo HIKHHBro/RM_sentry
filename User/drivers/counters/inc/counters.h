@@ -24,7 +24,7 @@
  **/
 #ifndef __COUNTERS_H 
 #define __COUNTERS_H 
-	#include "userdriverconfig.h "
+	#include "baseclass.h "
 
   #define LOCATION_MODE        0  //位置式
   #define INCREMENTAL_MODE     1  //增量式

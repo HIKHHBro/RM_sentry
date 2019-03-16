@@ -25,26 +25,11 @@
  **/
 #ifndef __BASECLASS_H 
 #define __BASECLASS_H 
-/* -------- stm32 库选择 1是开启，0是开闭--------- */
-// #define HAL_F1 0
-#define HAL_F4 1
+#include "userdriverconfig.h"
 /* -------------- 调试版本和发行版本选择 ----------------- */
 /*发行版请把这行宏定义注释掉*/
 #define DEBUG_BY_KEIL
-/* ----------------- 开发板的选择 1是开启，0是开闭-------------------- */
-#define RM_NEW_BOARD 1
-//#define RM_OLD_BOARD 0
-//#define BINGE_BOARD 1 //斌哥的板子
-#if HAL_F1 
-	// #include "stm32f1xx_hal.h"
-	// #include <stdlib.h>
-#elif HAL_F4
-		#include "stm32f4xx_hal.h"
-		#include "cmsis_os.h"
-		#include <stdlib.h>
-    #include <string.h>
-    #include <stdio.h>
-#endif 
+
 	#define MAX(X,Y) (X)>(Y)?(Y):(X)  //限做大值
 	#define MIN(X,Y) (X)<(Y)?(Y):(X)  //限做小值
 	#define ABS(X)   (X)<0?(-X):(X)    //取绝对值
@@ -101,6 +86,8 @@
 	/* --这两个宏一定要一起用，缓存之后一定要释放 -- */
 	#define CACHE_ADDR(CACHES,ADDRS) 	(CACHES = ADDRS) //缓存地址
 	#define FREE_ADDR(CACHES) 	(CACHES = NULL)		//释放地址  
+	/* -------------- 宏 ----------------- */
+	#define	CYCLE_NUMERICAL(data,max) ((data+1)%max)
 /* -------------- 函数定义 ----------------- */
 	UART_HandleTypeDef* RecognizeUSARTType(UART_HandleTypeDef* huartx);
   CAN_HandleTypeDef* RecognizeCanType(CAN_HandleTypeDef* hcanx);

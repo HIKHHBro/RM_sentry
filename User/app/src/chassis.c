@@ -120,6 +120,8 @@ extern TIM_HandleTypeDef htim5;
 		chassis_t.pchassisEnconder_t = &chassisEnconder_t;
 		  if(EnconderInit(&chassisEnconder_t,RADIUS,ENCONDER_POLES) !=HAL_OK)
         while(1){}
+		/* ------ 超声波初始化 ------- */
+		HCSR04Init();
     /* -------- 底盘模块初始化判断 --------- */
       SET_BIT(chassis_t.status,INIT_OK);//初始化成功
 	}
@@ -131,7 +133,7 @@ extern TIM_HandleTypeDef htim5;
 	*/
 	void ChassisParseDate(uint16_t id,uint8_t *data)
 	{
-		
+		HCSR04RxMsg();//超声波数据接收
 		switch (id)
 		{
 			case WHEEL1_RX_ID:
@@ -168,6 +170,8 @@ extern TIM_HandleTypeDef htim5;
 	*/
 	void ChassisControl(void)
 	{
+   chassis_t.pwheel1_t->target = GetDistance(3);
+   chassis_t.pwheel2_t->target = GetDistance(4);
 		SET_BIT(chassis_t.status,RUNING_OK);
 	}
  /*
