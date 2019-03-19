@@ -60,11 +60,11 @@ extern osThreadId startGimbalTaskHandle;
  */
  void SystemSelfChecking(void)
  {
-   uint32_t temp1,temp2;
+   uint32_t temp1,temp2,temp3;
   /* -------- 各任务初始化判断 --------- */
   temp1 = GetRcStatus();
   temp2 = GetChassisStatus();
-  //temp3 = GetGimbalStatus();
+  temp3 = GetGimbalStatus();
   while((temp1&temp2&INIT_OK) != INIT_OK)//加云台
   {
       //添加警报机制

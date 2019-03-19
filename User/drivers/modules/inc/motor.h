@@ -32,7 +32,7 @@
 	#include "bsp_can.h" 
 	#include "counters.h" 
 /* =========================== common of begin =========================== */
-	int16_t RatiometricConversion(int16_t real, int16_t threshold, int16_t perce);
+	int16_t RatiometricConversion(int16_t real,int16_t threshold,int16_t perce,uint32_t status);
 	int16_t zeroArgument(int16_t real, int16_t threshold);
 /* =========================== common of end =========================== */
 /* =========================== maxion of begin =========================== */

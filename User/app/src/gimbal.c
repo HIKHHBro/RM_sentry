@@ -58,7 +58,6 @@
 		{
 			case RAMMER_RX_ID:
 				RM2006ParseData(gimbal_t.prammer_t,data);
-				gimbal_t.prammer_t->real_angle = RatiometricConversion(gimbal_t.prammer_t->real_angle,RAMMER_REDUCTION,M2006_THRESHOLD);
   #ifdef ANTI_CLOCK_WISE  //逆时针为正方向
         AntiRM2006ParseData(gimbal_t.prammer_t,data);
   #endif
@@ -90,9 +89,7 @@
 	*/
 	void GimbalControl(void)
 	{
-		if(gimbal_t.pRc_t->switch_right == 1)
-		SET_FRICTIONGEAR_SPEED(FRICTIONGEAR_SPEED);
-		
+
 //		int16_t pid_out = -500;
 //		rammer_t.target = 3*(DbusAntiShake(20,dbus->ch1)); //目标值
 //		rammer_t.error = rammer_t.target - rammer_t.real_speed;
@@ -163,4 +160,5 @@
 			osDelay(10);
 		}
 	}
+ 
 /*-----------------------------------file of end------------------------------*/

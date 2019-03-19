@@ -29,7 +29,6 @@
 #define PRINTFTASKSTATUS 
  extern UART_HandleTypeDef huart2;//串口1
  extern UART_HandleTypeDef huart7;
- extern TIM_HandleTypeDef htim10;
 extern TIM_HandleTypeDef htim2;
  uint32_t runtimeCounter;
 debugByKeilStruct pdebug_t;
@@ -50,7 +49,7 @@ void StartDebugByKeilTask(void const *argument);
   void DebugByKeilInit(void)
   {
     /* -------- 测量运行时间定时器 --------- */
-    HAL_TIM_Base_Start_IT(&htim10);
+//    HAL_TIM_Base_Start_IT(&htim10);
     /* -------- keil硬件仿真任务示任务 --------- */
      osThreadDef(debugByKeilTask, StartDebugByKeilTask, osPriorityHigh, 0,DEBUG_HEAP_SIZE);
      startDebugByKeilTaskHandle = osThreadCreate(osThread(debugByKeilTask), NULL); 

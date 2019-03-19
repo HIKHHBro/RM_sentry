@@ -36,13 +36,20 @@
 	* @param   real 真实值
 	* @param   threshold 一圈最大线数的阀值
 	* @param   perce //转换比例（减速前角度:减速后的角度 = x:1
+  * @param   uint32_t status 模块的状态
 	* @retval  int16_t 换算后的目标值
 	*/
-	int16_t RatiometricConversion(int16_t real,int16_t threshold,int16_t perce)
+	int16_t RatiometricConversion(int16_t real,int16_t threshold,int16_t perce,uint32_t status)
 	{
 		static int32_t last_real,tem=0;
 		static uint16_t  coefficient=0;
-		if (real - last_real < threshold)
+    if((status&INIT_OK) ==INIT_OK)
+    {
+      return ((int16_t)((float)real/((float)perce)));//换算成上面转一圈
+    }
+    else
+    {
+     if (real - last_real < threshold)
 		{
 			/*角度系数循环自增,下面转36圈归零系数,设置范围[0,perce] */
 			coefficient =(coefficient+1)%(perce);
@@ -54,6 +61,7 @@
 		last_real = real;//缓存现在值
 		tem = real + (s_max_motor_lines* coefficient); //转换总角度
 		return ((int16_t)((float)tem/((float)perce)));//换算成上面转一圈
+    }
 	}
 	/**
 	* @Data    2019-01-18 20:48

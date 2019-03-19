@@ -87,7 +87,7 @@
       }
      else if(rammer_t.real_current < -STUCK_BULLET_THRE)
      {
-       RammerShake();
+//       RammerShake();
      }
     if(stuct_count >= RAMMER_TIME)
       {
