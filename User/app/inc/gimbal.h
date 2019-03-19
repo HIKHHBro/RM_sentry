@@ -48,6 +48,17 @@ void GimbalControl(void);
  HAL_StatusTypeDef RxPCMsg(void);
  uint32_t GetGimbalStatus(void);
 gimbalStruct *RWGetgimbalStructAddr(void);
+	 void SetGimBalInitStatus(void);
+
+#define GIMBAL_CAL_ERROR(target,real) (CalculateError((target),(real),6000,(8192)))
+#define GET_RAMMER_ANGLE(_A_,_LAST_,_COE_)     (RatiometricConversion(\
+                                    _A_,\
+                                    M2006_THRESHOLD,\
+                                    RAMMER_REDUCTION,\
+                                    _LAST_,\
+                                    _COE_\
+                                  )\
+                              )
 #endif // __GIMBAL_H
 /*-----------------------------------file of end------------------------------*/
 

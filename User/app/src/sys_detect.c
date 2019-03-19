@@ -65,7 +65,7 @@ extern osThreadId startGimbalTaskHandle;
   temp1 = GetRcStatus();
   temp2 = GetChassisStatus();
   temp3 = GetGimbalStatus();
-  while((temp1&temp2&INIT_OK) != INIT_OK)//加云台
+  while((temp1&temp2&temp3&INIT_OK) != INIT_OK)//加云台
   {
       //添加警报机制
 //    temp1 = GetRcStatus();

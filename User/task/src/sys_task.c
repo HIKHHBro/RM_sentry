@@ -130,7 +130,6 @@ extern CAN_HandleTypeDef hcan1;
     const dbusStruct* pRc_t;
     pRc_t = GetRcStructAddr();
     GimbalStructInit(pRc_t); 
-		vTaskSuspend(startGimbalTaskHandle);
 		for (;;)
 		{  
 				GimbalControl();

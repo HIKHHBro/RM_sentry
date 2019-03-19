@@ -28,7 +28,12 @@
 	gimbalStruct gimbal_t;//云台结构体
 /* -------------- 任务句柄 ----------------- */
 		osThreadId startRammerTaskHandle; 
+/* -------------- 外部链接 ----------------- */
+		extern osThreadId startGimbalTaskHandle;
 /* ----------------- 任务钩子函数 -------------------- */
+
+		int16_t pid_out = 0;
+    int16_t taddd =0;
 	void StartRammerTask(void const *argument);
 	/**
 	* @Data    2019-01-27 17:09
@@ -42,6 +47,12 @@
     gimbal_t.prammer_t =RammerInit();
   /* ------ 开启摩擦轮 ------- */
 		BrushlessMotorInit();
+ 	/* ------ 设置初始化标志位 ------- */
+		SET_BIT(gimbal_t.status,INIT_OK);
+	/* ------ 挂起任务，等待初始化 ------- */
+		vTaskSuspend(startGimbalTaskHandle);
+	/* ------ 设置机器人初始化状态 ------- */
+		SetGimBalInitStatus();
  /* ------ 创建拨弹任务 ------- */
 	osThreadDef(startRammerTask,StartRammerTask,osPriorityNormal,0,RAMMER_HEAP_SIZE);
 	startRammerTaskHandle = osThreadCreate(osThread(startRammerTask),NULL);
@@ -58,6 +69,7 @@
 		{
 			case RAMMER_RX_ID:
 				RM2006ParseData(gimbal_t.prammer_t,data);
+      RatiometricConversion(gimbal_t.prammer_t->real_angle,8192,36,gimbal_t.status);
   #ifdef ANTI_CLOCK_WISE  //逆时针为正方向
         AntiRM2006ParseData(gimbal_t.prammer_t,data);
   #endif
@@ -79,7 +91,7 @@
 			default:
 				break;
 		}
-
+    SET_BIT(gimbal_t.status,RX_OK);
 	}
 /**
 	* @Data    2019-02-14 21:01
@@ -90,12 +102,14 @@
 	void GimbalControl(void)
 	{
 
-//		int16_t pid_out = -500;
 //		rammer_t.target = 3*(DbusAntiShake(20,dbus->ch1)); //目标值
-//		rammer_t.error = rammer_t.target - rammer_t.real_speed;
-//		pid_out = SpeedPid(&rammerInnerLoopPid_t,rammer_t.error);
-//		pid_out = MAX(pid_out,2000); //限做大值
-//	  pid_out = MIN(pid_out,-2000); //限做小值
+//    PostionPid();
+     gimbal_t.prammer_t->pspeedPid_t->error = GIMBAL_CAL_ERROR(taddd,gimbal_t.prammer_t->real_speed);
+		pid_out = SpeedPid(gimbal_t.prammer_t->pspeedPid_t,gimbal_t.prammer_t->pspeedPid_t->error);
+  	pid_out = MAX(pid_out,4000); //限做大值
+  pid_out = MIN(pid_out,-4000); //限做小值
+    GimbalCanTx(0,0,pid_out);
+
 //		GimbalCanTx(pid_out,0);
 	}
 /**
@@ -156,9 +170,44 @@
 	{
 		for(;;)
 		{
-
+      RammerControl();
 			osDelay(10);
 		}
 	}
- 
+ /**
+	 * @Data    2019-03-19 17:58
+	 * @brief   云台初始化状态设置
+	 * @param   void
+	 * @retval  void
+	 */
+	 void SetGimBalInitStatus(void)
+	 {
+		   gimbal_t.prammer_t->target =  gimbal_t.prammer_t->real_angle; //目标值
+			/* ------ 外环pid参数 ------- */
+				gimbal_t.prammer_t->ppostionPid_t->kp = 0;
+				gimbal_t.prammer_t->ppostionPid_t->kd = 0;
+				gimbal_t.prammer_t->ppostionPid_t->ki = 0;
+				gimbal_t.prammer_t->ppostionPid_t->error = 0;
+				gimbal_t.prammer_t->ppostionPid_t->last_error = 0;//上次误差
+				gimbal_t.prammer_t->ppostionPid_t->integral_er = 0;//误差积分
+				gimbal_t.prammer_t->ppostionPid_t->pout = 0;//p输出
+				gimbal_t.prammer_t->ppostionPid_t->iout = 0;//i输出
+				gimbal_t.prammer_t->ppostionPid_t->dout = 0;//k输出
+				gimbal_t.prammer_t->ppostionPid_t->pid_out = 0;//pid输出
+			/* ------ 内环pid参数 ------- */
+				gimbal_t.prammer_t->pspeedPid_t->kp = 2;
+				gimbal_t.prammer_t->pspeedPid_t->kd = 0.07;
+				gimbal_t.prammer_t->pspeedPid_t->ki = 0.01;
+				gimbal_t.prammer_t->pspeedPid_t->error = 0;
+				gimbal_t.prammer_t->pspeedPid_t->last_error = 0;//上次误差
+				gimbal_t.prammer_t->pspeedPid_t->before_last_error = 0;//上上次误差
+				gimbal_t.prammer_t->pspeedPid_t->integral_er = 0;//误差积分
+				gimbal_t.prammer_t->pspeedPid_t->pout = 0;//p输出
+				gimbal_t.prammer_t->pspeedPid_t->iout = 0;//i输出
+				gimbal_t.prammer_t->pspeedPid_t->dout = 0;//k输出
+				gimbal_t.prammer_t->pspeedPid_t->pid_out = 0;//pid输出
+        gimbal_t.prammer_t->pspeedPid_t->limiting=LIMIMT_CUT;
+     	/* ------ 设置启动标志位 ------- */  
+        SET_BIT(gimbal_t.status,START_OK);  
+	 }
 /*-----------------------------------file of end------------------------------*/

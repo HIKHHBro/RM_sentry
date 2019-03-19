@@ -132,10 +132,10 @@
 		if(sps==NULL)
 		 return 0;
 		sps->error = error;
-		if((ABS(sps->error)) < (ABS(sps->last_error)))
-			sps->last_error = sps->error;
-		if((ABS(sps->last_error)) < (ABS(sps->before_last_error)))
-			sps->before_last_error = sps->last_error;
+//		if((ABS(sps->error)) < (ABS(sps->last_error)))
+//			sps->last_error = sps->error;
+//		if((ABS(sps->last_error)) < (ABS(sps->before_last_error)))
+//			sps->before_last_error = sps->last_error;
 		sps->pout = sps->kp * (sps->error - sps->last_error);
 		sps->iout = sps->ki * sps->error;
 		sps->dout = sps->kd * (sps->error - 2*sps->last_error + \

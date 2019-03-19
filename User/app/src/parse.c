@@ -52,6 +52,7 @@ void ParseInit(void)
 //    taskENTER_CRITICAL();
 		ByleToMultibyte(&can1_rx[8],&can_id);
 		ChassisParseDate(can_id,can1_rx);
+    GimbalParseDate(can_id,can1_rx);
     DbusParseData(&dbus_t);//
 //        taskEXIT_CRITICAL();
 	}

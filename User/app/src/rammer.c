@@ -91,12 +91,12 @@
      }
     if(stuct_count >= RAMMER_TIME)
       {
-        rammer_t.real_angle = PCycleNumerical(rammer_t.real_angle);
+        rammer_t.target = PCycleNumerical( rammer_t.target);
         stuct_count =0;
       }
       else if(stuct_lock_count <= -LOCK_ROTOT_TIME)
       {
-        rammer_t.real_angle = MCycleNumerical(rammer_t.real_angle);
+        rammer_t.target = MCycleNumerical( rammer_t.target);
         stuct_lock_count =0;
       }
 

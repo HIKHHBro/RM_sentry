@@ -43,7 +43,7 @@
 	{
 		static int32_t last_real,tem=0;
 		static uint16_t  coefficient=0;
-    if((status&INIT_OK) ==INIT_OK)
+    if((status&START_OK) !=START_OK)
     {
       return ((int16_t)((float)real/((float)perce)));//换算成上面转一圈
     }
@@ -140,8 +140,8 @@
 		int16_t tem_angle = 0;
 		RM6623->real_current = ((int16_t)(data[4] << 8) | data[5]);
 		tem_angle = ((int16_t)(data[0] << 8) | data[1]);
-		tem_angle = RatiometricConversion(tem_angle, RM6623->thresholds,\
-																								 RM6623->Percentage);
+//		tem_angle = RatiometricConversion(tem_angle, RM6623->thresholds,\
+//																								 RM6623->Percentage);
 		RM6623->real_angle = zeroArgument(tem_angle, RM6623->thresholds);
 	}
 
