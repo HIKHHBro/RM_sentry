@@ -49,6 +49,7 @@ void GimbalControl(void);
  uint32_t GetGimbalStatus(void);
 gimbalStruct *RWGetgimbalStructAddr(void);
 	 void SetGimBalInitStatus(void);
+  int16_t RammerPidControl(void);
 
 #define GIMBAL_CAL_ERROR(target,real) (CalculateError((target),(real),6000,(8192)))
 #define GET_RAMMER_ANGLE(_A_,_LAST_,_COE_)     (RatiometricConversion(\

@@ -74,11 +74,11 @@
 	*/
 	void RammerControl(void)
 	{
-     if((rammer_t.real_current < STUCK_BULLET_THRE) &&(rammer_t.real_current >=0))
+     if((rammer_t.real_current < STUCK_BULLET_THRE) &&(rammer_t.real_current > -1))
       {
         if(stuct_count < RAMMER_TIME)//500ms
         stuct_count ++;
-        stuct_lock_count =0;
+        stuct_lock_count =-1;
       } 
      else if(rammer_t.real_current > STUCK_BULLET_THRE )
       {
@@ -94,10 +94,10 @@
         rammer_t.target = PCycleNumerical( rammer_t.target);
         stuct_count =0;
       }
-      else if(stuct_lock_count <= -LOCK_ROTOT_TIME)
+      else if(stuct_lock_count <= (-LOCK_ROTOT_TIME))
       {
         rammer_t.target = MCycleNumerical( rammer_t.target);
-        stuct_lock_count =0;
+        stuct_lock_count =-1;
       }
 
 //		int16_t pid_out = -500;

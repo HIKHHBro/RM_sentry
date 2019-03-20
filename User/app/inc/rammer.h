@@ -31,8 +31,8 @@
 	#define RAMMER_ANGER_COE         (0.0012F)//拨弹电机角度转换系数
 	#define RAMMER_REDUCTION         (36U)
 	#define STUCK_BULLET_THRE        (3000U)//卡弹电流阀值
-	#define RAMMER_TIME             (100U)  // 500ms 单位10ms 拨弹间隔
-  #define LOCK_ROTOT_TIME         (300U) //1s 堵转时间
+	#define RAMMER_TIME             (200U)  // 1s 拨弹间隔  时间基数为10ms
+  #define LOCK_ROTOT_TIME         (3 * RAMMER_TIME) //3s 堵转时间
   #define CLOCK_WISE             //顺时针为正
   #define PARTITION_NUMB           (1365U)//每格转的值PARTITION_NUMB = M2006_POLES/x
   #define SHAKE_VAULE               (600U)//抖动范围
@@ -42,7 +42,7 @@
 	void RammerControl(void);
 		int16_t PCycleNumerical(int16_t data);
 		int16_t MCycleNumerical(int16_t data);
-      void RammerShake(void);
+    void RammerShake(void);
 #endif	// __RAMMER_H
 /*-----------------------------------file of end------------------------------*/
 

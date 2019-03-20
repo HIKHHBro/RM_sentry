@@ -102,13 +102,8 @@
 	void GimbalControl(void)
 	{
 
-//		rammer_t.target = 3*(DbusAntiShake(20,dbus->ch1)); //目标值
-//    PostionPid();
-     gimbal_t.prammer_t->pspeedPid_t->error = GIMBAL_CAL_ERROR(taddd,gimbal_t.prammer_t->real_speed);
-		pid_out = SpeedPid(gimbal_t.prammer_t->pspeedPid_t,gimbal_t.prammer_t->pspeedPid_t->error);
-  	pid_out = MAX(pid_out,4000); //限做大值
-  pid_out = MIN(pid_out,-4000); //限做小值
-    GimbalCanTx(0,0,pid_out);
+    pid_out = RammerPidControl();
+    GimbalCanTx(0,0 ,pid_out);
 
 //		GimbalCanTx(pid_out,0);
 	}
@@ -210,4 +205,21 @@
      	/* ------ 设置启动标志位 ------- */  
         SET_BIT(gimbal_t.status,START_OK);  
 	 }
+  /**
+  * @Data    2019-03-19 23:28
+  * @brief   拨弹PID控制
+  * @param   void
+  * @retval  void
+  */
+  int16_t RammerPidControl(void)
+  {
+    int16_t temp_pid_out;
+    gimbal_t.prammer_t->ppostionPid_t->error = GIMBAL_CAL_ERROR(0,gimbal_t.prammer_t->real_angle);
+    gimbal_t.prammer_t->ppostionPid_t->pid_out = PostionPid(gimbal_t.prammer_t->ppostionPid_t,gimbal_t.prammer_t->ppostionPid_t->error);
+    gimbal_t.prammer_t->pspeedPid_t->error = GIMBAL_CAL_ERROR(gimbal_t.prammer_t->ppostionPid_t->pid_out,gimbal_t.prammer_t->real_speed);
+		gimbal_t.prammer_t->pspeedPid_t->pid_out = SpeedPid(gimbal_t.prammer_t->pspeedPid_t,gimbal_t.prammer_t->pspeedPid_t->error);
+  	temp_pid_out = MAX(gimbal_t.prammer_t->pspeedPid_t->pid_out,4000); //限做大值
+    temp_pid_out = MIN(gimbal_t.prammer_t->pspeedPid_t->pid_out,-4000); //限做小值
+    return temp_pid_out;
+  }
 /*-----------------------------------file of end------------------------------*/
