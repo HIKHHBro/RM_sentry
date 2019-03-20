@@ -42,25 +42,26 @@
 	int16_t RatiometricConversion(int16_t real,int16_t threshold,int16_t perce,uint32_t status)
 	{
 		static int32_t last_real,tem=0;
-		static uint16_t  coefficient=0;
-    if((status&START_OK) !=START_OK)
+		static int16_t  coefficient=0;
+    if((status&START_OK) ==START_OK)
     {
-      return ((int16_t)((float)real/((float)perce)));//换算成上面转一圈
+       if ((real - last_real) < -threshold)
+      {
+        /*角度系数循环自增,下面转36圈归零系数,设置范围[0,perce] */
+        coefficient =(coefficient+1)%(perce);
+      }
+     else if((real -last_real) > threshold)
+      {
+        coefficient = (perce-1)-((((perce-1) - coefficient)+1)%(perce));
+      }
+      last_real = real;//缓存现在值
+      tem = real + (s_max_motor_lines* coefficient); //转换总角度
+      return ((int16_t)((float)tem/((float)perce)));//换算成上面转一圈
     }
     else
     {
-     if (real - last_real < threshold)
-		{
-			/*角度系数循环自增,下面转36圈归零系数,设置范围[0,perce] */
-			coefficient =(coefficient+1)%(perce);
-		}
-		else if(last_real - real < threshold)
-		{
-			coefficient = (perce-1)-((((perce-1) - coefficient)+1)%(perce));
-		}
-		last_real = real;//缓存现在值
-		tem = real + (s_max_motor_lines* coefficient); //转换总角度
-		return ((int16_t)((float)tem/((float)perce)));//换算成上面转一圈
+      last_real = real;//缓存现在值
+      return ((int16_t)((float)real/((float)perce)));//换算成上面转一圈
     }
 	}
 	/**
@@ -171,7 +172,7 @@
 		*/
 		void RM2006ParseData(M2006Struct *M2006,uint8_t *data)
 		{
-			M2006->real_angle  = ((int16_t)(data[0]<<8)|data[1]);
+			M2006->tem_angle  = ((int16_t)(data[0]<<8)|data[1]);
     	M2006->real_speed = ((int16_t)(data[2]<<8)|data[3]);
 			M2006->real_current=((int16_t)(data[4]<<8)|data[5]);
 		}

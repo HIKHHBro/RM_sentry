@@ -31,9 +31,11 @@
 /* -------------- 外部链接 ----------------- */
 		extern osThreadId startGimbalTaskHandle;
 /* ----------------- 任务钩子函数 -------------------- */
-
+/* ----------------- 临时变量 -------------------- */
 		int16_t pid_out = 0;
     int16_t taddd =0;
+    int16_t xianfuweizhi =3000;
+    int16_t xianfusudu = 5000;//STUCK_BULLET_THRE
 	void StartRammerTask(void const *argument);
 	/**
 	* @Data    2019-01-27 17:09
@@ -44,6 +46,7 @@
 	void GimbalStructInit(const dbusStruct* pRc_t)
 	{
 		gimbal_t.pRc_t = pRc_t;
+    gimbal_t.status = 0;
     gimbal_t.prammer_t =RammerInit();
   /* ------ 开启摩擦轮 ------- */
 		BrushlessMotorInit();
@@ -69,7 +72,7 @@
 		{
 			case RAMMER_RX_ID:
 				RM2006ParseData(gimbal_t.prammer_t,data);
-      RatiometricConversion(gimbal_t.prammer_t->real_angle,8192,36,gimbal_t.status);
+     gimbal_t.prammer_t->real_angle = RatiometricConversion(gimbal_t.prammer_t->tem_angle,7000,36,gimbal_t.status);
   #ifdef ANTI_CLOCK_WISE  //逆时针为正方向
         AntiRM2006ParseData(gimbal_t.prammer_t,data);
   #endif
@@ -103,7 +106,7 @@
 	{
 
     pid_out = RammerPidControl();
-    GimbalCanTx(0,0 ,pid_out);
+    GimbalCanTx(0,0,pid_out);
 
 //		GimbalCanTx(pid_out,0);
 	}
@@ -179,7 +182,7 @@
 	 {
 		   gimbal_t.prammer_t->target =  gimbal_t.prammer_t->real_angle; //目标值
 			/* ------ 外环pid参数 ------- */
-				gimbal_t.prammer_t->ppostionPid_t->kp = 0;
+				gimbal_t.prammer_t->ppostionPid_t->kp = 4;
 				gimbal_t.prammer_t->ppostionPid_t->kd = 0;
 				gimbal_t.prammer_t->ppostionPid_t->ki = 0;
 				gimbal_t.prammer_t->ppostionPid_t->error = 0;
@@ -190,7 +193,7 @@
 				gimbal_t.prammer_t->ppostionPid_t->dout = 0;//k输出
 				gimbal_t.prammer_t->ppostionPid_t->pid_out = 0;//pid输出
 			/* ------ 内环pid参数 ------- */
-				gimbal_t.prammer_t->pspeedPid_t->kp = 2;
+				gimbal_t.prammer_t->pspeedPid_t->kp = 0.7;
 				gimbal_t.prammer_t->pspeedPid_t->kd = 0.07;
 				gimbal_t.prammer_t->pspeedPid_t->ki = 0.01;
 				gimbal_t.prammer_t->pspeedPid_t->error = 0;
@@ -214,12 +217,15 @@
   int16_t RammerPidControl(void)
   {
     int16_t temp_pid_out;
-    gimbal_t.prammer_t->ppostionPid_t->error = GIMBAL_CAL_ERROR(0,gimbal_t.prammer_t->real_angle);
+    gimbal_t.prammer_t->ppostionPid_t->error = GIMBAL_CAL_ERROR(gimbal_t.prammer_t->target,gimbal_t.prammer_t->real_angle);
     gimbal_t.prammer_t->ppostionPid_t->pid_out = PostionPid(gimbal_t.prammer_t->ppostionPid_t,gimbal_t.prammer_t->ppostionPid_t->error);
+    gimbal_t.prammer_t->ppostionPid_t->pid_out = MAX(gimbal_t.prammer_t->ppostionPid_t->pid_out,xianfuweizhi); //限做大值
+    gimbal_t.prammer_t->ppostionPid_t->pid_out = MIN(gimbal_t.prammer_t->ppostionPid_t->pid_out,-xianfuweizhi); //限做小值
+    
     gimbal_t.prammer_t->pspeedPid_t->error = GIMBAL_CAL_ERROR(gimbal_t.prammer_t->ppostionPid_t->pid_out,gimbal_t.prammer_t->real_speed);
 		gimbal_t.prammer_t->pspeedPid_t->pid_out = SpeedPid(gimbal_t.prammer_t->pspeedPid_t,gimbal_t.prammer_t->pspeedPid_t->error);
-  	temp_pid_out = MAX(gimbal_t.prammer_t->pspeedPid_t->pid_out,4000); //限做大值
-    temp_pid_out = MIN(gimbal_t.prammer_t->pspeedPid_t->pid_out,-4000); //限做小值
+  	temp_pid_out = MAX(gimbal_t.prammer_t->pspeedPid_t->pid_out,xianfusudu); //限做大值
+    temp_pid_out = MIN(gimbal_t.prammer_t->pspeedPid_t->pid_out,-xianfusudu); //限做小值
     return temp_pid_out;
   }
 /*-----------------------------------file of end------------------------------*/

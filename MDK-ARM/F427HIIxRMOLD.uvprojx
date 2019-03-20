@@ -184,6 +184,7 @@
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
             <RvdsVP>2</RvdsVP>
+            <RvdsMve>0</RvdsMve>
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -311,7 +312,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>4</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -777,14 +778,14 @@
               <FilePath>..\User\app\src\parse.c</FilePath>
             </File>
             <File>
-              <FileName>rammer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\app\src\rammer.c</FilePath>
-            </File>
-            <File>
               <FileName>send_message.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\app\src\send_message.c</FilePath>
+            </File>
+            <File>
+              <FileName>rammer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\app\src\rammer.c</FilePath>
             </File>
             <File>
               <FileName>sys_detect.c</FileName>

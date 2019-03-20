@@ -28,8 +28,13 @@
 	postionPidStruct rammerOuterLoopPid_t;//拨弹电机外环pid
 	speedPidStruct rammerInnerLoopPid_t;//拨弹电机内环pid
 /* -------------- 变量声明 ----------------- */
-	static int16_t stuct_lock_count = 0;
-  static int16_t stuct_count = 0;
+	 int16_t stuct_lock_count = 0;
+   int16_t stuct_count = 0;
+  int16_t currer = 0;
+  
+  
+  	int16_t RAMMER_TIME    =         50 ;// 1s 拨弹间隔  时间基数为10ms
+  int16_t LOCK_ROTOT_TIME ; // =     3 * RAMMER_TIME; //3s 堵转时间
 	M2006Struct* RammerInit(void)
 	{
 				/* ------ 拨弹电机初始化 ------- */
@@ -64,6 +69,7 @@
 				rammerInnerLoopPid_t.iout = 0;//i输出
 				rammerInnerLoopPid_t.dout = 0;//k输出
 				rammerInnerLoopPid_t.pid_out = 0;//pid输出
+        
 				return &rammer_t;
 	}
 	/**
@@ -74,7 +80,8 @@
 	*/
 	void RammerControl(void)
 	{
-     if((rammer_t.real_current < STUCK_BULLET_THRE) &&(rammer_t.real_current > -1))
+    LOCK_ROTOT_TIME  =     3 * RAMMER_TIME; //3s 堵转时间
+     if((rammer_t.real_current < STUCK_BULLET_THRE) &&((rammer_t.real_current > (-STUCK_BULLET_THRE))||(rammer_t.real_current == (-STUCK_BULLET_THRE))))
       {
         if(stuct_count < RAMMER_TIME)//500ms
         stuct_count ++;
@@ -116,7 +123,7 @@
 		*/
 		int16_t PCycleNumerical(int16_t data)
 		{
-			return ((data+1000) % M2006_POLES);
+			return ((data+PARTITION_NUMB) % M2006_POLES);
 		}
 	/**
 		* @Data    2019-03-16 19:43
@@ -126,7 +133,7 @@
 		*/
 		int16_t MCycleNumerical(int16_t data)
 		{
-			return (M2006_POLES - ((M2006_POLES-data) + 2000) % M2006_POLES);
+			return ((M2006_POLES-1) - (((M2006_POLES-1)-data) + PARTITION_NUMB) % M2006_POLES);
 		}
   // /**
   // * @Data    2019-03-17 00:49
