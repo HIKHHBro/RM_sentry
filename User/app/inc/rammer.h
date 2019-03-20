@@ -27,6 +27,7 @@
 #define __RAMMER_H 
 #include "motor.h"
 #include "DJI_dbus.h"  
+#include "pc_data.h" 
  	#define RAMMER_RX_ID	 					  0x207//拨弹电机接收id
 	#define RAMMER_ANGER_COE         (0.0012F)//拨弹电机角度转换系数
 	#define RAMMER_REDUCTION         (36)

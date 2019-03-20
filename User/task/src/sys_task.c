@@ -98,7 +98,6 @@ extern CAN_HandleTypeDef hcan1;
 	void StartParseTask(void const *argument)
 	{
     ParseInit();
-		vTaskSuspend(startParseTaskHandle);
 		for(;;)
 		{
 				ParseData();
@@ -133,11 +132,13 @@ extern CAN_HandleTypeDef hcan1;
 	void StartGimbalTask(void const *argument)
 	{
     const dbusStruct* pRc_t;
-    pRc_t = GetRcStructAddr();
-    GimbalStructInit(pRc_t); 
+    const pcDataStruct* pPc_t;
+    pRc_t = GetRcStructAddr();//遥控数据
+    pPc_t = GetPcDataStructAddr();//小电脑数据
+    GimbalStructInit(pRc_t,pPc_t); 
 		for (;;)
 		{  
-				GimbalControl();
+				GimbalAutoControl();
 				osDelay(5);
 		}
 	}

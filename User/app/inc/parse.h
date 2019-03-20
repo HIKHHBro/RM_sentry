@@ -27,10 +27,13 @@
 #define __PARSE_H 
  #include "chassis.h"
  #include "gimbal.h"  
+ #include "pc_data.h" 
  void ParseInit(void);
  void ParseData(void);
  	const dbusStruct* GetRcStructAddr(void);
-	 	uint32_t GetRcStatus(void);
+	uint32_t GetRcStatus(void);
+	uint32_t GetPcDataStatus(void);
+  const pcDataStruct* GetPcDataStructAddr(void);
 #endif	// __PARSE_H
 /*-----------------------------------file of end------------------------------*/
 

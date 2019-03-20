@@ -26,7 +26,9 @@
 #include "parse.h" 
 /* -------------- 结构体 ----------------- */
  dbusStruct dbus_t; //大疆遥控
+ pcDataStruct pc_t;//小电脑数据
 /* -------------- 外部链接 ----------------- */
+extern osThreadId startParseTaskHandle;
 extern UART_HandleTypeDef huart1;//串口1
 extern uint8_t can1_rx[12];
 	/**
@@ -38,6 +40,9 @@ extern uint8_t can1_rx[12];
 void ParseInit(void)
 {
   DJIDbusInit(&dbus_t,&huart1);//大疆遥控初始化
+  PcDataRxInit(&pc_t);//小电脑数据接收初始化
+  /* -------- 挂起等待任务系统初始化 --------- */
+	vTaskSuspend(startParseTaskHandle);
 }
 
 	/**
@@ -54,6 +59,7 @@ void ParseInit(void)
 		ChassisParseDate(can_id,can1_rx);
     GimbalParseDate(can_id,can1_rx);
     DbusParseData(&dbus_t);//
+    Pc_ParseData(&pc_t);//小电脑数据解析
 //        taskEXIT_CRITICAL();
 	}
  /*
@@ -76,6 +82,26 @@ void ParseInit(void)
 	{
 		return (dbus_t.status);
 	}
+  /**
+	* @Data    2019-03-13 15:30
+	* @brief   
+	* @param   void
+	* @retval  void
+	*/
+	uint32_t GetPcDataStatus(void)
+	{
+		return (pc_t.status);
+	}
+  /**
+  * @Data    2019-03-21 01:09
+  * @brief   获取小电脑构体地址
+  * @param   void
+  * @retval  void
+  */
+  const pcDataStruct* GetPcDataStructAddr(void)
+  {
+    return (&pc_t);
+  }
 /*-----------------------------------file of end------------------------------*/
 
 

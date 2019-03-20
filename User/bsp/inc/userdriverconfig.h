@@ -78,6 +78,7 @@
     /* ----------------- 编码器宏定义接口 -------------------- */
     extern UART_HandleTypeDef huart1;//串口1
     extern UART_HandleTypeDef huart2;//串口2
+    extern UART_HandleTypeDef huart6;
     extern CAN_HandleTypeDef hcan1;
     extern TIM_HandleTypeDef htim5;
     extern TIM_HandleTypeDef htim2;
@@ -91,6 +92,7 @@
 		 #define FRICTIONGEAR_1_START_V (10U)//摩擦轮1启动型号
 		 #define FRICTIONGEAR_2_START_V (10U)//摩擦轮2启动型号
 		 #define GIMBAL_CAN (&hcan1)    //云台电机的can
+     #define PC_DATA_UASRT (&huart6)//小电脑数据接收串口
   #elif BINGE_BOARD
     #define LED_1 GPIO_PIN_9
     #define LED_2 GPIO_PIN_10

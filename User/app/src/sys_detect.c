@@ -61,13 +61,14 @@ extern	osThreadId startTxTaskHandle;//发送任务
  */
  void SystemSelfChecking(void)
  {
-   uint32_t temp1,temp2,temp3,temp4;
+   uint32_t temp1,temp2,temp3,temp4,temp5;
   /* -------- 各任务初始化判断 --------- */
   temp1 = GetRcStatus();
   temp2 = GetChassisStatus();
   temp3 = GetGimbalStatus();
   temp4	= GetUserTxStatus();
-  while((temp1&temp2&temp3&temp4&INIT_OK) != INIT_OK)//加云台
+  temp5 = GetPcDataStatus();
+  while((temp1 & temp2 & temp3 & temp4 & temp5 & INIT_OK) != INIT_OK)//加云台
   {
       //添加警报机制
 //    temp1 = GetRcStatus();

@@ -41,17 +41,25 @@ typedef struct gimbalStruct
   RM6623Struct *pYaw_t;
     RM6623Struct *pPitch_t;
 	const dbusStruct* pRc_t;
+  const pcDataStruct* pPc_t;
 } gimbalStruct;
-	void GimbalStructInit(const dbusStruct* pRc_t);
+	void GimbalStructInit(const dbusStruct* pRc_t,const pcDataStruct* pPc_t);
 void GimbalParseDate(uint32_t id,uint8_t *data);
 HAL_StatusTypeDef GimbalCanTx(int16_t yaw,int16_t pitch,int16_t rammer);
-void GimbalControl(void);
+void GimbalAutoControl(void);
  HAL_StatusTypeDef RxPCMsg(void);
  uint32_t GetGimbalStatus(void);
 gimbalStruct *RWGetgimbalStructAddr(void);
 	 void SetGimBalInitStatus(void);
-  int16_t RammerPidControl(void);
+  int16_t RammerPidControl(int16_t rammer);
 RM6623Struct* YawInit(void);
+  int16_t PitchPidControl(int16_t pitch);
+  int16_t YawPidControl(int16_t yaw);
+
+
+
+
+
 #define GIMBAL_CAL_ERROR(target,real) (CalculateError((target),(real),6000,(8192)))
 #define GET_RAMMER_ANGLE(_A_,_LAST_,_COE_)     (RatiometricConversion(\
                                     _A_,\
