@@ -17,20 +17,16 @@
 
 ## 库说明
 
-STM32CubeF4 Firmware Package V1.24.0
-### 基于此库问题说明
-1. RM新板和旧版can无法发送，发送邮箱总是满
-2. 旧版遥控数据有问题，会出现失真，怀疑是乱码
-
+STM32CubeF4 Firmware Package V1.19.0
 ## 系统支持
-
 FreeRTOS
-
+#### 系统用户接口
+ userFreeRTOSConfig.h
 ## 开发板支持
 
 RM新板,RM旧板,彬哥第一代板（f427IIHx）
 
-## BSP层接口支持(baseclass.h)
+## BSP层接口支持(userdriverconfig.h)
 外设|引脚宏接口|端口接口
 -|-|-
 LED|LED_x(x=1,2,3…)|LED_GPIO
