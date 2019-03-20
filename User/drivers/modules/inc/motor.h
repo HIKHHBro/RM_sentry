@@ -32,7 +32,7 @@
 	#include "bsp_can.h" 
 	#include "counters.h" 
 /* =========================== common of begin =========================== */
-	int16_t RatiometricConversion(int16_t real,int16_t threshold,int16_t perce,uint32_t status);
+	int16_t RatiometricConversion(int16_t real,int16_t threshold,int16_t perce,int32_t* last_real,int16_t* coefficient,uint32_t status);
 	int16_t zeroArgument(int16_t real, int16_t threshold);
 /* =========================== common of end =========================== */
 /* =========================== maxion of begin =========================== */
@@ -149,6 +149,8 @@
 		int16_t Percentage;//转换比例（减速前角度:减速后的角度 = x:1
 		int16_t thresholds; //电机反转阀值
     int16_t error;//当前误差
+    int32_t last_real;
+    int16_t coefficient;
     postionPidStruct *ppostionPid_t;
 		speedPidStruct *pspeedPid_t;
 	} RM6623Struct;
@@ -191,6 +193,8 @@ void RM3508ParseData(RM3508Struct *RM3508,uint8_t *data);
     int16_t error;//当前误差
 		int16_t real_speed;//真实速度
     int16_t tem_speed;//真实速度
+    int32_t last_real;
+    int16_t coefficient;
     postionPidStruct *ppostionPid_t;
 		speedPidStruct *pspeedPid_t;
 	}M2006Struct;

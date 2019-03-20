@@ -33,6 +33,7 @@ extern	osThreadId startParseTaskHandle;
 //extern	osThreadId startLedTaskHandle;
 extern	osThreadId startChassisTaskHandle;
 extern osThreadId startGimbalTaskHandle;
+extern	osThreadId startTxTaskHandle;//发送任务
 /* ----------------- 私有函数 -------------------- */ 
 //  static void DetectControlMode(void);
   static void RcCalibratorMode(sysDetectStruct* sds);
@@ -60,22 +61,26 @@ extern osThreadId startGimbalTaskHandle;
  */
  void SystemSelfChecking(void)
  {
-   uint32_t temp1,temp2,temp3;
+   uint32_t temp1,temp2,temp3,temp4;
   /* -------- 各任务初始化判断 --------- */
   temp1 = GetRcStatus();
   temp2 = GetChassisStatus();
   temp3 = GetGimbalStatus();
-  while((temp1&temp2&temp3&INIT_OK) != INIT_OK)//加云台
+  temp4	= GetUserTxStatus();
+  while((temp1&temp2&temp3&temp4&INIT_OK) != INIT_OK)//加云台
   {
       //添加警报机制
 //    temp1 = GetRcStatus();
 //    temp2 = GetChassisStatus();
 //    //temp3 = GetGimbalStatus();
 //    //增加等待时间超时进入报错模式，蜂鸣器长响，
-//      osDelay(5);
+      osDelay(5);
   }
   /* -------- 重启解析任务 --------- */
   vTaskResume(startParseTaskHandle);
+	  /* -------- 重启发送任务 --------- */
+  vTaskResume(startTxTaskHandle);
+
 //  temp1 = GetRcStatus();
 //  temp2 = GetChassisStatus();
 //  //temp3 = GetGimbalStatus();

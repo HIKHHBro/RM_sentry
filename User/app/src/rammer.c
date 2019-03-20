@@ -44,6 +44,8 @@
 		  rammer_t.real_angle = 0;//真实角度
 		  rammer_t.real_speed = 0;//真实速度
 			rammer_t.error = 0;
+    rammer_t.coefficient =0;
+    rammer_t.last_real =0;
 			/* ------ 外环pid参数 ------- */
 				rammer_t.ppostionPid_t = &rammerOuterLoopPid_t;
 				rammerOuterLoopPid_t.kp = 0;

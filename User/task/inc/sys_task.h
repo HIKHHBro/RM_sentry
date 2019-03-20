@@ -28,6 +28,7 @@
 #include "DJI_dbus.h"
 #include "leds_tip.h" 
 #include "sys_detect.h" 
+#include "user_tx.h"
 void SysInitCreate(void);
 #endif	// __SYS_TASK_H
 /*----------------------------------file of end-------------------------------*/

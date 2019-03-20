@@ -24,19 +24,29 @@
 	|-----------------------------declaration of end-----------------------------|
  **/
 #include "gimbal.h" 
+/* -------------- 私有宏 ----------------- */
+	#define QUEUE_LEN      5U//深度为5
+	#define  QUEUE_SIZE    8U//长度为5;
 /* -------------- 结构体声明 ----------------- */
 	gimbalStruct gimbal_t;//云台结构体
+  RM6623Struct yaw_t;//yaw轴电机
+	postionPidStruct yawOuterLoopPid_t;//yaw 电机外环pid
+	speedPidStruct yawInnerLoopPid_t;//yaw 电机内环pid
 /* -------------- 任务句柄 ----------------- */
 		osThreadId startRammerTaskHandle; 
 /* -------------- 外部链接 ----------------- */
 		extern osThreadId startGimbalTaskHandle;
+/* -------------- 发送队列 ----------------- */
+  xQueueHandle gimbal_queue;
 /* ----------------- 任务钩子函数 -------------------- */
+	void StartRammerTask(void const *argument);
+/* -------------- 私有函数 ----------------- */
+	static void GimbalTx(int16_t yaw,int16_t pitch,int16_t rammer);
 /* ----------------- 临时变量 -------------------- */
 		int16_t pid_out = 0;
     int16_t taddd =0;
     int16_t xianfuweizhi =3000;
     int16_t xianfusudu = 5000;//STUCK_BULLET_THRE
-	void StartRammerTask(void const *argument);
 	/**
 	* @Data    2019-01-27 17:09
 	* @brief   云台结构体初始化
@@ -48,8 +58,11 @@
 		gimbal_t.pRc_t = pRc_t;
     gimbal_t.status = 0;
     gimbal_t.prammer_t =RammerInit();
+		gimbal_t.pYaw_t = YawInit();
   /* ------ 开启摩擦轮 ------- */
 		BrushlessMotorInit();
+  /* ------ 创建云台发送队列 ------- */
+	  gimbal_queue	= xQueueCreate(QUEUE_LEN,QUEUE_SIZE);//一定要在用之前创建队列
  	/* ------ 设置初始化标志位 ------- */
 		SET_BIT(gimbal_t.status,INIT_OK);
 	/* ------ 挂起任务，等待初始化 ------- */
@@ -72,18 +85,14 @@
 		{
 			case RAMMER_RX_ID:
 				RM2006ParseData(gimbal_t.prammer_t,data);
-     gimbal_t.prammer_t->real_angle = RatiometricConversion(gimbal_t.prammer_t->tem_angle,7000,36,gimbal_t.status);
+     gimbal_t.prammer_t->real_angle = RatiometricConversion(gimbal_t.prammer_t->tem_angle,7000,36,&(gimbal_t.prammer_t->last_real),&(gimbal_t.prammer_t->coefficient),gimbal_t.status);
   #ifdef ANTI_CLOCK_WISE  //逆时针为正方向
         AntiRM2006ParseData(gimbal_t.prammer_t,data);
   #endif
 				break;
 			case YAW_RX_ID:
-				// RM6623ParseData(gimbal_t.pYaw_t,data);
-        // /* -------- 比例转换 --------- */
-        // gimbal_t.pYaw_t->real_angle = RatiometricConversion  \
-        // (gimbal_t.pYaw_t->real_angle,gimbal_t.pYaw_t->thresholds,gimbal_t.pYaw_t->Percentage);
-        /* -------- 过零处理 --------- */
-        //  zeroArgument(gimbal_t.pYaw_t->real_angle,gimbal_t.pYaw_t->thresholds); 
+				RM6623ParseData(gimbal_t.pYaw_t,data);
+				gimbal_t.pYaw_t->real_angle = RatiometricConversion(gimbal_t.pYaw_t->tem_angle,7000,5,&(gimbal_t.pYaw_t->last_real),&(gimbal_t.pYaw_t->coefficient),gimbal_t.status);
 				break;
 			case PITCH_RX_ID:
 				// RM6623ParseData(gimbal_t.pPitch_t,data);
@@ -106,9 +115,7 @@
 	{
 
     pid_out = RammerPidControl();
-    GimbalCanTx(0,0,pid_out);
-
-//		GimbalCanTx(pid_out,0);
+		GimbalTx(0,0,pid_out);
 	}
 /**
 	* @Data    2019-02-15 15:10
@@ -180,6 +187,7 @@
 	 */
 	 void SetGimBalInitStatus(void)
 	 {
+		/* -------------- 拨弹参数设置 ----------------- */
 		   gimbal_t.prammer_t->target =  gimbal_t.prammer_t->real_angle; //目标值
 			/* ------ 外环pid参数 ------- */
 				gimbal_t.prammer_t->ppostionPid_t->kp = 4;
@@ -204,7 +212,33 @@
 				gimbal_t.prammer_t->pspeedPid_t->iout = 0;//i输出
 				gimbal_t.prammer_t->pspeedPid_t->dout = 0;//k输出
 				gimbal_t.prammer_t->pspeedPid_t->pid_out = 0;//pid输出
-        gimbal_t.prammer_t->pspeedPid_t->limiting=LIMIMT_CUT;
+        gimbal_t.prammer_t->pspeedPid_t->limiting=RAMMER_LIMIMT_CUT;
+		/* -------------- yaw轴电机参数设置 ----------------- */
+		gimbal_t.pYaw_t->target = gimbal_t.pYaw_t->real_angle;//设置启动目标值
+						/* ------ 外环pid参数 ------- */
+				gimbal_t.pYaw_t->ppostionPid_t->kp = 0;
+				gimbal_t.pYaw_t->ppostionPid_t->kd = 0;
+				gimbal_t.pYaw_t->ppostionPid_t->ki = 0;
+				gimbal_t.pYaw_t->ppostionPid_t->error = 0;
+				gimbal_t.pYaw_t->ppostionPid_t->last_error = 0;//上次误差
+				gimbal_t.pYaw_t->ppostionPid_t->integral_er = 0;//误差积分
+				gimbal_t.pYaw_t->ppostionPid_t->pout = 0;//p输出
+				gimbal_t.pYaw_t->ppostionPid_t->iout = 0;//i输出
+				gimbal_t.pYaw_t->ppostionPid_t->dout = 0;//k输出
+				gimbal_t.pYaw_t->ppostionPid_t->pid_out = 0;//pid输出
+			/* ------ 内环pid参数 ------- */
+				gimbal_t.pYaw_t->pspeedPid_t->kp = 0;
+				gimbal_t.pYaw_t->pspeedPid_t->kd = 0;
+				gimbal_t.pYaw_t->pspeedPid_t->ki = 0;
+				gimbal_t.pYaw_t->pspeedPid_t->error = 0;
+				gimbal_t.pYaw_t->pspeedPid_t->last_error = 0;//上次误差
+				gimbal_t.pYaw_t->pspeedPid_t->before_last_error = 0;//上上次误差
+				gimbal_t.pYaw_t->pspeedPid_t->integral_er = 0;//误差积分
+				gimbal_t.pYaw_t->pspeedPid_t->pout = 0;//p输出
+				gimbal_t.pYaw_t->pspeedPid_t->iout = 0;//i输出
+				gimbal_t.pYaw_t->pspeedPid_t->dout = 0;//k输出
+				gimbal_t.pYaw_t->pspeedPid_t->pid_out = 0;//pid输出
+        gimbal_t.pYaw_t->pspeedPid_t->limiting=YAW_LIMIMT_CUT;
      	/* ------ 设置启动标志位 ------- */  
         SET_BIT(gimbal_t.status,START_OK);  
 	 }
@@ -228,4 +262,45 @@
     temp_pid_out = MIN(gimbal_t.prammer_t->pspeedPid_t->pid_out,-xianfusudu); //限做小值
     return temp_pid_out;
   }
+/**
+	* @Data    2019-03-20 20:27
+	* @brief   云台队列发送函数
+	* @param   void
+	* @retval  void
+	*/
+	void GimbalTx(int16_t yaw,int16_t pitch,int16_t rammer)
+	{
+		int16_t data[5];
+		data[0] = yaw;
+		data[1] = pitch;
+		data[2] = rammer;
+		xQueueSendToBack(gimbal_queue,data,0);
+	}
+/**
+	* @Data    2019-03-20 21:27
+	* @brief   yaw轴电机初始化
+	* @param   void
+	* @retval  void
+	*/
+	RM6623Struct* YawInit(void)
+	{
+	yaw_t.id = YAW_RX_ID ;//电机can的 ip
+	yaw_t.target = 0 ;		 //目标值
+	yaw_t.tem_target = 0 ;//临时目标值
+	yaw_t.real_current = 0 ; //真实电流
+	yaw_t.real_angle = 0 ;//真实角度
+	yaw_t.tem_angle = 0 ;//临时角度
+	yaw_t.zero = 0 ;			 //电机零点
+	yaw_t.Percentage = 0 ;//转换比例（减速前角度:减速后的角度 = x:1
+	yaw_t.thresholds = 0 ; //电机反转阀值
+  yaw_t.error = 0 ;//当前误差
+  yaw_t.last_real = 0 ;
+  yaw_t.coefficient = 0 ;
+		/* ------ 外环pid地址 ------- */
+  yaw_t.ppostionPid_t = &yawOuterLoopPid_t ;
+			/* ------ 内环pid地址 ------- */
+	yaw_t.pspeedPid_t = &yawInnerLoopPid_t ;
+
+			return &yaw_t;
+	}
 /*-----------------------------------file of end------------------------------*/

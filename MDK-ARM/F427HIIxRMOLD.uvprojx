@@ -792,6 +792,26 @@
               <FileType>1</FileType>
               <FilePath>..\User\app\src\sys_detect.c</FilePath>
             </File>
+            <File>
+              <FileName>user_tx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\app\src\user_tx.c</FilePath>
+            </File>
+            <File>
+              <FileName>user_tx.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\app\inc\user_tx.h</FilePath>
+            </File>
+            <File>
+              <FileName>sys_selfchecking.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\app\src\sys_selfchecking.c</FilePath>
+            </File>
+            <File>
+              <FileName>sys_selfchecking.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\app\inc\sys_selfchecking.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

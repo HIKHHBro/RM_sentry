@@ -35,12 +35,14 @@ extern CAN_HandleTypeDef hcan1;
 //	osThreadId startLedTaskHandle;
 	osThreadId startChassisTaskHandle;
 	osThreadId startGimbalTaskHandle;
+	osThreadId startTxTaskHandle;//发送任务
 /* ----------------- 任务钩子函数 -------------------- */
 	void StartSysInitTask(void const *argument);
 	void StartParseTask(void const *argument);
 //	void StartLedTask(void const *argument);
 	void StartChassisTask(void const *argument);
 	void StartGimbalTask(void const *argument);
+	void StartTxTask(void const *argument);
 /* ----------------- 任务信号量 -------------------- */
 //static uint8_t parse_task_status = 0;//数据解析任务工作状态标志
 /**
@@ -77,8 +79,11 @@ extern CAN_HandleTypeDef hcan1;
 			/* ------ 云台任务 ------- */
 			osThreadDef(gimbalTask, StartGimbalTask, osPriorityNormal, 0, GIMBAL_HEAP_SIZE);
       startGimbalTaskHandle = osThreadCreate(osThread(gimbalTask), NULL);
+      /* ------ 数据发送任务任务 ------- */
+			osThreadDef(txTask, StartTxTask, osPriorityNormal, 0, TX_HEAP_SIZE);
+      startTxTaskHandle = osThreadCreate(osThread(txTask), NULL);
+       ProgressBarLed(LED_GPIO, 500);
       /* -------- 系统模块自检 --------- */
-        ProgressBarLed(LED_GPIO, 500);
         SystemSelfChecking();
 			/* -------- 删除系统任务 --------- */
 			vTaskDelete(startSysInitTaskHandle);
@@ -133,6 +138,23 @@ extern CAN_HandleTypeDef hcan1;
 		for (;;)
 		{  
 				GimbalControl();
+				osDelay(5);
+		}
+	}
+/**
+	* @Data    2019-03-20 20:01
+	* @brief   用户数据发送任务
+	* @param   void
+	* @retval  void
+	*/
+	void StartTxTask(void const *argument)
+	{
+		const dbusStruct* pRc_t;
+    pRc_t = GetRcStructAddr();
+    UserTxInit(pRc_t);
+		for (;;)
+		{ 
+			UserTxControl();
 				osDelay(5);
 		}
 	}

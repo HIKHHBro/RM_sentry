@@ -51,6 +51,7 @@
  * 化位| can1 | CAN2 | UASRT1 | UASRT3 | UASRT6 | UART7 |   保留    | 
  * -----------------------------------------------------------------
  */
+	#define MOD_READ                    0x00000000U//准备就绪
 	#define INIT_OK                     0x00000001U//初始化成功
   #define RUNING_OK                   0x00000002U//正常运行
   #define RX_OK                       0x00000004U//接受正常

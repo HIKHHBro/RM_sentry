@@ -36,7 +36,7 @@
   #define CLOCK_WISE             //顺时针为正
   #define PARTITION_NUMB           (1366)//每格转的值PARTITION_NUMB = M2006_POLES/x
   #define SHAKE_VAULE               (600)//抖动范围
-  #define LIMIMT_CUT                 (3000)//电流限幅
+  #define RAMMER_LIMIMT_CUT                 (3000)//电流限幅
   // #define ANTI_CLOCK_WISE	        //逆时针为正方向
 	M2006Struct* RammerInit(void);
 	void RammerControl(void);

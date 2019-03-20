@@ -27,6 +27,7 @@
 #define __SYS_DETECT_H 
 #include "parse.h" 
 #include "leds_tip.h" 
+#include "user_tx.h" 
 typedef struct sysDetectStruct 
 {
   chassisStruct* psys_chassis_t;

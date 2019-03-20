@@ -39,28 +39,27 @@
   * @param   uint32_t status 模块的状态
 	* @retval  int16_t 换算后的目标值
 	*/
-	int16_t RatiometricConversion(int16_t real,int16_t threshold,int16_t perce,uint32_t status)
+	int16_t RatiometricConversion(int16_t real,int16_t threshold,int16_t perce,int32_t* last_real,int16_t* coefficient,uint32_t status)
 	{
-		static int32_t last_real,tem=0;
-		static int16_t  coefficient=0;
+		int32_t tem=0;
     if((status&START_OK) ==START_OK)
     {
-       if ((real - last_real) < -threshold)
+       if ((real - *last_real) < -threshold)
       {
         /*角度系数循环自增,下面转36圈归零系数,设置范围[0,perce] */
-        coefficient =(coefficient+1)%(perce);
+        *coefficient =(*coefficient+1)%(perce);
       }
-     else if((real -last_real) > threshold)
+     else if((real -*last_real) > threshold)
       {
-        coefficient = (perce-1)-((((perce-1) - coefficient)+1)%(perce));
+        *coefficient = (perce-1)-((((perce-1) - *coefficient)+1)%(perce));
       }
-      last_real = real;//缓存现在值
-      tem = real + (s_max_motor_lines* coefficient); //转换总角度
+      *last_real = real;//缓存现在值
+      tem = real + (s_max_motor_lines* (*coefficient)); //转换总角度
       return ((int16_t)((float)tem/((float)perce)));//换算成上面转一圈
     }
     else
     {
-      last_real = real;//缓存现在值
+      *last_real = real;//缓存现在值
       return ((int16_t)((float)real/((float)perce)));//换算成上面转一圈
     }
 	}
@@ -138,12 +137,8 @@
 		*/
 	void RM6623ParseData(RM6623Struct*RM6623,uint8_t *data)
 	{
-		int16_t tem_angle = 0;
 		RM6623->real_current = ((int16_t)(data[4] << 8) | data[5]);
-		tem_angle = ((int16_t)(data[0] << 8) | data[1]);
-//		tem_angle = RatiometricConversion(tem_angle, RM6623->thresholds,\
-//																								 RM6623->Percentage);
-		RM6623->real_angle = zeroArgument(tem_angle, RM6623->thresholds);
+		RM6623->tem_angle = ((int16_t)(data[0] << 8) | data[1]);
 	}
 
 /* ============================= RM6623 of end ============================== */

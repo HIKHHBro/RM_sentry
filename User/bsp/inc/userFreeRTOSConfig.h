@@ -35,6 +35,7 @@
    #define SYS_DETEC_HEAP_SIZE   1024//系统自检和数据校准任务
    #define DEBUG_HEAP_SIZE       1024//硬件仿真任务提示任务
 	 #define RAMMER_HEAP_SIZE      512//拨弹电机任务
+	 #define TX_HEAP_SIZE          256//用户发送任务
 	/* -------------- 队列堆栈大小设置 ----------------- */   
 	/* ----------------- 任务内存大小设置-------------------- */
    #define TOTAL_HEAP_SIZE 								\
@@ -46,7 +47,8 @@
 						 LED_TIP_HEAP_SIZE + 					\
 						 DEBUG_HEAP_SIZE + 						\
 						 SYS_DETEC_HEAP_SIZE+					\
-						 RAMMER_HEAP_SIZE           \
+						 RAMMER_HEAP_SIZE +          \
+						 TX_HEAP_SIZE                \
 																			 ) * 7))
 		
 

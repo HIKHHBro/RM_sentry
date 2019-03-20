@@ -33,6 +33,7 @@
 	#define PITCH_RX_ID 							0x206//PITCH轴电机接收 id
 	#define GIMBAL_CAN_TX_ID 					0x1ff//云台电机发送id
 	#define FRICTIONGEAR_SPEED 				(17)	//摩擦轮速度
+ #define YAW_LIMIMT_CUT                 (5000)//电流限幅
 typedef struct gimbalStruct
 {
   uint32_t status;
@@ -50,7 +51,7 @@ void GimbalControl(void);
 gimbalStruct *RWGetgimbalStructAddr(void);
 	 void SetGimBalInitStatus(void);
   int16_t RammerPidControl(void);
-
+RM6623Struct* YawInit(void);
 #define GIMBAL_CAL_ERROR(target,real) (CalculateError((target),(real),6000,(8192)))
 #define GET_RAMMER_ANGLE(_A_,_LAST_,_COE_)     (RatiometricConversion(\
                                     _A_,\
