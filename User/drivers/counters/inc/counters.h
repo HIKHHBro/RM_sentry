@@ -54,6 +54,7 @@
 		int16_t error;
 		int16_t last_error;//上次误差
 		int16_t integral_er;//误差积分
+    int16_t integral_limint;
 		float pout;//p输出
 		float iout;//i输出
 		float dout;//k输出

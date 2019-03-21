@@ -25,7 +25,7 @@
  **/
 #include "pc_data.h" 
 #define PC_CHECK_BYTE (0x55)//校验位
-uint8_t pc_databuff[8];
+uint8_t pc_databuff[11];
     /**
     * @Data    2019-03-21 00:22
     * @brief   小电脑数据接收初始化
@@ -41,7 +41,7 @@ uint8_t pc_databuff[8];
       }
       pc->pitch_target_angle = 0;
       pc->yaw_target_angle = 0;
-      if(UsartAndDMAInit(PC_DATA_UASRT,8,ENABLE) != HAL_OK)
+      if(UsartAndDMAInit(PC_DATA_UASRT,11,ENABLE) != HAL_OK)
       {
         //报错机制
         return HAL_ERROR;

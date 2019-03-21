@@ -80,7 +80,7 @@ extern CAN_HandleTypeDef hcan1;
 			osThreadDef(gimbalTask, StartGimbalTask, osPriorityNormal, 0, GIMBAL_HEAP_SIZE);
       startGimbalTaskHandle = osThreadCreate(osThread(gimbalTask), NULL);
       /* ------ 数据发送任务任务 ------- */
-			osThreadDef(txTask, StartTxTask, osPriorityNormal, 0, TX_HEAP_SIZE);
+			osThreadDef(txTask, StartTxTask, osPriorityHigh, 0, TX_HEAP_SIZE);
       startTxTaskHandle = osThreadCreate(osThread(txTask), NULL);
        ProgressBarLed(LED_GPIO, 500);
       /* -------- 系统模块自检 --------- */
@@ -116,7 +116,6 @@ extern CAN_HandleTypeDef hcan1;
     const dbusStruct* pRc_t;
     pRc_t = GetRcStructAddr();
     ChassisInit(&hcan1,pRc_t);
-		vTaskSuspend(startChassisTaskHandle);
 		for (;;)
 		{
         ChassisControl();
@@ -156,7 +155,7 @@ extern CAN_HandleTypeDef hcan1;
 		for (;;)
 		{ 
 			UserTxControl();
-				osDelay(5);
+				osDelay(4);
 		}
 	}
 /*----------------------------------file of end-------------------------------*/

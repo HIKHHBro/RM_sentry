@@ -211,6 +211,30 @@ void RM3508ParseData(RM3508Struct *RM3508,uint8_t *data);
 						__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,__V_);  \
 					} while(0U)//设置摩擦轮速度
 /* =========================== PWM控制的电机 of end ========================== */
+/* =========================== M6020 of begin =========================== */
+	typedef struct GM6020Struct
+{
+		uint16_t id;//电机can的 ip
+		int16_t target;		 //目标值
+		int16_t tem_target;//临时目标值
+		int16_t real_current; //真实电流
+		int16_t real_angle;//真实角度
+		int16_t tem_angle;//临时角度
+		int16_t zero;			 //电机零点
+		int16_t Percentage;//转换比例（减速前角度:减速后的角度 = x:1
+		int16_t thresholds; //电机反转阀值
+    int16_t error;//当前误差
+		int16_t real_speed;//真实速度
+    int16_t tem_speed;//真实速度
+    int32_t last_real;
+    int16_t coefficient;
+    postionPidStruct *ppostionPid_t;
+		speedPidStruct *pspeedPid_t;
+}GM6020Struct;
+ void GM6020ParseData(GM6020Struct* GM6020,uint8_t *data);
+/* =========================== M6020 of end =========================== */
+
+
 #endif	// __MOTOR_H
 /*---------------------------------file of end--------------------------------*/
 

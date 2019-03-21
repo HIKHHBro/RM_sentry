@@ -113,6 +113,8 @@
 	{
 	  pps->error	= error;
 		pps->integral_er += pps->error;
+    pps->integral_er = MAX(pps->integral_er,pps->integral_limint);
+    pps->integral_er = MIN(pps->integral_er,(-pps->integral_limint));
 		pps->pout = pps->kp * pps->error;
 		pps->iout = pps->ki * pps->integral_er;
 		pps->dout = pps->kd * (pps->error - pps->last_error);

@@ -53,12 +53,14 @@ userTxStruct userTx_t;
 		{
 			if(userTx_t.rc->switch_left ==1)
 			{
-				int16_t data[8]={0};
+				uint8_t data[8]={0};
 				portBASE_TYPE xStatus;
 			 xStatus = xQueueReceive(gimbal_queue,data,0);
 				if(xStatus == pdPASS)
 				{
-						GimbalCanTx(data[0],data[1],data[2]);
+           taskENTER_CRITICAL();
+					CanTxMsg(GIMBAL_CAN,GIMBAL_CAN_TX_ID,data);
+            taskEXIT_CRITICAL();
 				}
 			}
    else

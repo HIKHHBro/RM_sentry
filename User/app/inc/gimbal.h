@@ -34,12 +34,14 @@
 	#define GIMBAL_CAN_TX_ID 					0x1ff//云台电机发送id
 	#define FRICTIONGEAR_SPEED 				(17)	//摩擦轮速度
  #define YAW_LIMIMT_CUT                 (5000)//电流限幅
+  #define PITCH_LIMIMT_CUT                 (29000)//电流限幅
+  #define LINT_LIMINT                    (5000)
 typedef struct gimbalStruct
 {
   uint32_t status;
 	M2006Struct *prammer_t;
   RM6623Struct *pYaw_t;
-    RM6623Struct *pPitch_t;
+  GM6020Struct *pPitch_t;
 	const dbusStruct* pRc_t;
   const pcDataStruct* pPc_t;
 } gimbalStruct;
@@ -55,6 +57,7 @@ gimbalStruct *RWGetgimbalStructAddr(void);
 RM6623Struct* YawInit(void);
   int16_t PitchPidControl(int16_t pitch);
   int16_t YawPidControl(int16_t yaw);
+		GM6020Struct* PitchInit(void);
 
 
 

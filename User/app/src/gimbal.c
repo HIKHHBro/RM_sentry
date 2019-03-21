@@ -32,6 +32,9 @@
   RM6623Struct yaw_t;//yaw轴电机
 	postionPidStruct yawOuterLoopPid_t;//yaw 电机外环pid
 	speedPidStruct yawInnerLoopPid_t;//yaw 电机内环pid
+	GM6020Struct pitch_t;//pitch轴电机
+	postionPidStruct pitchOuterLoopPid_t;//pitch 电机外环pid
+	speedPidStruct pitchInnerLoopPid_t;//pitch 电机内环pid
 /* -------------- 任务句柄 ----------------- */
 		osThreadId startRammerTaskHandle; 
 /* -------------- 外部链接 ----------------- */
@@ -41,12 +44,13 @@
 /* ----------------- 任务钩子函数 -------------------- */
 	void StartRammerTask(void const *argument);
 /* -------------- 私有函数 ----------------- */
-	static void GimbalTx(int16_t yaw,int16_t pitch,int16_t rammer);
 /* ----------------- 临时变量 -------------------- */
     int16_t taddd =0;
     int16_t xianfuweizhi =3000;
     int16_t xianfusudu = 5000;//STUCK_BULLET_THRE
     int16_t yawxianfu = 5000;
+		int16_t pitchxianfu =10000;
+		int16_t sudupitchxianfu =10000;
 	/**
 	* @Data    2019-01-27 17:09
 	* @brief   云台结构体初始化
@@ -60,6 +64,7 @@
     gimbal_t.status = MOD_READ;
     gimbal_t.prammer_t =RammerInit();
 		gimbal_t.pYaw_t = YawInit();
+		gimbal_t.pPitch_t = PitchInit();
   /* ------ 开启摩擦轮 ------- */
 		BrushlessMotorInit();
   /* ------ 创建云台发送队列 ------- */
@@ -96,9 +101,7 @@
 				gimbal_t.pYaw_t->real_angle = RatiometricConversion(gimbal_t.pYaw_t->tem_angle,7000,5,&(gimbal_t.pYaw_t->last_real),&(gimbal_t.pYaw_t->coefficient),gimbal_t.status);
 				break;
 			case PITCH_RX_ID:
-				// RM6623ParseData(gimbal_t.pPitch_t,data);
-        /* -------- 过零处理 --------- */
-        //  zeroArgument(gimbal_t.pPitch_t->real_angle,gimbal_t.pPitch_t->thresholds); 
+        GM6020ParseData(gimbal_t.pPitch_t,data);
 				break;
 		
 			default:
@@ -112,13 +115,28 @@
 	* @param   void
 	* @retval  void
 	*/
+  int16_t i = 0;
+  float iii = 0.1;
 	void GimbalAutoControl(void)
 	{
-		int16_t yaw,pitch,rammer;
+		int16_t yaw=0;
+    int16_t pitch=0;
+    int16_t rammer=0;
+    i +=(int16_t)(gimbal_t.pRc_t->ch1 * iii);
+        if(i>8191)
+        {
+          i = i-8192;
+        }
+        else if(i<0)
+        {
+          i = 8192 + i;
+        }
+        gimbal_t.pYaw_t->target = i;
     rammer = RammerPidControl(gimbal_t.prammer_t->target);
-    yaw = YawPidControl(gimbal_t.pPc_t->yaw_target_angle);
-    
-		GimbalTx(yaw,0,rammer);
+    yaw = YawPidControl(gimbal_t.pYaw_t->target);
+
+    pitch = PitchPidControl(gimbal_t.pPitch_t->target);
+    GimbalCanTx(yaw,pitch,rammer);
 	}
 /**
 	* @Data    2019-02-15 15:10
@@ -128,14 +146,16 @@
 	*/
 	HAL_StatusTypeDef GimbalCanTx(int16_t yaw,int16_t pitch,int16_t rammer)
 	{
-		uint8_t s[8]={0};
-    s[0] = (uint8_t)(yaw>>8);
+		uint8_t s[8];
+    memset(s,0,8);
+    s[0] = (uint8_t)(yaw>>8) & 0xFF;
     s[1] = (uint8_t)yaw;
-    s[2] = (uint8_t)(pitch>>8);
+    s[2] = (uint8_t)(pitch>>8) & 0xFF;
     s[3] = (uint8_t)pitch;
-		s[4] = (uint8_t)(rammer>>8);
+		s[4] = (uint8_t)(rammer>>8) & 0xFF;
 		s[5] = (uint8_t)rammer;
-		return(CanTxMsg(GIMBAL_CAN,GIMBAL_CAN_TX_ID,s));
+   	xQueueSendToBack(gimbal_queue,s,0);
+		return HAL_OK;
 	}
   /**
   * @Data    2019-03-15 23:14
@@ -231,6 +251,33 @@
 				gimbal_t.pYaw_t->pspeedPid_t->dout = 0;//k输出
 				gimbal_t.pYaw_t->pspeedPid_t->pid_out = 0;//pid输出
         gimbal_t.pYaw_t->pspeedPid_t->limiting=YAW_LIMIMT_CUT;
+		/* -------------- pitch轴 ----------------- */
+				gimbal_t.pPitch_t->target = gimbal_t.pPitch_t->real_angle;//设置启动目标值
+						/* ------ 外环pid参数 ------- */
+				gimbal_t.pPitch_t->ppostionPid_t->kp = 0;
+				gimbal_t.pPitch_t->ppostionPid_t->kd = 0;
+				gimbal_t.pPitch_t->ppostionPid_t->ki = 0;
+				gimbal_t.pPitch_t->ppostionPid_t->error = 0;
+				gimbal_t.pPitch_t->ppostionPid_t->last_error = 0;//上次误差
+				gimbal_t.pPitch_t->ppostionPid_t->integral_er = 0;//误差积分
+				gimbal_t.pPitch_t->ppostionPid_t->pout = 0;//p输出
+				gimbal_t.pPitch_t->ppostionPid_t->iout = 0;//i输出
+				gimbal_t.pPitch_t->ppostionPid_t->dout = 0;//k输出
+				gimbal_t.pPitch_t->ppostionPid_t->pid_out = 0;//pid输出
+        gimbal_t.pPitch_t->ppostionPid_t->integral_limint = LINT_LIMINT;//积分限幅
+			/* ------ 内环pid参数 ------- */
+				gimbal_t.pPitch_t->pspeedPid_t->kp = 9;
+				gimbal_t.pPitch_t->pspeedPid_t->kd = 30;
+				gimbal_t.pPitch_t->pspeedPid_t->ki = 0.4;
+				gimbal_t.pPitch_t->pspeedPid_t->error = 0;
+				gimbal_t.pPitch_t->pspeedPid_t->last_error = 0;//上次误差
+				gimbal_t.pPitch_t->pspeedPid_t->before_last_error = 0;//上上次误差
+				gimbal_t.pPitch_t->pspeedPid_t->integral_er = 0;//误差积分
+				gimbal_t.pPitch_t->pspeedPid_t->pout = 0;//p输出
+				gimbal_t.pPitch_t->pspeedPid_t->iout = 0;//i输出
+				gimbal_t.pPitch_t->pspeedPid_t->dout = 0;//k输出
+				gimbal_t.pPitch_t->pspeedPid_t->pid_out = 0;//pid输出
+        gimbal_t.pPitch_t->pspeedPid_t->limiting=PITCH_LIMIMT_CUT;
      	/* ------ 设置启动标志位 ------- */  
         SET_BIT(gimbal_t.status,START_OK);  
 	 }
@@ -266,8 +313,8 @@
     int16_t temp_pid_out;
     gimbal_t.pYaw_t->ppostionPid_t->error = GIMBAL_CAL_ERROR(yaw,gimbal_t.pYaw_t->real_angle);
     gimbal_t.pYaw_t->ppostionPid_t->pid_out = PostionPid(gimbal_t.pYaw_t->ppostionPid_t,gimbal_t.pYaw_t->ppostionPid_t->error);
-    gimbal_t.pYaw_t->ppostionPid_t->pid_out = MAX(gimbal_t.pYaw_t->ppostionPid_t->pid_out,yawxianfu);
-    gimbal_t.pYaw_t->ppostionPid_t->pid_out = MIN( gimbal_t.pYaw_t->ppostionPid_t->pid_out,-yawxianfu);
+    temp_pid_out = MAX(gimbal_t.pYaw_t->ppostionPid_t->pid_out,yawxianfu);
+    temp_pid_out = MIN( gimbal_t.pYaw_t->ppostionPid_t->pid_out,-yawxianfu);
     return temp_pid_out;
   }
   /**
@@ -276,25 +323,21 @@
   * @param   void
   * @retval  void
   */
-  int16_t PitchPidControl(int16_t yaw)
+  int16_t PitchPidControl(int16_t pitch)
   {
     int16_t temp_pid_out;
+       /* -------- 外环 --------- */
+    gimbal_t.pPitch_t->ppostionPid_t->error = GIMBAL_CAL_ERROR(pitch,gimbal_t.pPitch_t->real_angle);
+    gimbal_t.pPitch_t->ppostionPid_t->pid_out = PostionPid(gimbal_t.pPitch_t->ppostionPid_t,gimbal_t.pPitch_t->ppostionPid_t->error);
+    temp_pid_out = MAX(gimbal_t.pPitch_t->ppostionPid_t->pid_out,pitchxianfu);
+    temp_pid_out = MIN( gimbal_t.pPitch_t->ppostionPid_t->pid_out,-pitchxianfu);
+//       /* -------- 内环 --------- */
+//    gimbal_t.pPitch_t->pspeedPid_t->error = GIMBAL_CAL_ERROR(gimbal_t.pPitch_t->ppostionPid_t->pid_out,gimbal_t.pPitch_t->real_speed);
+//		gimbal_t.pPitch_t->pspeedPid_t->pid_out = SpeedPid(gimbal_t.pPitch_t->pspeedPid_t,gimbal_t.pPitch_t->pspeedPid_t->error);
+//  	temp_pid_out = MAX(gimbal_t.pPitch_t->pspeedPid_t->pid_out,sudupitchxianfu); //限做大值
+//    temp_pid_out = MIN(gimbal_t.pPitch_t->pspeedPid_t->pid_out,-sudupitchxianfu); //限做小值
     return temp_pid_out;
   }
-/**
-	* @Data    2019-03-20 20:27
-	* @brief   云台队列发送函数
-	* @param   void
-	* @retval  void
-	*/
-	void GimbalTx(int16_t yaw,int16_t pitch,int16_t rammer)
-	{
-		int16_t data[5];
-		data[0] = yaw;
-		data[1] = pitch;
-		data[2] = rammer;
-		xQueueSendToBack(gimbal_queue,data,0);
-	}
 /**
 	* @Data    2019-03-20 21:27
 	* @brief   yaw轴电机初始化
@@ -321,5 +364,32 @@
 	yaw_t.pspeedPid_t = &yawInnerLoopPid_t ;
 
 			return &yaw_t;
+	}
+	/**
+	* @Data    2019-03-20 21:27
+	* @brief   pitch轴电机初始化
+	* @param   void
+	* @retval  void
+	*/
+	GM6020Struct* PitchInit(void)
+	{
+	pitch_t.id = YAW_RX_ID ;//电机can的 ip
+	pitch_t.target = 0 ;		 //目标值
+	pitch_t.tem_target = 0 ;//临时目标值
+	pitch_t.real_current = 0 ; //真实电流
+	pitch_t.real_angle = 0 ;//真实角度
+	pitch_t.tem_angle = 0 ;//临时角度
+	pitch_t.zero = 0 ;			 //电机零点
+	pitch_t.Percentage = 0 ;//转换比例（减速前角度:减速后的角度 = x:1
+	pitch_t.thresholds = 0 ; //电机反转阀值
+  pitch_t.error = 0 ;//当前误差
+  pitch_t.last_real = 0 ;
+  pitch_t.coefficient = 0 ;
+		/* ------ 外环pid地址 ------- */
+  pitch_t.ppostionPid_t = &pitchOuterLoopPid_t ;
+			/* ------ 内环pid地址 ------- */
+	pitch_t.pspeedPid_t = &pitchInnerLoopPid_t ;
+
+			return &pitch_t;
 	}
 /*-----------------------------------file of end------------------------------*/

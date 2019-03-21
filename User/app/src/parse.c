@@ -53,14 +53,16 @@ void ParseInit(void)
 	*/
 	void ParseData(void)
 	{
-		uint32_t can_id = 0;
+//		uint32_t can_id = 0;
 //    taskENTER_CRITICAL();
-		ByleToMultibyte(&can1_rx[8],&can_id);
-		ChassisParseDate(can_id,can1_rx);
-    GimbalParseDate(can_id,can1_rx);
-    DbusParseData(&dbus_t);//
+//		ByleToMultibyte(&can1_rx[8],&can_id);
+//		ChassisParseDate(can_id,can1_rx);
+//    GimbalParseDate(can_id,can1_rx);
+//    taskEXIT_CRITICAL();
+        DbusParseData(&dbus_t);//
     Pc_ParseData(&pc_t);//小电脑数据解析
-//        taskEXIT_CRITICAL();
+    		HCSR04RxMsg();//超声波数据接收
+
 	}
  /*
 	* @Data    2019-02-24 11:59
@@ -101,6 +103,12 @@ void ParseInit(void)
   const pcDataStruct* GetPcDataStructAddr(void)
   {
     return (&pc_t);
+  }
+void can_rx(uint32_t id,uint8_t *data)
+  {
+    
+    ChassisParseDate(id,data);
+    GimbalParseDate(id,data);
   }
 /*-----------------------------------file of end------------------------------*/
 

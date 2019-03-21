@@ -26,8 +26,9 @@
 #include "chassis.h"
 /* -------------- 外部链接 ----------------- */
 extern TIM_HandleTypeDef htim5;
+extern	osThreadId startChassisTaskHandle;
 /* -------------- 静态变量 ----------------- */
-	static chassisStruct chassis_t;
+	 chassisStruct chassis_t;
     static RM3508Struct wheel1_t;         //轮子1
       static speedPidStruct wheel1Speed_t;
     static RM3508Struct wheel2_t;         //轮子2
@@ -124,6 +125,7 @@ extern TIM_HandleTypeDef htim5;
 		HCSR04Init();
     /* -------- 底盘模块初始化判断 --------- */
       SET_BIT(chassis_t.status,INIT_OK);//初始化成功
+          		vTaskSuspend(startChassisTaskHandle);
 	}
 /**
 	* @Data    2019-01-28 11:40
@@ -133,7 +135,6 @@ extern TIM_HandleTypeDef htim5;
 	*/
 	void ChassisParseDate(uint16_t id,uint8_t *data)
 	{
-		HCSR04RxMsg();//超声波数据接收
 		switch (id)
 		{
 			case WHEEL1_RX_ID:

@@ -176,9 +176,10 @@ HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
 		canDataStrcut *addr;
 	  addr = GetCanAddr(hcan); //获取相应用户can结构体地址
 		HAL_CAN_GetRxMessage(hcan,CAN_RX_FIFO0,&addr->rxMsg,addr->rxdata);
+    can_rx(addr->rxMsg.StdId,addr->rxdata);
 //待解决can高速中断造成队列满之后卡死现象
-		MultibyteToByle(addr->rxMsg.StdId,&can1_rx[8]);
-		memcpy(&can1_rx,&addr->rxdata,8);
+//		MultibyteToByle(addr->rxMsg.StdId,&can1_rx[8]);
+//		memcpy(&can1_rx,&addr->rxdata,8);
 //		xQueueOverwriteFromISR(addr->can_queue,addr->queue_data,0);
 	}
 /**
@@ -236,6 +237,11 @@ HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
    return(HAL_CAN_AddTxMessage(hcanx,&addr->txMsg,message,\
                                 (uint32_t*)CAN_TX_MAILBOX0));
 
+}
+ 
+__weak void can_rx(uint32_t id,uint8_t *data)
+{
+  
 }
 /*-----------------------------------file of end------------------------------*/
 

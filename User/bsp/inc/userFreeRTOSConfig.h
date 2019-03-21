@@ -28,14 +28,14 @@
 #define __USERFREERTOSCONFIG_H 
 	/* ----------------- 任务堆栈大小设置 -------------------- */
    #define SYS_INIT_HEAP_SIZE    512//系统初始任务
-   #define PARSE_HEAP_SIZE       256//数据解析任务
+   #define PARSE_HEAP_SIZE       1024//数据解析任务
    #define CHASSIS_HEAP_SIZE     512//底盘任务
    #define GIMBAL_HEAP_SIZE      512//云台任务
    #define LED_TIP_HEAP_SIZE     512//led提示任务
    #define SYS_DETEC_HEAP_SIZE   1024//系统自检和数据校准任务
    #define DEBUG_HEAP_SIZE       1024//硬件仿真任务提示任务
 	 #define RAMMER_HEAP_SIZE      512//拨弹电机任务
-	 #define TX_HEAP_SIZE          256//用户发送任务
+	 #define TX_HEAP_SIZE          512//用户发送任务
 	/* -------------- 队列堆栈大小设置 ----------------- */   
 	/* ----------------- 任务内存大小设置-------------------- */
    #define TOTAL_HEAP_SIZE 								\

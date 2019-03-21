@@ -33,7 +33,7 @@
   int16_t currer = 0;
   
   
-  	int16_t RAMMER_TIME    =         50 ;// 1s 拨弹间隔  时间基数为10ms
+  	int16_t RAMMER_TIME    =         100 ;// 1s 拨弹间隔  时间基数为10ms
   int16_t LOCK_ROTOT_TIME ; // =     3 * RAMMER_TIME; //3s 堵转时间
 	M2006Struct* RammerInit(void)
 	{

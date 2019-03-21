@@ -202,8 +202,9 @@ HAL_StatusTypeDef AllocateUsartxSpace(UART_HandleTypeDef *huartx)
 xStatus = xQueueReceive(addr->usart_queue, pvBuffer, 0);
 				if(pdFAIL != xStatus)
 				{
-					return HAL_ERROR;
+						return HAL_OK;
 				}
-		return HAL_OK;
+        	return HAL_ERROR;
+
 	}
 /*-----------------------------------file of end------------------------------*/
