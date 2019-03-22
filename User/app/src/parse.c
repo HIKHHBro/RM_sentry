@@ -106,7 +106,6 @@ void ParseInit(void)
   }
 void can_rx(uint32_t id,uint8_t *data)
   {
-    
     ChassisParseDate(id,data);
     GimbalParseDate(id,data);
   }

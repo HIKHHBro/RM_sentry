@@ -26,7 +26,7 @@
 #include "debug_by_keil.h" 
 #ifdef DEBUG_BY_KEIL
 /* -------- 打印任务状态 --------- */
-#define PRINTFTASKSTATUS 
+//#define PRINTFTASKSTATUS 
  extern UART_HandleTypeDef huart2;//串口1
  extern UART_HandleTypeDef huart7;
 extern TIM_HandleTypeDef htim2;
@@ -92,7 +92,7 @@ void StartDebugByKeilTask(void const *argument)
         osDelay(100);      
 #endif
       
-//	osDelay(100);
+	osDelay(1000);
       
 		}
 }

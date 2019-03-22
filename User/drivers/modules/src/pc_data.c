@@ -49,34 +49,43 @@ uint8_t pc_databuff[11];
       SET_BIT(pc->status,INIT_OK);
       return HAL_OK;
     }
-      /**
-      * @Data    2019-03-21 00:46
-      * @brief   数据解析
-      * @param   void
-      * @retval  void
-      */
-      void Pc_ParseData(pcDataStruct* pc)
-      {
-        if(UserUsartQueueRX(PC_DATA_UASRT,pc_databuff) == HAL_OK)
-        {
-          if(pc_databuff[0] == PC_CHECK_BYTE)
-          {
-           pc->yaw_target_angle = (int16_t)((uint8_t)(pc_databuff[1]) | ((pc_databuff[2]<<8)&0xff00));
-           pc->yaw_target_angle = (int16_t)((uint8_t)(pc_databuff[3]) | ((pc_databuff[4]<<8)&0xff00));
-          }
-          
-          else
-          {
-            /* code */
-          }
-          
-        }
-        else
-        {
-          /* code */
-        }
-        
-      }
+/**
+* @Data    2019-03-21 00:46
+* @brief   数据解析
+* @param   void
+* @retval  void
+*/
+void Pc_ParseData(pcDataStruct* pc)
+{
+  if(UserUsartQueueRX(PC_DATA_UASRT,pc_databuff) == HAL_OK)
+  {
+    if(pc_databuff[0] == PC_CHECK_BYTE)
+    {
+     pc->yaw_target_angle = (int16_t)((pc_databuff[1]<<8) | pc_databuff[2]);
+     pc->pitch_target_angle = (int16_t)((pc_databuff[3]<<8) | pc_databuff[4]);
+     pc->commot = pc_databuff[5];
+      
+    }
+    
+    else
+    {
+      /* code */
+    }
+    
+  }
+  else
+  {
+    /* code */
+  }
+  
+}
+/**
+* @Data    2019-03-21 00:46
+* @brief   
+* @param   void
+* @retval  void
+*/
+
 /*------------------------------------file of end-------------------------------*/
 
 

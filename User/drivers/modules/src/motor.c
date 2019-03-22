@@ -64,6 +64,39 @@
     }
 	}
 	/**
+	* @Data    2019-01-18 20:14
+	* @brief    圈数累计转换  
+	* @param   real 真实值
+	* @param   threshold 一圈最大线数的阀值
+	* @param   perce //转换比例（减速前角度:减速后的角度 = x:1
+  * @param   uint32_t status 模块的状态
+	* @retval  int16_t 换算后的目标值
+	*/
+	int16_t NoRatiometricConversion(int16_t real,int16_t threshold,int16_t perce,int32_t* last_real,int16_t* coefficient,uint32_t status)
+	{
+		int32_t tem=0;
+    if((status&START_OK) ==START_OK)
+    {
+       if ((real - *last_real) < -threshold)
+      {
+        /*角度系数循环自增,下面转36圈归零系数,设置范围[0,perce] */
+        *coefficient =(*coefficient+1)%(perce);
+      }
+     else if((real -*last_real) > threshold)
+      {
+        *coefficient = (perce-1)-((((perce-1) - *coefficient)+1)%(perce));
+      }
+      *last_real = real;//缓存现在值
+      tem = real + (s_max_motor_lines* (*coefficient)); //转换总角度
+      return ((int16_t)(tem *(float)0.5));//换算成上面转一圈
+    }
+    else
+    {
+      *last_real = real;//缓存现在值
+      return ((int16_t)(real *(float)0.5));//换算成上面转一圈
+    }
+	}
+	/**
 	* @Data    2019-01-18 20:48
 	* @brief   零点处理
 	* @param   real 真实值
@@ -89,21 +122,23 @@
   * @param    int16_t max_speed 一个计算周期内的最大速度
   * @retval  当前误差
   */
-  int16_t CalculateError(int16_t target,int16_t real,uint16_t max_speed,uint16_t linesnumb)
+  int16_t CalculateError(int16_t target,int16_t real,int16_t max_speed,int16_t linesnumb)
   {
     int16_t error;
     error = target - real;
-    if((error > -max_speed)&&(error < max_speed))
-    return error;
+    if(   ((error < (max_speed))&&(error > (-max_speed))) ||  ((error == (max_speed))||(error == (-max_speed)))  )
+    {
+      return error;
+    }
     else
     {
-      if(error <= -max_speed)
+      if(error < (-max_speed))
       {
-        error = (linesnumb - real)+target;
+        error = target - (real - linesnumb);
       }
-      if(error >= max_speed)
+      if(error > max_speed)
       {
-        error = (linesnumb - target) + real;
+        error = (target -linesnumb) - real;
       }
       return error;
     }

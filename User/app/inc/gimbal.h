@@ -44,6 +44,8 @@ typedef struct gimbalStruct
   GM6020Struct *pPitch_t;
 	const dbusStruct* pRc_t;
   const pcDataStruct* pPc_t;
+  int16_t yaw_scan_target;
+  int16_t pitch_scan_target;
 } gimbalStruct;
 	void GimbalStructInit(const dbusStruct* pRc_t,const pcDataStruct* pPc_t);
 void GimbalParseDate(uint32_t id,uint8_t *data);
@@ -63,7 +65,8 @@ RM6623Struct* YawInit(void);
 
 
 
-#define GIMBAL_CAL_ERROR(target,real) (CalculateError((target),(real),6000,(8192)))
+#define GIMBAL_CAL_ERROR(target,real) (CalculateError((target),(real),5500,(8192)))
+//#define YAW_CAL_ERROR(target,real) (CalculateError((target),(real),15000,(20480)))
 #define GET_RAMMER_ANGLE(_A_,_LAST_,_COE_)     (RatiometricConversion(\
                                     _A_,\
                                     M2006_THRESHOLD,\

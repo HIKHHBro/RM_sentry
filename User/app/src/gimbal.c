@@ -48,7 +48,7 @@
     int16_t taddd =0;
     int16_t xianfuweizhi =3000;
     int16_t xianfusudu = 5000;//STUCK_BULLET_THRE
-    int16_t yawxianfu = 5000;
+    int16_t yawxianfu = 1900;
 		int16_t pitchxianfu =10000;
 		int16_t sudupitchxianfu =10000;
 	/**
@@ -98,7 +98,7 @@
 				break;
 			case YAW_RX_ID:
 				RM6623ParseData(gimbal_t.pYaw_t,data);
-				gimbal_t.pYaw_t->real_angle = RatiometricConversion(gimbal_t.pYaw_t->tem_angle,7000,5,&(gimbal_t.pYaw_t->last_real),&(gimbal_t.pYaw_t->coefficient),gimbal_t.status);
+				gimbal_t.pYaw_t->real_angle = NoRatiometricConversion(gimbal_t.pYaw_t->tem_angle,5000,5,&(gimbal_t.pYaw_t->last_real),&(gimbal_t.pYaw_t->coefficient),gimbal_t.status);
 				break;
 			case PITCH_RX_ID:
         GM6020ParseData(gimbal_t.pPitch_t,data);
@@ -123,16 +123,16 @@
     int16_t pitch=0;
     int16_t rammer=0;
     i +=(int16_t)(gimbal_t.pRc_t->ch1 * iii);
-        if(i>8191)
+        if(i>20480)
         {
-          i = i-8192;
+          i = i-20480;
         }
         else if(i<0)
         {
-          i = 8192 + i;
+          i = 20480 + i;
         }
-        gimbal_t.pYaw_t->target = i;
-    rammer = RammerPidControl(gimbal_t.prammer_t->target);
+//        gimbal_t.pYaw_t->target = i;
+//    rammer = RammerPidControl(gimbal_t.prammer_t->target);
     yaw = YawPidControl(gimbal_t.pYaw_t->target);
 
     pitch = PitchPidControl(gimbal_t.pPitch_t->target);
@@ -228,12 +228,13 @@
 		/* -------------- yaw轴电机参数设置 ----------------- */
 		gimbal_t.pYaw_t->target = gimbal_t.pYaw_t->real_angle;//设置启动目标值
 						/* ------ 外环pid参数 ------- */
-				gimbal_t.pYaw_t->ppostionPid_t->kp = 0;
-				gimbal_t.pYaw_t->ppostionPid_t->kd = 0;
-				gimbal_t.pYaw_t->ppostionPid_t->ki = 0;
+				gimbal_t.pYaw_t->ppostionPid_t->kp = -0.5;
+				gimbal_t.pYaw_t->ppostionPid_t->kd = -1;
+				gimbal_t.pYaw_t->ppostionPid_t->ki = -0.04;
 				gimbal_t.pYaw_t->ppostionPid_t->error = 0;
 				gimbal_t.pYaw_t->ppostionPid_t->last_error = 0;//上次误差
 				gimbal_t.pYaw_t->ppostionPid_t->integral_er = 0;//误差积分
+        gimbal_t.pYaw_t->ppostionPid_t->integral_limint = 3000;
 				gimbal_t.pYaw_t->ppostionPid_t->pout = 0;//p输出
 				gimbal_t.pYaw_t->ppostionPid_t->iout = 0;//i输出
 				gimbal_t.pYaw_t->ppostionPid_t->dout = 0;//k输出
@@ -254,9 +255,9 @@
 		/* -------------- pitch轴 ----------------- */
 				gimbal_t.pPitch_t->target = gimbal_t.pPitch_t->real_angle;//设置启动目标值
 						/* ------ 外环pid参数 ------- */
-				gimbal_t.pPitch_t->ppostionPid_t->kp = 0;
-				gimbal_t.pPitch_t->ppostionPid_t->kd = 0;
-				gimbal_t.pPitch_t->ppostionPid_t->ki = 0;
+				gimbal_t.pPitch_t->ppostionPid_t->kp = 10;
+				gimbal_t.pPitch_t->ppostionPid_t->kd = 10;
+				gimbal_t.pPitch_t->ppostionPid_t->ki = 0.1;
 				gimbal_t.pPitch_t->ppostionPid_t->error = 0;
 				gimbal_t.pPitch_t->ppostionPid_t->last_error = 0;//上次误差
 				gimbal_t.pPitch_t->ppostionPid_t->integral_er = 0;//误差积分
@@ -311,7 +312,7 @@
   int16_t YawPidControl(int16_t yaw)
   {
     int16_t temp_pid_out;
-    gimbal_t.pYaw_t->ppostionPid_t->error = GIMBAL_CAL_ERROR(yaw,gimbal_t.pYaw_t->real_angle);
+    gimbal_t.pYaw_t->ppostionPid_t->error = CalculateError((yaw),(gimbal_t.pYaw_t->real_angle),15000,(20480));//YAW_CAL_ERROR(yaw,gimbal_t.pYaw_t->real_angle);
     gimbal_t.pYaw_t->ppostionPid_t->pid_out = PostionPid(gimbal_t.pYaw_t->ppostionPid_t,gimbal_t.pYaw_t->ppostionPid_t->error);
     temp_pid_out = MAX(gimbal_t.pYaw_t->ppostionPid_t->pid_out,yawxianfu);
     temp_pid_out = MIN( gimbal_t.pYaw_t->ppostionPid_t->pid_out,-yawxianfu);
@@ -327,7 +328,7 @@
   {
     int16_t temp_pid_out;
        /* -------- 外环 --------- */
-    gimbal_t.pPitch_t->ppostionPid_t->error = GIMBAL_CAL_ERROR(pitch,gimbal_t.pPitch_t->real_angle);
+    gimbal_t.pPitch_t->ppostionPid_t->error = CalculateError((pitch),( gimbal_t.pPitch_t->real_angle),5500,(8192));//GIMBAL_CAL_ERROR(pitch,gimbal_t.pPitch_t->real_angle);
     gimbal_t.pPitch_t->ppostionPid_t->pid_out = PostionPid(gimbal_t.pPitch_t->ppostionPid_t,gimbal_t.pPitch_t->ppostionPid_t->error);
     temp_pid_out = MAX(gimbal_t.pPitch_t->ppostionPid_t->pid_out,pitchxianfu);
     temp_pid_out = MIN( gimbal_t.pPitch_t->ppostionPid_t->pid_out,-pitchxianfu);
@@ -392,4 +393,16 @@
 
 			return &pitch_t;
 	}
+/**
+* @Data    2019-03-20 21:27
+* @brief   云台扫描探索模式
+* @param   void
+* @retval  void
+*/
+uint8_t ScanningToExplore(void)
+{
+    //gimbal_t.pitch_scan_target+10) % 100);
+  gimbal_t.yaw_scan_target +=100;
+}
+
 /*-----------------------------------file of end------------------------------*/

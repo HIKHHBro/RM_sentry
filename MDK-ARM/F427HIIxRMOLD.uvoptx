@@ -158,7 +158,7 @@
           <Type>0</Type>
           <LineNumber>957</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134222702</Address>
+          <Address>134222606</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -249,9 +249,31 @@
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>\\F427HIIxRMOLD\../User/app/src/gimbal.c\gimbal_t.pYaw_t-&gt;ppostionPid_t-&gt;kp</ItemText>
+          <ItemText>stemptme____,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>16</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>stemp__,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>17</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>flaff__</ItemText>
+        </Ww>
+        <Ww>
+          <count>18</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>ssssss,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
+      <WatchWindow2>
+        <Ww>
+          <count>0</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>pc_databuff</ItemText>
+        </Ww>
+      </WatchWindow2>
       <Tracepoint>
         <THDelay>0</THDelay>
       </Tracepoint>

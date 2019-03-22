@@ -31,6 +31,7 @@ typedef struct pcDataStruct
   uint32_t status;
   int16_t yaw_target_angle;
   int16_t pitch_target_angle;
+  uint8_t commot;
 }pcDataStruct;
      void Pc_ParseData(pcDataStruct* pc);
      HAL_StatusTypeDef PcDataRxInit(pcDataStruct* pc);
