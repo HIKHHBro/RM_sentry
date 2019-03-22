@@ -24,6 +24,10 @@
 	|-----------------------------declaration of end-----------------------------|
  **/
 #include "gimbal.h" 
+/* -------------- 模块自定义标志位宏 ----------------- */
+#define  SCAN_MODE          (0x80000000U)//扫描模式
+#define  PC_SHOOT_MODE      (0x40000000U)//自瞄打击模式
+#define  DELEC_USER_MODE    (0x00FFFFFFU)//清除用户自定义标志位
 /* -------------- 私有宏 ----------------- */
 	#define QUEUE_LEN      5U//深度为5
 	#define  QUEUE_SIZE    8U//长度为5;
@@ -122,19 +126,20 @@
 		int16_t yaw=0;
     int16_t pitch=0;
     int16_t rammer=0;
-    i +=(int16_t)(gimbal_t.pRc_t->ch1 * iii);
-        if(i>20480)
-        {
-          i = i-20480;
-        }
-        else if(i<0)
-        {
-          i = 20480 + i;
-        }
+    //ControlSwitch();//控制模式切换
+//    i +=(int16_t)(gimbal_t.pRc_t->ch1 * iii);
+//        if(i>20480)
+//        {
+//          i = i-20480;
+//        }
+//        else if(i<0)
+//        {
+//          i = 20480 + i;
+//        }
 //        gimbal_t.pYaw_t->target = i;
 //    rammer = RammerPidControl(gimbal_t.prammer_t->target);
+    
     yaw = YawPidControl(gimbal_t.pYaw_t->target);
-
     pitch = PitchPidControl(gimbal_t.pPitch_t->target);
     GimbalCanTx(yaw,pitch,rammer);
 	}
@@ -339,6 +344,48 @@
 //    temp_pid_out = MIN(gimbal_t.pPitch_t->pspeedPid_t->pid_out,-sudupitchxianfu); //限做小值
     return temp_pid_out;
   }
+  
+  //待测试代码
+  /**
+  * @Data    2019-03-21 01:39
+  * @brief   yaw轴pid控制
+  * @param   void
+  * @retval  void
+  */
+  int16_t YawPidControl_dai(int16_t yaw_err)
+  {
+    int16_t temp_pid_out;
+    gimbal_t.pYaw_t->ppostionPid_t->pid_out = PostionPid(gimbal_t.pYaw_t->ppostionPid_t,yaw_err);
+    temp_pid_out = MAX(gimbal_t.pYaw_t->ppostionPid_t->pid_out,yawxianfu);
+    temp_pid_out = MIN( gimbal_t.pYaw_t->ppostionPid_t->pid_out,-yawxianfu);
+    return temp_pid_out;
+  }
+  /**
+  * @Data    2019-03-21 01:40
+  * @brief   pitch轴pid控制
+  * @param   void
+  * @retval  void
+  */
+  int16_t PitchPidControl_dai(int16_t pitch_err)
+  {
+    int16_t temp_pid_out;
+       /* -------- 外环 --------- */
+    gimbal_t.pPitch_t->ppostionPid_t->pid_out = PostionPid(gimbal_t.pPitch_t->ppostionPid_t,pitch_err);
+    temp_pid_out = MAX(gimbal_t.pPitch_t->ppostionPid_t->pid_out,pitchxianfu);
+    temp_pid_out = MIN( gimbal_t.pPitch_t->ppostionPid_t->pid_out,-pitchxianfu);
+//       /* -------- 内环 --------- */
+//    gimbal_t.pPitch_t->pspeedPid_t->error = GIMBAL_CAL_ERROR(gimbal_t.pPitch_t->ppostionPid_t->pid_out,gimbal_t.pPitch_t->real_speed);
+//		gimbal_t.pPitch_t->pspeedPid_t->pid_out = SpeedPid(gimbal_t.pPitch_t->pspeedPid_t,gimbal_t.pPitch_t->pspeedPid_t->error);
+//  	temp_pid_out = MAX(gimbal_t.pPitch_t->pspeedPid_t->pid_out,sudupitchxianfu); //限做大值
+//    temp_pid_out = MIN(gimbal_t.pPitch_t->pspeedPid_t->pid_out,-sudupitchxianfu); //限做小值
+    return temp_pid_out;
+  }
+  
+   //待测试代码
+  
+  
+  
+  
 /**
 	* @Data    2019-03-20 21:27
 	* @brief   yaw轴电机初始化
@@ -390,19 +437,74 @@
   pitch_t.ppostionPid_t = &pitchOuterLoopPid_t ;
 			/* ------ 内环pid地址 ------- */
 	pitch_t.pspeedPid_t = &pitchInnerLoopPid_t ;
-
 			return &pitch_t;
 	}
+  
+  
+  //待测试代码
 /**
 * @Data    2019-03-20 21:27
-* @brief   云台扫描探索模式
+* @brief   云台扫描探索模式目标值//待测试
 * @param   void
 * @retval  void
 */
-uint8_t ScanningToExplore(void)
+uint8_t scflag = 0;
+void ScanningToExplore(void)
 {
-    //gimbal_t.pitch_scan_target+10) % 100);
-  gimbal_t.yaw_scan_target +=100;
+  if((gimbal_t.status&SCAN_MODE) != SCAN_MODE)
+  {
+    //目标值切换，状态切换
+    gimbal_t.pitch_scan_target = gimbal_t.pPitch_t->real_angle;
+    gimbal_t.yaw_scan_target = gimbal_t.pYaw_t->real_angle;
+    //清除pc控制标志位，设置标志位
+     CLEAR_BIT(gimbal_t.status,PC_SHOOT_MODE);
+     SET_BIT(gimbal_t.status,SCAN_MODE);
+  }
+    if(gimbal_t.pitch_scan_target < 1000)
+    {
+      gimbal_t.pitch_scan_target += 1;
+    }
+    if(gimbal_t.pitch_scan_target > 2500)
+    {
+       gimbal_t.pitch_scan_target -= 1;
+    }
+    gimbal_t.yaw_scan_target +=10;
 }
-
+/**
+* @Data    2019-03-20 21:27
+* @brief   云台自瞄pc控制模式目标值//待测试
+* @param   void
+* @retval  void
+*/
+void PcControlMode(void)
+{
+  if((gimbal_t.status&PC_SHOOT_MODE) != PC_SHOOT_MODE)
+  {
+    //目标值切换，状态切换
+     CLEAR_BIT(gimbal_t.status,SCAN_MODE);//清除pc控制标志位
+     SET_BIT(gimbal_t.status,PC_SHOOT_MODE);
+  }
+  
+}
+/**
+* @Data    2019-03-20 21:27
+* @brief   控制权切换//待测试
+* @param   void
+* @retval  void
+*/
+void ControlSwitch(void)
+{
+ switch (gimbal_t.pPc_t->commot)
+ {
+   case 0:
+     ScanningToExplore();
+     break;
+   case 1:
+     PcControlMode();
+     break;
+   default:
+	    break;
+ }
+}
+  //待测试代码
 /*-----------------------------------file of end------------------------------*/

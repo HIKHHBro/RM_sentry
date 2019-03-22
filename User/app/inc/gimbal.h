@@ -60,7 +60,7 @@ RM6623Struct* YawInit(void);
   int16_t PitchPidControl(int16_t pitch);
   int16_t YawPidControl(int16_t yaw);
 		GM6020Struct* PitchInit(void);
-
+void ScanningToExplore(void);
 
 
 
