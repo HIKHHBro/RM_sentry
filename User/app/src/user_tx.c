@@ -50,23 +50,25 @@ userTxStruct userTx_t;
 		* @retval  void
 		*/
     int16_t ssssss =0;
+  uint8_t pc_data[8]={0};
 		void UserTxControl(void)
-		{
+    {
+      memset(pc_data,0,8);
 			if(userTx_t.rc->switch_left ==1)
 			{
-				uint8_t data[8]={0};
 				portBASE_TYPE xStatus;
-			 xStatus = xQueueReceive(gimbal_queue,data,0);
+			 xStatus = xQueueReceive(gimbal_queue,pc_data,0);
 				if(xStatus == pdPASS)
 				{
            taskENTER_CRITICAL();
-					CanTxMsg(GIMBAL_CAN,GIMBAL_CAN_TX_ID,data);
+					CanTxMsg(GIMBAL_CAN,GIMBAL_CAN_TX_ID,pc_data);
             taskEXIT_CRITICAL();
 				}
 			}
    else
 	 {
-		 GimbalCanTx(0,0,0);
+     memset(pc_data,0,8);
+		 	CanTxMsg(GIMBAL_CAN,GIMBAL_CAN_TX_ID,pc_data);
 	 }
 
 		}

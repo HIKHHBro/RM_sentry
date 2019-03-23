@@ -738,6 +738,26 @@
               <FileType>5</FileType>
               <FilePath>..\User\drivers\modules\inc\pc_data.h</FilePath>
             </File>
+            <File>
+              <FileName>communicate.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\drivers\modules\src\communicate.c</FilePath>
+            </File>
+            <File>
+              <FileName>communicate.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\drivers\modules\inc\communicate.h</FilePath>
+            </File>
+            <File>
+              <FileName>currentmeter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\drivers\modules\src\currentmeter.c</FilePath>
+            </File>
+            <File>
+              <FileName>currentmeter.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\drivers\modules\inc\currentmeter.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

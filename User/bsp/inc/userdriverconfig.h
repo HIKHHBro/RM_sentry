@@ -60,7 +60,7 @@
       #define GREEN_LED GPIO_PIN_14//PE14
       #define COLOR_LED_GPIO GPIOE
     /* ----------------- 激光引脚宏定义定义 -------------------- */  
-      #define LASER GPIO_PIN_12//PG13
+      #define LASER GPIO_PIN_13//PG13
       #define LASER_GPIO GPIOG
     /* -----------------电源管理引脚宏定义定义 -------------------- */   
       #define POWER_1 GPIO_PIN_2//PH2

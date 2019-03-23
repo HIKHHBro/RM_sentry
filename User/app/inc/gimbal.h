@@ -65,6 +65,9 @@ void ControlSwitch(uint32_t commot);
 void PcControlMode(void);
 void GimbalRcControlMode(void);
   uint32_t ControlDecision(void);//´ý²âÊÔ´úÂë
+void SetGeneralMode(void);
+void SetPcControlPID(void);
+void GimbalDeinit(void);
 
 #define GIMBAL_CAL_ERROR(target,real) (CalculateError((target),(real),5500,(8192)))
 //#define YAW_CAL_ERROR(target,real) (CalculateError((target),(real),15000,(20480)))

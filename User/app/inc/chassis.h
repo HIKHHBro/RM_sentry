@@ -30,6 +30,7 @@
 #include "usart_debug.h" 
 #include "enconder.h" 
 #include "ultrasonic.h" 
+#include "currentmeter.h" 
 typedef struct chassisStruct
 {
 	RM3508Struct *pwheel1_t;
@@ -37,6 +38,7 @@ typedef struct chassisStruct
   const dbusStruct   *rc_t;
 	incrementalEnconderStruct* pchassisEnconder_t;
 	CAN_HandleTypeDef *hcanx;
+	currentMeterStruct_t *pcurrentMeter_t;
   uint32_t status;
 
 }chassisStruct;

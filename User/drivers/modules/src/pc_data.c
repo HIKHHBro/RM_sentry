@@ -25,7 +25,8 @@
  **/
 #include "pc_data.h" 
 #define PC_CHECK_BYTE (0x55)//校验位
-uint8_t pc_databuff[11];
+uint8_t pc_databuff[8];
+static pcDataStruct lastpc;
     /**
     * @Data    2019-03-21 00:22
     * @brief   小电脑数据接收初始化
@@ -57,36 +58,105 @@ uint8_t pc_databuff[11];
 * @param   void
 * @retval  void
 */
+      int16_t tem_yaw;
+  int16_t tem_pitch;
+     int16_t __tem_yaw;
+  int16_t __tem_pitch;
+    float yawscinf =-1;
+    float pitchddd =1;
 void Pc_ParseData(pcDataStruct* pc)
 {
   if(UserUsartQueueRX(PC_DATA_UASRT,pc_databuff) == HAL_OK)
   {
     if(pc_databuff[0] == PC_CHECK_BYTE)
     {
-     pc->yaw_target_angle = (int16_t)((pc_databuff[1]<<8) | pc_databuff[2]);
-     pc->pitch_target_angle = (int16_t)((pc_databuff[3]<<8) | pc_databuff[4]);
+    tem_yaw = (int16_t)((pc_databuff[1]<<8) | pc_databuff[2]);
+      __tem_yaw = (tem_yaw-220);
+    pc->yaw_target_angle = YawDataConversion(__tem_yaw);
+    tem_pitch= (int16_t)((pc_databuff[3]<<8) | pc_databuff[4]);
+      __tem_pitch = (tem_pitch-223);
+    pc->pitch_target_angle = PitchDataConversion(__tem_pitch);
      pc->commot = pc_databuff[5];
-      
+      lastpc  = *pc;
     }
     
-    else
-    {
-      /* code */
-    }
+//    
+//    else if((pc->yaw_target_angle > 320)||(pc->yaw_target_angle <-320))
+//    {
+//      pc->yaw_target_angle = 0;
+//    }
+//   else if((pc->pitch_target_angle > 180)||(pc->pitch_target_angle <-180))
+//    {
+//      pc->pitch_target_angle = 0;
+//    }
     
   }
   else
   {
-    /* code */
+     *pc = lastpc;
   }
   
 }
 /**
 * @Data    2019-03-21 00:46
-* @brief   
+* @brief   自瞄数据转换//待测试
 * @param   void
 * @retval  void
 */
+int16_t lockqu =340;
+int16_t zhengda = 140;
+float zhengdacen = 11;
+int16_t zhengzhong = 70;
+float zhengzhongcen = 8;
+int16_t zhengxiao = 2;
+float zhengxixiaoen = 3;
+int16_t plockqu =200;
+int16_t pzhengda = 100;
+float pzhengdacen = 0;
+int16_t pzhengzhong = 0;
+float pzhengzhongcen = 0;
+int16_t pzhengxiao = 0;
+float pzhengxixiaoen = 0;
+int16_t YawDataConversion(int16_t yaw)
+{
+   if((yaw > lockqu)||(yaw <-lockqu))
+    {
+     return 0;
+    }
+//  else if((yaw > zhengda) || (yaw < -zhengda))
+//  {
+//    return (int16_t)(yaw*(-zhengdacen));
+//  }
+//  else if((yaw > zhengzhong) || (yaw< -zhengzhong))
+//  {
+//    return (int16_t)(yaw*(-zhengzhongcen));
+//  }
+  else
+  {
+     return (int16_t)(yaw*(-zhengxixiaoen));
+  }
+}
+
+int16_t PitchDataConversion(int16_t pitch)
+{
+   if((pitch > plockqu)||(pitch <-plockqu))
+    {
+     pitch = 0;
+    }
+//  if((pitch >pzhengda) || (pitch < -pzhengda))
+//  {
+//   
+//    return (int16_t)(pitch * pzhengdacen);
+//  }
+//  else if((pitch > pzhengzhong) || (pitch< -pzhengzhong))
+//  {
+//    return (int16_t)(pitch*pzhengzhongcen);
+//  }
+  else
+  {
+     return pitch;
+  }
+}
 
 /*------------------------------------file of end-------------------------------*/
 

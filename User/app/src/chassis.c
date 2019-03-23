@@ -24,6 +24,8 @@
 	|-------------------------------declaration of end---------------------------|
  **/
 #include "chassis.h"
+/* -------------- 模块标志位宏定义 ----------------- */
+
 /* -------------- 外部链接 ----------------- */
 extern TIM_HandleTypeDef htim5;
 extern	osThreadId startChassisTaskHandle;
@@ -33,6 +35,7 @@ extern	osThreadId startChassisTaskHandle;
       static speedPidStruct wheel1Speed_t;
     static RM3508Struct wheel2_t;         //轮子2
       static speedPidStruct wheel2Speed_t;
+			static currentMeterStruct currtenMeter_t;
 /*-------------------------------------------------------
   |       型号     |  线数 |  brown | bule  |black|while|
   -------------------------------------------------------
@@ -40,13 +43,15 @@ extern	osThreadId startChassisTaskHandle;
  -------------------------------------------------------*/
 		static incrementalEnconderStruct chassisEnconder_t; //编码器结构体
 /* -------------- 私有宏 ----------------- */
-	#define WHEEL1_RX_ID       0x201
-	#define WHEEL2_RX_ID       0x202
-	#define CHASSIS_CAN_TX_ID  0x200
-	#define W1_LIMIT_SPEED     3000  //轮子1速度限幅
-	#define W2_LIMIT_SPEED     3000  //轮子2速度限幅
-	#define RADIUS             30    //编码器轮子半径单位 mm
-	#define ENCONDER_POLES     500 
+	#define WHEEL1_RX_ID      			 0x201
+	#define WHEEL2_RX_ID       			 0x202
+	#define CURRENT_METER_RX_ID      0x401//电流计接收id
+	#define CHASSIS_CAN_TX_ID  			 0x200
+	#define W1_LIMIT_SPEED    			 3000  //轮子1速度限幅
+	#define W2_LIMIT_SPEED    			 3000  //轮子2速度限幅
+	#define RADIUS            			 30    //编码器轮子半径单位 mm
+	#define ENCONDER_POLES    			 500 
+
 	/**
 	* @Data    2019-01-27 17:09
 	* @brief   底盘结构体数据初始化
@@ -58,6 +63,7 @@ extern	osThreadId startChassisTaskHandle;
 		chassis_t.hcanx = hcan;
     chassis_t.rc_t =  rc;
     chassis_t.status = 0;
+		chassis_t.pcurrentMeter_t = &currtenMeter_t;
 		/* ------ 轮子1结构体数据初始化 ------- */
 		chassis_t.pwheel1_t = &wheel1_t;
 			wheel1_t.id = WHEEL1_RX_ID;//电机can的 ip
@@ -142,6 +148,9 @@ extern	osThreadId startChassisTaskHandle;
 				break;
 			case WHEEL2_RX_ID:
 				RM3508ParseData(&wheel2_t,data);
+				break;
+	  	case CURRENT_METER_RX_ID:
+				 CurrentMeterAnalysis(&currtenMeter_t,data);
 				break;
 			default:
 				break;

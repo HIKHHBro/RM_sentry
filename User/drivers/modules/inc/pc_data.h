@@ -35,6 +35,9 @@ typedef struct pcDataStruct
 }pcDataStruct;
      void Pc_ParseData(pcDataStruct* pc);
      HAL_StatusTypeDef PcDataRxInit(pcDataStruct* pc);
+
+int16_t YawDataConversion(int16_t yaw);
+int16_t PitchDataConversion(int16_t pitch);
 #endif	// __PC_DATA_H
   
  /*------------------------------------file of end-------------------------------*/

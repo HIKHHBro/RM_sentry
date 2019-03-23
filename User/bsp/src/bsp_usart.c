@@ -98,9 +98,9 @@ HAL_StatusTypeDef UsartAndDMAInit(UART_HandleTypeDef *huartx,uint8_t frame_size\
 		/* -------- 接收rx_buff_len个字节 --------- */
 		if(huartx->hdmarx->Instance->NDTR== A_FRAME_CHECK_LEN)
 		{
-			/* -------- 设置校验值 --------- */
-			if(RCREncryption(addr->rx_buff_data, addr->rx_buff_size) != HAL_OK)
-				return HAL_ERROR;
+//			/* -------- 设置校验值 --------- */
+//			if(RCREncryption(addr->rx_buff_data, addr->rx_buff_size) != HAL_OK)
+//				return HAL_ERROR;
 			xQueueSendToBackFromISR(addr->usart_queue, addr->rx_buff_data,0);
 		}
     /* ------ 设置接收地址和数据长度 ------- */
