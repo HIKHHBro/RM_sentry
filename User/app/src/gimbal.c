@@ -337,8 +337,7 @@
 ////    temp_pid_out = MIN(gimbal_t.pPitch_t->pspeedPid_t->pid_out,-sudupitchxianfu); //限做小值
 //    return temp_pid_out;
 //  }
-  
-  //待测试代码
+
   /**
   * @Data    2019-03-21 01:39
   * @brief   yaw轴pid控制
@@ -373,12 +372,7 @@
 //    temp_pid_out = MIN(gimbal_t.pPitch_t->pspeedPid_t->pid_out,-sudupitchxianfu); //限做小值
     return temp_pid_out;
   }
-  
-   //待测试代码
-  
-  
-  
-  
+
 /**
 	* @Data    2019-03-20 21:27
 	* @brief   yaw轴电机初始化
@@ -432,12 +426,9 @@
 	pitch_t.pspeedPid_t = &pitchInnerLoopPid_t ;
 			return &pitch_t;
 	}
-  
-  
-  //待测试代码
 /**
 * @Data    2019-03-20 21:27
-* @brief   云台扫描探索模式目标值//待测试
+* @brief   云台扫描探索模式目标值
 * @param   void
 * @retval  void
 */
@@ -491,7 +482,7 @@ void ScanningToExplore(void)
 }
 /**
 * @Data    2019-03-20 21:27
-* @brief   云台自瞄pc控制模式目标值//待测试
+* @brief   云台自瞄pc控制模式目标值
 * @param   void
 * @retval  void
 */
@@ -514,7 +505,7 @@ void PcControlMode(void)
 }
 /**
 * @Data    2019-03-20 21:27
-* @brief   控制权切换//待测试
+* @brief   控制权切换
 * @param   void
 * @retval  void
 */
@@ -537,12 +528,11 @@ void ControlSwitch(uint32_t commot)
 }
 /**
 * @Data    2019-03-20 21:27
-* @brief   决策控制判断//待测试
+* @brief   决策控制判断
 * @param   void
 * @retval  void
 */
-uint32_t ccccc=0;
-  uint32_t ControlDecision(void)//待测试代码
+  uint32_t ControlDecision(void)
   {
     if(gimbal_t.pRc_t->switch_right ==1)
     {
@@ -568,8 +558,8 @@ uint32_t ccccc=0;
       CLEAR_BIT(gimbal_t.status,SCAN_MODE_READ);
       CLEAR_BIT(gimbal_t.status,PC_SHOOT_MODE_READ);
     }
-    ccccc = (gimbal_t.status & JUDGE_READ);
-    return ccccc;
+   
+    return (gimbal_t.status & JUDGE_READ);
   }
  /**
 * @Data    2019-03-20 21:27

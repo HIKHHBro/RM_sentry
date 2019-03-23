@@ -91,7 +91,6 @@ void StartDebugByKeilTask(void const *argument)
      taskEXIT_CRITICAL();
         osDelay(100);      
 #endif
-//      ScanningToExplore();//测试波形正不正常，测试速度
 	osDelay(60);
       
 		}

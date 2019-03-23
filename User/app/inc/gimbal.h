@@ -63,7 +63,6 @@ RM6623Struct* YawInit(void);
 void ScanningToExplore(void);
 void ControlSwitch(uint32_t commot);
 void PcControlMode(void);
-void ScanningToExplore(void);
 void GimbalRcControlMode(void);
   uint32_t ControlDecision(void);//´ý²âÊÔ´úÂë
 
