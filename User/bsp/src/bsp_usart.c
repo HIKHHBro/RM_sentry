@@ -58,8 +58,6 @@ HAL_StatusTypeDef UsartAndDMAInit(UART_HandleTypeDef *huartx,uint8_t frame_size\
 	addr->rx_on_off = on_off;//接收开关
 	/* ------ 分配接收缓存地址空间 ------- */
 	addr->rx_buff_data = (uint8_t *)malloc(addr->rx_buff_size * sizeof(uint8_t));
-	/* -------- 使能 --------- */
-	__HAL_UART_ENABLE_IT(huartx, UART_IT_IDLE);					 //使能串口中断
 	if(UsartQueueCreate(addr,5,addr->rx_buff_size) != HAL_OK) //创建队列
 	{
 		//添加错误机制
@@ -67,6 +65,9 @@ HAL_StatusTypeDef UsartAndDMAInit(UART_HandleTypeDef *huartx,uint8_t frame_size\
 		free(addr);
 		return HAL_ERROR;
 	}
+  	/* -------- 使能 --------- */
+  HAL_UART_Receive_DMA(huartx,addr->rx_buff_data,addr->rx_buff_size);
+	__HAL_UART_ENABLE_IT(huartx, UART_IT_IDLE);					 //使能串口中断
 	return HAL_OK;
 }
 /**
@@ -207,4 +208,27 @@ xStatus = xQueueReceive(addr->usart_queue, pvBuffer, 0);
         	return HAL_ERROR;
 
 	}
+    /**
+    * @Data    2019-03-23 23:28
+    * @brief   裁判系统数据接收//待测试
+    * @param   void
+    * @retval  void
+    */
+  void RxCcomuu(UART_HandleTypeDef *huartx)
+	{
+      uint32_t temp; 
+		usartDataStrcut *addr = NULL;
+		addr = GetUsartAddr(huartx); //获取相应用户串口结构体地址
+		if(addr->rx_on_off != ENABLE)
+     if((__HAL_UART_GET_FLAG(huartx,UART_FLAG_IDLE) != RESET))  
+     {
+	    	__HAL_UART_CLEAR_IDLEFLAG(huartx);
+        HAL_UART_DMAStop(huartx);  
+      temp = huartx->hdmarx->Instance->NDTR; 
+       temp = 200-temp;
+       xQueueSendToBackFromISR(addr->usart_queue, addr->rx_buff_data,0);
+       memset(addr->rx_buff_data,0,addr->rx_buff_size);
+      HAL_UART_Receive_DMA(huartx,addr->rx_buff_data,addr->rx_buff_size);
+     }
+   }
 /*-----------------------------------file of end------------------------------*/

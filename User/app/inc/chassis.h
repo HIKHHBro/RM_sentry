@@ -38,7 +38,7 @@ typedef struct chassisStruct
   const dbusStruct   *rc_t;
 	incrementalEnconderStruct* pchassisEnconder_t;
 	CAN_HandleTypeDef *hcanx;
-	currentMeterStruct_t *pcurrentMeter_t;
+	currentMeterStruct *pcurrentMeter_t;
   uint32_t status;
 
 }chassisStruct;

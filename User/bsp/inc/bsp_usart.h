@@ -45,6 +45,8 @@ HAL_StatusTypeDef AllocateUsartxSpace(UART_HandleTypeDef *huartx);
 usartDataStrcut *GetUsartAddr(UART_HandleTypeDef *huartx);
 HAL_StatusTypeDef UserUsartQueueRX(UART_HandleTypeDef *huartx, \
 																	 void *const pvBuffer);
+
+void RxCcomuu(UART_HandleTypeDef *huartx);
 #endif // __BSP_USART_H
 
 /*----------------------------------file of end-------------------------------*/
