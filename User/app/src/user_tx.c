@@ -64,10 +64,6 @@ userTxStruct userTx_t;
             taskEXIT_CRITICAL();
 				}
 			}
-//   if(userTx_t.rc->switch_right ==1)
-//   {
-//     GimbalCanTx(ssssss,0,0);
-//   }
    else
 	 {
 		 GimbalCanTx(0,0,0);

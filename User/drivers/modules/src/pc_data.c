@@ -41,6 +41,8 @@ uint8_t pc_databuff[11];
       }
       pc->pitch_target_angle = 0;
       pc->yaw_target_angle = 0;
+      pc->commot = 0;
+      pc->status = 0;
       if(UsartAndDMAInit(PC_DATA_UASRT,11,ENABLE) != HAL_OK)
       {
         //±¨´í»úÖÆ

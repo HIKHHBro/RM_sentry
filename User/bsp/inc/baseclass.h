@@ -30,9 +30,9 @@
 /*发行版请把这行宏定义注释掉*/
 #define DEBUG_BY_KEIL
 
-	#define MAX(X,Y) (X)>(Y)?(Y):(X)  //限做大值
-	#define MIN(X,Y) (X)<(Y)?(Y):(X)  //限做小值
-	#define ABS(X)   (X)<0?(-X):(X)    //取绝对值
+	#define MAX(X,Y) ((X)>(Y)?(Y):(X))  //限做大值
+	#define MIN(X,Y) ((X)<(Y)?(Y):(X))  //限做小值
+	#define ABS(X)  ( (X)<0?(-X):(X))    //取绝对值
 
 /* ----------------- 标志位变量外部链接 -------------------- */
 	extern unsigned int e_periphera_interface_flag; 	//外设接口使用状态变量定义

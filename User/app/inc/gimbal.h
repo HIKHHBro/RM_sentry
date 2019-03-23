@@ -61,9 +61,11 @@ RM6623Struct* YawInit(void);
   int16_t YawPidControl(int16_t yaw);
 		GM6020Struct* PitchInit(void);
 void ScanningToExplore(void);
-
-
-
+void ControlSwitch(uint32_t commot);
+void PcControlMode(void);
+void ScanningToExplore(void);
+void GimbalRcControlMode(void);
+  uint32_t ControlDecision(void);//´ý²âÊÔ´úÂë
 
 #define GIMBAL_CAL_ERROR(target,real) (CalculateError((target),(real),5500,(8192)))
 //#define YAW_CAL_ERROR(target,real) (CalculateError((target),(real),15000,(20480)))
