@@ -40,7 +40,7 @@
 float OutMapCurrent(int16_t coe,int16_t input)
 {
 	//-16384 ~ 0 ~ 16384,3508
-	return (int16_t)(coe*input);
+	return (float)(coe*input);
 }
 /**
 	* @Data    2019-03-24 21:14
@@ -129,7 +129,7 @@ return input;
     return POOL_MID;
     else if(pbs->r_w >= pbs->low_water_level)
     return POOL_LOW;
-    else POOL_EMPTY;
+    else return POOL_EMPTY;
   }
 /*-----------------------------------file of end------------------------------*/
 
