@@ -24,28 +24,20 @@
 	|-----------------------------declaration of end-----------------------------|
  **/
 #include "power_buffer_pool.h"
-/* 
-	* @Data    2019-03-24 19:42
-	* @brief   功率缓冲池
-	* @param   void
-	* @retval  void
-	*/
-	int16_t PowerBufferPool(powerBufferPoolStruct* pbs,int16_t input)
-	{
-		 if(pbs->r_w > pbs->high_water_level)
-		 {
-			 	
-		  	pbs->buf_t++;
-		 }
+#define POOL_FULL  0x01
+#define POOL_PADDING 0x02
+#define POOL_EMPTY  0x03
+#define POOL_HIGH   0x04
+#define POOL_MID    0x05
+#define POOL_LOW    0x06
 
-	}
 /**
 	* @Data    2019-03-24 19:59
-	* @brief   pid计算初始值映射电流
+	* @brief   pid输出值映射电流
 	* @param   void
-	* @retval  void 单位mA
+	* @retval  void 单位A
 	*/
-int16_t OutMapCurrent(int16_t coe,int16_t input)
+float OutMapCurrent(int16_t coe,int16_t input)
 {
 	//-16384 ~ 0 ~ 16384,3508
 	return (int16_t)(coe*input);
@@ -66,47 +58,79 @@ int16_t OutMapCurrent(int16_t coe,int16_t input)
 	* @param   input 输出量
 	* @retval  void  
 	*/
-float time_coe=500;//单位ms
-int16_t WaterOutlet(powerBufferPoolStruct* pbs,int16_t input)
+float time_coe=0.001;//单位ms
+int16_t GetOutlet(powerBufferPoolStruct* pbs,int16_t input)
 {
-	int16_t cur;//单位mN
-	
-	if(pbs->r_w > pbs->high_water_level)
-	{
-		cur = CurrentMapping(pbs->current_mapp_coe,input);
-		if(cur > pbs->current_threshold)
+	int16_t cur;//单位A
+  uint8_t state;
+	state = GetPowerPoolState(pbs);
+  cur = CurrentMapping(pbs->current_mapp_coe,input);
+  switch (state) 
+  {
+    case POOL_HIGH:
+    if(cur > pbs->high_current_threshold)
 		{
-			return CurrentMapOut(pbs->current_mapp_coe,pbs->current_threshold);
+			input = CurrentMapOut(pbs->current_mapp_coe,pbs->high_current_threshold);
 		}
-		else return input;
-	}
-	if(pbs->r_w < pbs->low_water_level)
-	{
-
-	}
+      break;
+    case POOL_MID:
+    if(cur > pbs->mid_current_threshold)
+		{
+			input = CurrentMapOut(pbs->current_mapp_coe,pbs->mid_current_threshold);
+		}
+      break;
+    case POOL_LOW:
+    if(cur > pbs->mid_current_threshold)
+		{
+			input = CurrentMapOut(pbs->current_mapp_coe,pbs->low_current_threshold);
+		}
+      break;
+    case POOL_EMPTY:
+    if(cur > pbs->safe_current_threshold)
+		{
+			input = CurrentMapOut(pbs->current_mapp_coe,pbs->safe_current_threshold);
+		}
+      break;
+    default:
+      break;
+  }
+return input;
 }
-// /**
-// 	* @Data    2019-03-24 20:20
-// 	* @brief   功率计算
-// 	* @param   void
-// 	* @retval  void 
-// 	*/
-// 	void CalculatedPower(powerBufferPoolStruct* pbs,int16_t input)
-// 	{
-// 		int16_t p;
-// 		p = CurrentMapping(pbs->current_mapp_coe,input);
-// 		return (int16_t)( p * pbs->period);
-// 	}
-// /**
-// 	* @Data    2019-03-24 21:04
-// 	* @brief   计算阀值电流
-// 	* @param   void
-// 	* @retval  void
-// 	*/
-// 	void name(void)
-// 	{
-		
-// 	}
+  /**
+  * @Data    2019-03-24 22:56
+  * @brief   往缓存池注入
+  * @param   void
+  * @retval  void
+  */
+  uint8_t Inject(powerBufferPoolStruct* pbs)
+  {
+    if(pbs->r_w >= pbs->max_w)
+    {
+      pbs->r_w =  pbs->max_w;
+      return POOL_FULL;
+    }
+    else if(pbs->pcurrentMeter_t->power < pbs->max_p)
+    {
+      pbs->r_w = pbs->r_w - ((pbs->pcurrentMeter_t->power - pbs->max_p)*pbs->period);
+      return POOL_PADDING;
+    }
+  }
+  /**
+  * @Data    2019-03-24 23:23
+  * @brief   获取缓存池状态
+  * @param   void
+  * @retval  void
+  */
+  uint8_t GetPowerPoolState(powerBufferPoolStruct* pbs)
+  {
+    if(pbs->r_w >= pbs->high_water_level)
+    return POOL_HIGH;
+    else if(pbs->r_w >= pbs->mid_water_level)
+    return POOL_MID;
+    else if(pbs->r_w >= pbs->low_water_level)
+    return POOL_LOW;
+    else POOL_EMPTY;
+  }
 /*-----------------------------------file of end------------------------------*/
 
 

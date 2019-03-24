@@ -31,6 +31,7 @@
 #include "enconder.h" 
 #include "ultrasonic.h" 
 #include "currentmeter.h" 
+#include "power_buffer_pool.h"
 typedef struct chassisStruct
 {
 	RM3508Struct *pwheel1_t;
@@ -38,7 +39,7 @@ typedef struct chassisStruct
   const dbusStruct   *rc_t;
 	incrementalEnconderStruct* pchassisEnconder_t;
 	CAN_HandleTypeDef *hcanx;
-	currentMeterStruct *pcurrentMeter_t;
+  powerBufferPoolStruct*ppowerBufferPool_t;
   uint32_t status;
 
 }chassisStruct;
@@ -51,8 +52,10 @@ const chassisStruct* GetChassisStructAddr(void);
  chassisStruct *RWGetChassisStructAddr(void);
  uint32_t GetChassisStatus(void);
   void SetMotorTarget(int16_t w1,int16_t w2);
-   void RcControlMode(void);
-	 
+   void ChassisRcControlMode(void);
+	 powerBufferPoolStruct* PowerBufferPoolInit(void);
+     RM3508Struct* wheel2Init(void);
+       RM3508Struct* wheel1Init(void);
 #endif	// __CHASSIS_H
 	
 /*-----------------------------------file of end------------------------------*/

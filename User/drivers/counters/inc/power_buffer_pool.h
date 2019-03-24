@@ -30,25 +30,24 @@
 typedef struct powerBufferPoolStruct
 {
 	currentMeterStruct* pcurrentMeter_t;
-	uint32_t max_p;
-	uint32_t max_w;//功率单位mW
-	uint32_t r_p;
-	uint32_t r_w;//功率单位mW
-  uint32_t buf_t;
-	uint32_t rec_t;
-	uint32_t current_mapp_coe;//电流映射系数
-	uint32_t high_water_level;
-	uint32_t low_water_level;
-	uint32_t mid_water_level;
-	uint32_t base_v;//基准电压 单位V
-	uint32_t period;//运行周期，单位/ms
-	uint32_t current_threshold;//mA
+	float max_p;
+	float max_w;//功率单位mW
+	float r_w;//功率单位mW
+	float current_mapp_coe;//电流映射系数
+	float high_water_level;
+	float low_water_level;
+	float mid_water_level;
+	float period;//运行周期，单位/s
+	float high_current_threshold;//mA
+  float mid_current_threshold;//mA
+  float low_current_threshold;//mA
+  float safe_current_threshold;//mA
 }powerBufferPoolStruct;
-int16_t CurrentMapping(int16_t coe,int16_t input);
 int16_t WaterOutlet(powerBufferPoolStruct* pbs,int16_t input);
-	void CalculatedPower(powerBufferPoolStruct* pbs,int16_t input);
-int16_t OutMapCurrent(int16_t coe,int16_t input);
+float OutMapCurrent(int16_t coe,int16_t input);
 	int16_t CurrentMapOut(int16_t coe,int16_t current);
+    uint8_t Inject(powerBufferPoolStruct* pbs);
+  uint8_t GetPowerPoolState(powerBufferPoolStruct* pbs);
 #endif	// __POWER_BUFFER_POOL_H
 /*-----------------------------------file of end------------------------------*/
 
