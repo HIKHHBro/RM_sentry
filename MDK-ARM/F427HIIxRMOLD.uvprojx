@@ -757,6 +757,16 @@
               <FileType>5</FileType>
               <FilePath>..\User\drivers\modules\inc\currentmeter.h</FilePath>
             </File>
+            <File>
+              <FileName>gyro.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\drivers\modules\src\gyro.c</FilePath>
+            </File>
+            <File>
+              <FileName>gyro.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\drivers\modules\inc\gyro.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
