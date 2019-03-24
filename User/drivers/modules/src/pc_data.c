@@ -141,7 +141,7 @@ int16_t PitchDataConversion(int16_t pitch)
 {
    if((pitch > plockqu)||(pitch <-plockqu))
     {
-     pitch = 0;
+     return 0;
     }
 //  if((pitch >pzhengda) || (pitch < -pzhengda))
 //  {

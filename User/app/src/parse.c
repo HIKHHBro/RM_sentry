@@ -31,6 +31,7 @@
 extern osThreadId startParseTaskHandle;
 extern UART_HandleTypeDef huart1;//串口1
 extern uint8_t can1_rx[12];
+extern uint32_t lenjuu;
 	/**
 	* @Data    2019-02-14 14:36
 	* @brief   数据解析任务初始化
@@ -39,7 +40,8 @@ extern uint8_t can1_rx[12];
 	*/
 void ParseInit(void)
 {
-  DJIDbusInit(&dbus_t,&huart1);//大疆遥控初始化
+  CommunicateInit();
+    DJIDbusInit(&dbus_t,&huart1);//大疆遥控初始化
   PcDataRxInit(&pc_t);//小电脑数据接收初始化
   /* -------- 挂起等待任务系统初始化 --------- */
 	vTaskSuspend(startParseTaskHandle);
@@ -62,6 +64,7 @@ void ParseInit(void)
         DbusParseData(&dbus_t);//
     Pc_ParseData(&pc_t);//小电脑数据解析
     		HCSR04RxMsg();//超声波数据接收
+  CommunicateParse(lenjuu);
 
 	}
  /*

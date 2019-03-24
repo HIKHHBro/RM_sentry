@@ -25,6 +25,7 @@
  **/
 #include "bsp_usart.h"
 #define A_FRAME_CHECK_LEN 3//一帧接收缓存长度
+uint32_t lenjuu =0;
 /* ----------------- 结构体地址列表 -------------------- */
 usartDataStrcut *pusart1_t = NULL;
 usartDataStrcut *pusart2_t = NULL;
@@ -66,7 +67,7 @@ HAL_StatusTypeDef UsartAndDMAInit(UART_HandleTypeDef *huartx,uint8_t frame_size\
 		return HAL_ERROR;
 	}
   	/* -------- 使能 --------- */
-  HAL_UART_Receive_DMA(huartx,addr->rx_buff_data,addr->rx_buff_size);
+//  HAL_UART_Receive_DMA(huartx,addr->rx_buff_data,addr->rx_buff_size);
 	__HAL_UART_ENABLE_IT(huartx, UART_IT_IDLE);					 //使能串口中断
 	return HAL_OK;
 }
@@ -220,12 +221,14 @@ xStatus = xQueueReceive(addr->usart_queue, pvBuffer, 0);
 		usartDataStrcut *addr = NULL;
 		addr = GetUsartAddr(huartx); //获取相应用户串口结构体地址
 		if(addr->rx_on_off != ENABLE)
+    {
+    }
      if((__HAL_UART_GET_FLAG(huartx,UART_FLAG_IDLE) != RESET))  
      {
 	    	__HAL_UART_CLEAR_IDLEFLAG(huartx);
         HAL_UART_DMAStop(huartx);  
-      temp = huartx->hdmarx->Instance->NDTR; 
-       temp = 200-temp;
+     temp = huartx->hdmarx->Instance->NDTR; 
+      lenjuu = addr->rx_buff_size-temp;
        xQueueSendToBackFromISR(addr->usart_queue, addr->rx_buff_data,0);
        memset(addr->rx_buff_data,0,addr->rx_buff_size);
       HAL_UART_Receive_DMA(huartx,addr->rx_buff_data,addr->rx_buff_size);

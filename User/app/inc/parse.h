@@ -28,6 +28,7 @@
  #include "chassis.h"
  #include "gimbal.h"  
  #include "pc_data.h" 
+ #include "communicate.h" 
  void ParseInit(void);
  void ParseData(void);
  	const dbusStruct* GetRcStructAddr(void);
