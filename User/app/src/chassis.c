@@ -239,4 +239,18 @@ const chassisStruct* GetChassisStructAddr(void)
 		SpeedPid(chassis_t.pwheel2_t->pspeedPid_t,chassis_t.pwheel2_t->error);
 		ChassisCanTx(chassis_t.pwheel1_t->pspeedPid_t->pid_out,chassis_t.pwheel2_t->pspeedPid_t->pid_out);
   }
+// /**
+// 	* @Data    2019-03-24 16:23
+// 	* @brief   Ñ¡ÔñÒ»²à³¬Éù²¨
+// 	* @param   void
+// 	* @retval  void
+// 	*/
+// 	void GetUltrasoundDistance(void)
+// 	{ 
+// 				if()
+// 				GetDistance(3);
+//        GetDistance(4);
+// 	}
+// /**
+
 /*----------------------------------file of end-------------------------------*/
