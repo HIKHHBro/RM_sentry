@@ -43,10 +43,21 @@ typedef struct chassisStruct
   uint32_t status;
 
 }chassisStruct;
-#define CAL_ERROR(target,real) (CalculateError((target),(real),6000,(8192)))
+/* -------------- 宏 ----------------- */
+#define CAL_ERROR(target,real) (CalculatePationError((target),(real)))
+
+	#define WHEEL1_RX_ID      			 0x201
+	#define WHEEL2_RX_ID       			 0x202
+	#define CURRENT_METER_RX_ID      0x401//电流计接收id
+	#define CHASSIS_CAN_TX_ID  			 0x200
+	#define W1_LIMIT_SPEED    			 6000  //轮子1速度限幅
+	#define W2_LIMIT_SPEED    			 6000  //轮子2速度限幅
+	#define RADIUS            			 30    //编码器轮子半径单位 mm
+	#define ENCONDER_POLES    			 500 
 	void ChassisInit(CAN_HandleTypeDef *hcan,const dbusStruct*rc);
 	void ChassisParseDate(uint16_t id,uint8_t *data);
-	void ChassisCanTx(int16_t w1,int16_t w2);
+//	void ChassisUserCanTx(int16_t w1,int16_t w2);
+	HAL_StatusTypeDef ChassisCanTx(int16_t w1,int16_t w2);
 	void ChassisControl(void);
 const chassisStruct* GetChassisStructAddr(void);
  chassisStruct *RWGetChassisStructAddr(void);
@@ -56,6 +67,7 @@ const chassisStruct* GetChassisStructAddr(void);
 	 powerBufferPoolStruct* PowerBufferPoolInit(void);
      RM3508Struct* wheel2Init(void);
        RM3508Struct* wheel1Init(void);
+        	void SetSetInitStatus(void);
 #endif	// __CHASSIS_H
 	
 /*-----------------------------------file of end------------------------------*/

@@ -26,6 +26,7 @@
 #include "user_tx.h" 
 extern osThreadId startTxTaskHandle;//发送任务
 extern xQueueHandle gimbal_queue;
+extern  xQueueHandle chassis_queue;
 userTxStruct userTx_t;
 	/**
 		* @Data    2019-03-20 20:06
@@ -51,27 +52,54 @@ userTxStruct userTx_t;
 		*/
     int16_t ssssss =0;
   uint8_t pc_data[8]={0};
-		void UserTxControl(void)
+void UserTxControl(void)
+{
+  memset(pc_data,0,8);
+  uint8_t chassis_status;
+  uint8_t gimbal_status;
+  portBASE_TYPE xStatus;
+ gimbal_status = GetGimbalStatus();
+ chassis_status =  GetChassisStatus();
+  if((gimbal_status & RUNING_OK) ==RUNING_OK)
+  {
+    if(userTx_t.rc->switch_left ==1)
     {
-      memset(pc_data,0,8);
-			if(userTx_t.rc->switch_left ==1)
-			{
-				portBASE_TYPE xStatus;
-			 xStatus = xQueueReceive(gimbal_queue,pc_data,0);
-				if(xStatus == pdPASS)
-				{
-           taskENTER_CRITICAL();
-					CanTxMsg(GIMBAL_CAN,GIMBAL_CAN_TX_ID,pc_data);
-            taskEXIT_CRITICAL();
-				}
-			}
+      xStatus = xQueueReceive(gimbal_queue,pc_data,0);
+      if(xStatus == pdPASS)
+      {
+        taskENTER_CRITICAL();
+        CanTxMsg(GIMBAL_CAN,GIMBAL_CAN_TX_ID,pc_data);
+        taskEXIT_CRITICAL();
+      }
+    }
    else
-	 {
-     memset(pc_data,0,8);
-		 	CanTxMsg(GIMBAL_CAN,GIMBAL_CAN_TX_ID,pc_data);
-	 }
-
-		}
+   {
+      memset(pc_data,0,8);
+      CanTxMsg(GIMBAL_CAN,GIMBAL_CAN_TX_ID,pc_data);
+//          CanTxMsg(CHASSIS_CAN,CHASSIS_CAN_TX_ID,pc_data);
+   }
+  }
+else if((chassis_status & RUNING_OK) ==RUNING_OK)
+{
+   if(userTx_t.rc->switch_left ==1)
+   {
+    memset(pc_data,0,8);
+    xStatus = xQueueReceive(chassis_queue,pc_data,0);
+    if(xStatus == pdPASS)
+    {
+      taskENTER_CRITICAL();
+      CanTxMsg(CHASSIS_CAN,CHASSIS_CAN_TX_ID,pc_data);
+      taskEXIT_CRITICAL();
+    }
+  }
+   else
+   {
+      memset(pc_data,0,8);
+     CanTxMsg(CHASSIS_CAN,CHASSIS_CAN_TX_ID,pc_data);
+   }
+}
+else  memset(pc_data,0,8);
+}
 	/**
 		* @Data    2019-03-20 20:12
 		* @brief   用户发送任务启动设置

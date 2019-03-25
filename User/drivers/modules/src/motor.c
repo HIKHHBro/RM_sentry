@@ -143,6 +143,17 @@
       return error;
     }
   }
+   /**
+  * @Data    2019-03-13 03:55
+  * @brief   速度PID控制系统误差
+  * @param    int16_t target 目标值
+  * @param   int16_t real 真实值
+  * @retval  当前误差
+  */
+  int16_t CalculatePationError(int16_t target,int16_t real)
+  {
+    return (target - real);
+  }
 /* ============================ common of end =============================== */
 /* ============================= RM6623 of begin ============================ */
 	/**

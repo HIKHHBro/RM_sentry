@@ -185,6 +185,7 @@
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
             <RvdsVP>2</RvdsVP>
+            <RvdsMve>0</RvdsMve>
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -766,6 +767,16 @@
               <FileName>gyro.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\User\drivers\modules\inc\gyro.h</FilePath>
+            </File>
+            <File>
+              <FileName>power_buffer_pool.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\drivers\counters\src\power_buffer_pool.c</FilePath>
+            </File>
+            <File>
+              <FileName>power_buffer_pool.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\drivers\counters\inc\power_buffer_pool.h</FilePath>
             </File>
           </Files>
         </Group>

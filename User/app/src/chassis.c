@@ -41,6 +41,8 @@
 /* -------------- 外部链接 ----------------- */
 extern TIM_HandleTypeDef htim5;
 extern	osThreadId startChassisTaskHandle;
+/* -------------- 发送队列 ----------------- */
+  xQueueHandle chassis_queue;
 /* -------------- 静态变量 ----------------- */
 	 chassisStruct chassis_t;
     static RM3508Struct wheel1_t;         //轮子1
@@ -56,15 +58,8 @@ extern	osThreadId startChassisTaskHandle;
  -------------------------------------------------------*/
 		static incrementalEnconderStruct chassisEnconder_t; //编码器结构体
 /* -------------- 私有宏 ----------------- */
-	#define WHEEL1_RX_ID      			 0x201
-	#define WHEEL2_RX_ID       			 0x202
-	#define CURRENT_METER_RX_ID      0x401//电流计接收id
-	#define CHASSIS_CAN_TX_ID  			 0x200
-	#define W1_LIMIT_SPEED    			 3000  //轮子1速度限幅
-	#define W2_LIMIT_SPEED    			 3000  //轮子2速度限幅
-	#define RADIUS            			 30    //编码器轮子半径单位 mm
-	#define ENCONDER_POLES    			 500 
-
+	#define CHASSIS_QUEUE_LEN      5U//深度为5
+	#define CHASSIS_QUEUE_SIZE    8U//长度为5;
 	/**
 	* @Data    2019-01-27 17:09
 	* @brief   底盘结构体数据初始化
@@ -81,6 +76,8 @@ extern	osThreadId startChassisTaskHandle;
 		chassis_t.pwheel1_t = wheel1Init();
 		/* ------ 轮子2结构体数据初始化 ------- */
 		chassis_t.pwheel2_t = wheel2Init();
+  /* ------ 创建云台发送队列 ------- */
+	  chassis_queue	= xQueueCreate(CHASSIS_QUEUE_LEN,CHASSIS_QUEUE_SIZE);//一定要在用之前创建队列
     /* -------- can配置 --------- */
       if(UserCanConfig(hcan)!= HAL_OK)
         while(1){}//待添加防重复配置功能
@@ -92,7 +89,10 @@ extern	osThreadId startChassisTaskHandle;
 	  	HCSR04Init();
     /* -------- 底盘模块初始化判断 --------- */
       SET_BIT(chassis_t.status,INIT_OK);//初始化成功
+	/* ------ 挂起任务，等待初始化 ------- */
     	vTaskSuspend(startChassisTaskHandle);
+	/* ------ 设置机器人初始化状态 ------- */
+     SetSetInitStatus();
 	}
 /**
 	* @Data    2019-01-28 11:40
@@ -118,21 +118,21 @@ extern	osThreadId startChassisTaskHandle;
 		}
     SET_BIT(chassis_t.status,RX_OK);//接受成功
 	}
-/**
-	* @Data    2019-02-15 15:10
-	* @brief   底盘数据发送
-	* @param   void
-	* @retval  void
-	*/
-	void ChassisCanTx(int16_t w1,int16_t w2)
-	{
-		uint8_t s[8]={0};
-		s[0] = (uint8_t)(w1<<8);
-		s[1] = (uint8_t)w1;
-		s[2] = (uint8_t)(w2<<8);
-		s[3] = (uint8_t)w2;
-		CanTxMsg(chassis_t.hcanx,CHASSIS_CAN_TX_ID,s);
-	}
+///**
+//	* @Data    2019-02-15 15:10
+//	* @brief   底盘数据发送
+//	* @param   void
+//	* @retval  void
+//	*/
+//	void ChassisUserCanTx(int16_t w1,int16_t w2)
+//	{
+//		uint8_t s[8]={0};
+//		s[0] = (uint8_t)(w1<<8);
+//		s[1] = (uint8_t)w1;
+//		s[2] = (uint8_t)(w2<<8);
+//		s[3] = (uint8_t)w2;
+//		CanTxMsg(chassis_t.hcanx,CHASSIS_CAN_TX_ID,s);
+//	}
 /**
 	* @Data    2019-03-12 16:25
 	* @brief   底盘控制函数
@@ -141,9 +141,11 @@ extern	osThreadId startChassisTaskHandle;
 	*/
 	void ChassisControl(void)
 	{
+    Inject(&powerBufferPool_t);
+    ChassisRcControlMode();
+    SET_BIT(chassis_t.status,RUNING_OK);
   //  chassis_t.pwheel1_t->target = GetDistance(3);
   //  chassis_t.pwheel2_t->target = GetDistance(4);
-	// 	SET_BIT(chassis_t.status,RUNING_OK);
 	}
  /*
 * @Data    2019-02-24 11:59
@@ -192,13 +194,32 @@ const chassisStruct* GetChassisStructAddr(void)
   * @param   void
   * @retval  void
   */
+  int16_t currrtext;
+  int16_t www;
+  int16_t xong;
+   int16_t pid_out[2];
+  int16_t ssss1;
+  int16_t ssss2;
+   int16_t sssy1;
+  int16_t sssy2;
+  int16_t dubss =0;
   void ChassisRcControlMode(void)
   {
-		chassis_t.pwheel1_t->error = CAL_ERROR(chassis_t.rc_t->ch1,chassis_t.pwheel1_t->real_speed);
-		chassis_t.pwheel2_t->error = CAL_ERROR(chassis_t.rc_t->ch2,chassis_t.pwheel2_t->real_speed);
-    SpeedPid(chassis_t.pwheel1_t->pspeedPid_t,chassis_t.pwheel1_t->error);
-		SpeedPid(chassis_t.pwheel2_t->pspeedPid_t,chassis_t.pwheel2_t->error);
-		ChassisCanTx(chassis_t.pwheel1_t->pspeedPid_t->pid_out,chassis_t.pwheel2_t->pspeedPid_t->pid_out);
+   dubss = chassis_t.rc_t->ch1 *9;
+		chassis_t.pwheel1_t->error = CAL_ERROR(dubss,chassis_t.pwheel1_t->real_speed);
+		chassis_t.pwheel2_t->error = CAL_ERROR(dubss,chassis_t.pwheel2_t->real_speed);
+   pid_out[0] = SpeedPid(chassis_t.pwheel1_t->pspeedPid_t,chassis_t.pwheel1_t->error);
+  	pid_out[1] = SpeedPid(chassis_t.pwheel2_t->pspeedPid_t,chassis_t.pwheel2_t->error);
+        sssy1 = pid_out[0];
+    sssy2 = pid_out[1];
+    SetInPut(&powerBufferPool_t,pid_out,2);
+    ssss1 = pid_out[0];
+    ssss2 = pid_out[1];
+//    chassis_t.pwheel1_t->pspeedPid_t->pid_out = (int16_t)(xong*0.5);
+//    chassis_t.pwheel2_t->pspeedPid_t->pid_out =  (int16_t)(xong*0.5);
+		ChassisCanTx(pid_out[0],pid_out[1]);
+    currrtext = (int16_t)(chassis_t.ppowerBufferPool_t->pcurrentMeter_t->current *1000);
+    www  = (int16_t)chassis_t.ppowerBufferPool_t->r_w;
   }
   /**
   * @Data    2019-03-25 00:28
@@ -218,7 +239,23 @@ const chassisStruct* GetChassisStructAddr(void)
     // else if(chassis_t.status > )
   }
 
-
+/**
+	* @Data    2019-02-15 15:10
+	* @brief   云台数据发送
+	* @param   void
+	* @retval  void
+	*/
+	HAL_StatusTypeDef ChassisCanTx(int16_t w1,int16_t w2)
+	{
+		uint8_t s[8];
+    memset(s,0,8);
+    s[0] = (uint8_t)(w1>>8) & 0xFF;
+    s[1] = (uint8_t)w1;
+    s[2] = (uint8_t)(w2>>8) & 0xFF;
+    s[3] = (uint8_t)w2;
+   	xQueueSendToBack(chassis_queue,s,0);
+		return HAL_OK;
+	}
 
 
 
@@ -252,18 +289,19 @@ const chassisStruct* GetChassisStructAddr(void)
   powerBufferPoolStruct* PowerBufferPoolInit(void)
   {
     powerBufferPool_t.pcurrentMeter_t = &currtenMeter_t;
-    powerBufferPool_t.max_p = 0;
-    powerBufferPool_t.max_w = 0;//功率单位mW
-    powerBufferPool_t.r_w = 0;//功率单位mW
-    powerBufferPool_t.current_mapp_coe = 0;//电流映射系数
-    powerBufferPool_t.high_water_level = 0;
-    powerBufferPool_t.low_water_level = 0;
-    powerBufferPool_t.mid_water_level = 0;
-    powerBufferPool_t.period = 0;//运行周期，单位/s
-    powerBufferPool_t.high_current_threshold = 0;//mA
-    powerBufferPool_t.mid_current_threshold = 0;//mA
-    powerBufferPool_t.low_current_threshold = 0;//mA
-    powerBufferPool_t.safe_current_threshold = 0;//mA
+    powerBufferPool_t.max_p = 20.0;
+    powerBufferPool_t.max_w = 200.0;//功率单位mW
+    powerBufferPool_t.r_p = 0.0;
+    powerBufferPool_t.r_w = 200.0;//功率单位mW
+    powerBufferPool_t.current_mapp_coe = 0.00122;//电流映射系数
+    powerBufferPool_t.high_water_level = 150.0;
+    powerBufferPool_t.low_water_level = 30.0;
+    powerBufferPool_t.mid_water_level = 80.0;
+    powerBufferPool_t.period = 0.01;//运行周期，单位/s
+    powerBufferPool_t.high_current_threshold = 5.0;//mA
+    powerBufferPool_t.mid_current_threshold = 2.0;//mA
+    powerBufferPool_t.low_current_threshold = 0.9;//mA
+    powerBufferPool_t.safe_current_threshold = 0.7;//mA
     return &powerBufferPool_t;
   }
   /**
@@ -275,7 +313,7 @@ const chassisStruct* GetChassisStructAddr(void)
   RM3508Struct* wheel1Init(void)
   {
       wheel1_t.id = WHEEL1_RX_ID;//电机can的 ip
-			wheel1_t.target = 0;		 //目标值
+//			wheel1_t.target = 0;		 //目标值
 			wheel1_t.tem_target = 0;//临时目标值
 			wheel1_t.real_current = 0; //真实电流
 			wheel1_t.real_angle = 0;//真实角度
@@ -288,9 +326,9 @@ const chassisStruct* GetChassisStructAddr(void)
   	  wheel1_t.error = 0;//当前误差
       wheel1_t.ppostionPid_t = NULL;
       wheel1_t.pspeedPid_t = &wheel1Speed_t;
-				wheel1Speed_t.kp = 1;
-				wheel1Speed_t.kd = 0;
-				wheel1Speed_t.ki = 0;
+//				wheel1Speed_t.kp = 1;
+//				wheel1Speed_t.kd = 0;
+//				wheel1Speed_t.ki = 0;
 				wheel1Speed_t.error = 0;
 				wheel1Speed_t.last_error = 0;//上次误差
 				wheel1Speed_t.before_last_error = 0;//上上次误差
@@ -299,7 +337,7 @@ const chassisStruct* GetChassisStructAddr(void)
 				wheel1Speed_t.iout = 0;//i输出
 				wheel1Speed_t.dout = 0;//k输出
 				wheel1Speed_t.pid_out = 0;//pid输出
-				wheel1Speed_t.limiting = W1_LIMIT_SPEED;//轮子1速度限幅
+//				wheel1Speed_t.limiting = W1_LIMIT_SPEED;//轮子1速度限幅
         return &wheel1_t;
   }
   /**
@@ -311,7 +349,7 @@ const chassisStruct* GetChassisStructAddr(void)
   RM3508Struct* wheel2Init(void)
   {
 			wheel2_t.id = WHEEL2_RX_ID;//电机can的 ip
-			wheel2_t.target = 0;		 //目标值
+//			wheel2_t.target = 0;		 //目标值
 			wheel2_t.tem_target = 0;//临时目标值
 			wheel2_t.real_current = 0; //真实电流
 			wheel2_t.real_angle = 0;//真实角度
@@ -324,9 +362,9 @@ const chassisStruct* GetChassisStructAddr(void)
 			wheel2_t.error = 0;//当前误差
  			wheel2_t.ppostionPid_t = NULL;
       wheel2_t.pspeedPid_t = &wheel2Speed_t;
-				wheel2Speed_t.kp = 1;
-				wheel2Speed_t.kd = 0;
-				wheel2Speed_t.ki = 0;
+//				wheel2Speed_t.kp = 1;
+//				wheel2Speed_t.kd = 0;
+//				wheel2Speed_t.ki = 0;
 				wheel2Speed_t.error = 0;
 				wheel2Speed_t.last_error = 0;//上次误差
 				wheel2Speed_t.before_last_error = 0;//上上次误差
@@ -335,7 +373,29 @@ const chassisStruct* GetChassisStructAddr(void)
 				wheel2Speed_t.iout = 0;//i输出
 				wheel2Speed_t.dout = 0;//k输出
 				wheel2Speed_t.pid_out = 0;//pid输出
-				wheel2Speed_t.limiting = W2_LIMIT_SPEED;//轮子2速度限幅
+//				wheel2Speed_t.limiting = W2_LIMIT_SPEED;//轮子2速度限幅
       return &wheel2_t;
+  }
+ /**
+	 * @Data    2019-03-19 17:58
+	 * @brief   底盘初始化状态设置
+	 * @param   void
+	 * @retval  void
+	 */
+ 	void SetSetInitStatus(void)
+  {
+    	wheel1_t.target = 0;		 //目标值
+    		wheel1Speed_t.kp = 9;
+				wheel1Speed_t.kd = 1.5;
+				wheel1Speed_t.ki = 0.9;
+     	wheel1Speed_t.limiting = W1_LIMIT_SPEED;//轮子1速度限幅
+    
+    	wheel2_t.target = 0;		 //目标值
+    	wheel2Speed_t.kp = 9;
+			wheel2Speed_t.kd = 1.5;
+			wheel2Speed_t.ki = 0.9;
+    	wheel2Speed_t.limiting = W2_LIMIT_SPEED;//轮子2速度限幅
+     /* ------ 设置启动标志位 ------- */  
+        SET_BIT(chassis_t.status,START_OK);  
   }
 /*----------------------------------file of end-------------------------------*/

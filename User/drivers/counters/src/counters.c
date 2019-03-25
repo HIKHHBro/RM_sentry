@@ -145,8 +145,8 @@
 		sps->pid_out += (int16_t)(sps->pout + sps->iout + sps->dout);
     sps->pid_out = MAX(sps->pid_out,sps->limiting);
     sps->pid_out = MIN(sps->pid_out,(-sps->limiting));
+    sps->before_last_error = sps->last_error;
 		sps->last_error = sps->error;
-		sps->before_last_error = sps->last_error;
 		return (int16_t)(sps->pid_out);
 	}
 /* ============================ PID¿ØÖÆÆ÷ of end ============================ */

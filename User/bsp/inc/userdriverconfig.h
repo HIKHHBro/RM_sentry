@@ -93,6 +93,7 @@
 		 #define FRICTIONGEAR_1_START_V (10U)//摩擦轮1启动型号
 		 #define FRICTIONGEAR_2_START_V (10U)//摩擦轮2启动型号
 		 #define GIMBAL_CAN (&hcan1)    //云台电机的can
+     #define CHASSIS_CAN (&hcan1)    //云台电机的can
      #define PC_DATA_UASRT (&huart6)//小电脑数据接收串口
      #define COMMUNICAT    (&huart3)//裁判系统串口
   #elif BINGE_BOARD

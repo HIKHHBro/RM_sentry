@@ -32,10 +32,10 @@
 		*/
 		uint8_t CurrentMeterAnalysis(currentMeterStruct *Cms,uint8_t *data)
 		{
-			Cms->volt = (uint16_t)(data[1]<<8 | data[0])/100;
-			Cms->current = (uint16_t)(data[3]<<8 | data[2])*10;
-			Cms->data_buff = (uint16_t)(data[5]<<8 | data[4])/100;
-			Cms->power_buffer = (uint16_t)(data[7] | data[6])/100;
+			Cms->volt = (float)((data[1]<<8 | data[0])/100.0);
+			Cms->current = (float)((data[3]<<8 | data[2])/100.0);
+			Cms->data_buff = (float)((data[5]<<8 | data[4])/100.0);
+			Cms->power_buffer = (float)((data[7] | data[6])/100.0);
 			return 0;
 		}
 /*-----------------------------------file of end------------------------------*/
