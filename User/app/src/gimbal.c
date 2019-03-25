@@ -127,17 +127,19 @@
 	* @param   void
 	* @retval  void
 	*/
-	void GimbalAutoControl(void)
-	{
-		int16_t yaw=0;
+  		int16_t yaw=0;
     int16_t pitch=0;
     int16_t rammer=0;
     uint32_t commot =0;
+	void GimbalAutoControl(void)
+	{
+    SET_BIT(gimbal_t.status,RUNING_OK);
     commot = ControlDecision();//¾ö²ßÄ£Ê½
     ControlSwitch(commot);//¿ØÖÆÄ£Ê½ÇĞ»»
     yaw = YawPidControl(gimbal_t.pYaw_t->ppostionPid_t->error);
+    printf("t = %d\t r =%d\t t-r=%d\r\n",gimbal_t.pYaw_t->target,gimbal_t.pYaw_t->real_angle,gimbal_t.pYaw_t->ppostionPid_t->error);
     pitch = PitchPidControl(gimbal_t.pPitch_t->ppostionPid_t->error);
-    GimbalCanTx(yaw,pitch,rammer);
+    GimbalCanTx(yaw,0,0);
 	}
 /**
 	* @Data    2019-02-15 15:10
@@ -347,13 +349,16 @@
   * @param   void
   * @retval  void
   */
+   int16_t __temp_pid_out;
+   int16_t __temp_pid_out1;
   int16_t YawPidControl(int16_t yaw)
   {
-    int16_t temp_pid_out;
+   
     gimbal_t.pYaw_t->ppostionPid_t->pid_out = PostionPid(gimbal_t.pYaw_t->ppostionPid_t,yaw);
-    temp_pid_out = MAX(gimbal_t.pYaw_t->ppostionPid_t->pid_out,yawxianfu);
-    temp_pid_out = MIN( gimbal_t.pYaw_t->ppostionPid_t->pid_out,-yawxianfu);
-    return temp_pid_out;
+    __temp_pid_out1 = gimbal_t.pYaw_t->ppostionPid_t->pid_out;
+    __temp_pid_out = MAX(gimbal_t.pYaw_t->ppostionPid_t->pid_out,yawxianfu);
+    __temp_pid_out = MIN( gimbal_t.pYaw_t->ppostionPid_t->pid_out,-yawxianfu);
+    return __temp_pid_out;
   }
   /**
   * @Data    2019-03-21 01:40
@@ -565,7 +570,7 @@ void ControlSwitch(uint32_t commot)
       CLEAR_BIT(gimbal_t.status,SCAN_MODE_READ);
       CLEAR_BIT(gimbal_t.status,PC_SHOOT_MODE_READ);
     }
-    else if(gimbal_t.pRc_t->switch_right ==2)
+    else if(gimbal_t.pRc_t->switch_left ==2)
     {
       GimbalDeinit();
     }
@@ -579,10 +584,11 @@ void ControlSwitch(uint32_t commot)
 * @retval  void
 */
     int16_t i = 0;
-  float iii = 0.1;
+  float iii = 0.4;
    float yyyy = 0.1;
     int16_t rcscok_up = 600;
   int16_t rcscok_down = 3000;
+  int16_t rctemp;
 void GimbalRcControlMode(void)
 {
   if((gimbal_t.status&RC_MODE_RUNING) != RC_MODE_RUNING)
@@ -607,20 +613,23 @@ void GimbalRcControlMode(void)
     SetGeneralMode();
   }
   
-    gimbal_t.pYaw_t->target +=(int16_t)(gimbal_t.pRc_t->ch3 * iii);
-        if( gimbal_t.pYaw_t->target>20480)
-        {
-          gimbal_t.pYaw_t->target = gimbal_t.pYaw_t->target-20480;
-        }
-        else if( gimbal_t.pYaw_t->target < 0)
-        {
-          gimbal_t.pYaw_t->target = 20480 + gimbal_t.pYaw_t->target;
-        } 
+  rctemp =(int16_t)(gimbal_t.pRc_t->ch3 * iii);
+  rctemp = MAX(rctemp,7000);
+  rctemp = MIN(rctemp,-7000);
+//        if( gimbal_t.pYaw_t->target>20480)
+//        {
+//          gimbal_t.pYaw_t->target = gimbal_t.pYaw_t->target-20480;
+//        }
+//        else if( gimbal_t.pYaw_t->target < 0)
+//        {
+//          gimbal_t.pYaw_t->target = 20480 + gimbal_t.pYaw_t->target;
+//        } 
+//    gimbal_t.pYaw_t->target =;
         gimbal_t.pPitch_t->target -= (int16_t)(gimbal_t.pRc_t->ch4 * yyyy);
         gimbal_t.pPitch_t->target = MAX(gimbal_t.pPitch_t->target,rcscok_down);
         gimbal_t.pPitch_t->target = MIN(gimbal_t.pPitch_t->target,rcscok_up);
         
-     gimbal_t.pPitch_t->ppostionPid_t->error = CalculateError(gimbal_t.pPitch_t->target,( gimbal_t.pPitch_t->real_angle),5500,(8192));//´ı²âÊÔ
+     gimbal_t.pPitch_t->ppostionPid_t->error = rctemp;//CalculateError(gimbal_t.pPitch_t->target,( gimbal_t.pPitch_t->real_angle),5500,(8192));//´ı²âÊÔ
      gimbal_t.pYaw_t->ppostionPid_t->error = CalculateError((gimbal_t.pYaw_t->target),(gimbal_t.pYaw_t->real_angle),15000,(20480));//´ı²âÊÔ
 }
 /**

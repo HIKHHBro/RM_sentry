@@ -141,11 +141,14 @@ extern	osThreadId startChassisTaskHandle;
 	*/
 	void ChassisControl(void)
 	{
-    Inject(&powerBufferPool_t);
+		int16_t pid_out[2];
+    Inject(&powerBufferPool_t);//更新功率缓存池状态
     ChassisRcControlMode();
+		pid_out[0] = SpeedPid(chassis_t.pwheel1_t->pspeedPid_t,chassis_t.pwheel1_t->error);
+  	pid_out[1] = SpeedPid(chassis_t.pwheel2_t->pspeedPid_t,chassis_t.pwheel2_t->error);
+    SetInPut(&powerBufferPool_t,pid_out,2);//开功率缓存池
+		ChassisCanTx(pid_out[0],pid_out[1]);
     SET_BIT(chassis_t.status,RUNING_OK);
-  //  chassis_t.pwheel1_t->target = GetDistance(3);
-  //  chassis_t.pwheel2_t->target = GetDistance(4);
 	}
  /*
 * @Data    2019-02-24 11:59
@@ -194,32 +197,17 @@ const chassisStruct* GetChassisStructAddr(void)
   * @param   void
   * @retval  void
   */
-  int16_t currrtext;
-  int16_t www;
-  int16_t xong;
-   int16_t pid_out[2];
-  int16_t ssss1;
-  int16_t ssss2;
-   int16_t sssy1;
-  int16_t sssy2;
-  int16_t dubss =0;
+int16_t rc_coe=7;
   void ChassisRcControlMode(void)
   {
-   dubss = chassis_t.rc_t->ch1 *9;
-		chassis_t.pwheel1_t->error = CAL_ERROR(dubss,chassis_t.pwheel1_t->real_speed);
-		chassis_t.pwheel2_t->error = CAL_ERROR(dubss,chassis_t.pwheel2_t->real_speed);
-   pid_out[0] = SpeedPid(chassis_t.pwheel1_t->pspeedPid_t,chassis_t.pwheel1_t->error);
-  	pid_out[1] = SpeedPid(chassis_t.pwheel2_t->pspeedPid_t,chassis_t.pwheel2_t->error);
-        sssy1 = pid_out[0];
-    sssy2 = pid_out[1];
-    SetInPut(&powerBufferPool_t,pid_out,2);
-    ssss1 = pid_out[0];
-    ssss2 = pid_out[1];
-//    chassis_t.pwheel1_t->pspeedPid_t->pid_out = (int16_t)(xong*0.5);
-//    chassis_t.pwheel2_t->pspeedPid_t->pid_out =  (int16_t)(xong*0.5);
-		ChassisCanTx(pid_out[0],pid_out[1]);
-    currrtext = (int16_t)(chassis_t.ppowerBufferPool_t->pcurrentMeter_t->current *1000);
-    www  = (int16_t)chassis_t.ppowerBufferPool_t->r_w;
+		if((chassis_t.status & RC_MODE_RUNING)!= RC_MODE_RUNING)
+		{
+			chassis_t.pwheel1_t->target = 0;
+			chassis_t.pwheel2_t->target = 0;
+			SET_BIT(chassis_t.status,RC_MODE_RUNING);
+		}
+		chassis_t.pwheel1_t->target = chassis_t.rc_t->ch1 *rc_coe;
+		chassis_t.pwheel2_t->target = chassis_t.rc_t->ch1 *rc_coe;
   }
   /**
   * @Data    2019-03-25 00:28
@@ -227,18 +215,25 @@ const chassisStruct* GetChassisStructAddr(void)
   * @param   void
   * @retval  void
   */
-  void ChassisControlPriorityDecision(void)
-  {
-    // if(chassis_t.status > RC_MODE_READ)
-    // {
-    //   SET_BIT(chassis_t.status,RC_MODE_RUNING);
-    //   CLEAR_BIT(chassis_t.status,ELUDE_MODE_RUNING);
-    //   CLEAR_BIT(chassis_t.status,PC_SHOOT_MODE_RUNING);
-    //   CLEAR_BIT(chassis_t.status,CRUISE_MODE_RUNING);
-    // }
-    // else if(chassis_t.status > )
-  }
+  // void ChassisControlPriorityDecision(void)
+  // {
+  //   if(chassis_t.rc_t->switch_right ==1)
+	// 	{
+	// 		switch ()
+	// 	}
+	// 	else if(chassis_t.rc_t->switch_right ==2)
+	// 	{
+	// 	 	SET_BIT(chassis_t.status,RC_MODE_READ);
+  //     CLEAR_BIT(chassis_t.status,ELUDE_MODE_READ);
+  //     CLEAR_BIT(chassis_t.status,PC_SHOOT_MODE_READ);
+	// 		CLEAR_BIT(chassis_t.status,CRUISE_MODE_READ);
+	// 	}
 
+  //     // SET_BIT(chassis_t.status,RC_MODE_RUNING);
+  //     // CLEAR_BIT(chassis_t.status,ELUDE_MODE_RUNING);
+  //     // CLEAR_BIT(chassis_t.status,PC_SHOOT_MODE_RUNING);
+  //     // CLEAR_BIT(chassis_t.status,CRUISE_MODE_RUNING);
+  // }
 /**
 	* @Data    2019-02-15 15:10
 	* @brief   云台数据发送
@@ -256,13 +251,68 @@ const chassisStruct* GetChassisStructAddr(void)
    	xQueueSendToBack(chassis_queue,s,0);
 		return HAL_OK;
 	}
+// /**
+// 	* @Data    2019-03-25 19:05
+// 	* @brief   获取云台命令
+// 	* @param   void
+// 	* @retval  void
+// 	*/
+// 	void GetGimbalCom(void)
+// 	{
+		
+// 	}
+
+// /**
+// 	* @Data    2019-03-25 19:11
+// 	* @brief   获取机器人状态
+// 	* @param   void
+// 	* @retval  void
+// 	*/
+// 	void GetRotbStatus(void)
+// 	{
+// 		if()
+// 	}
+/**
+	* @Data    2019-03-25 19:13
+	* @brief   巡航模式
+	* @param   void
+	* @retval  void
+	*/
+	// 	 int16_t zhongd = 1500;
+	// void ChassisCruiseModeControl(void)
+	// {
+	// 		uint32_t position;
+	// 	if((chassis_t.status & CRUISE_MODE_READ) != CRUISE_MODE_READ)
+	// 	{
+	// 		CLEAR_BIT(chassis_t.status,ELUDE_MODE_RUNING);
+	// 		CLEAR_BIT(chassis_t.status,RC_MODE_RUNING);
+	// 		CLEAR_BIT(chassis_t.status,PC_SHOOT_MODE_RUNING);
+	// 		SET_BIT(chassis_t.status,CRUISE_MODE_RUNING);
+	// 		// 
+	// 	}
+	// 		position	=GetPosition(chassis_t.pchassisEnconder_t);
+	// 		if(position > 2600)
+	// 		{
+	// 			if(GetDistance(3) <600)
+	// 			{
+	// 				chassis_t
+	// 			}
+	// 		}
+	// }
+
+/**
+	* @Data    2019-03-25 19:16
+	* @brief   更新机器人位置和状态
+	* @param   void
+	* @retval  void
+	*/
+
+// 	void GetRobotStatus(void)
+// 	{
+// 		
 
 
-
-
-
-
-
+// 	}
 
 
 

@@ -55,8 +55,8 @@ userTxStruct userTx_t;
 void UserTxControl(void)
 {
   memset(pc_data,0,8);
-  uint8_t chassis_status;
-  uint8_t gimbal_status;
+  uint32_t chassis_status;
+  uint32_t gimbal_status;
   portBASE_TYPE xStatus;
  gimbal_status = GetGimbalStatus();
  chassis_status =  GetChassisStatus();

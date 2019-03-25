@@ -40,6 +40,14 @@ typedef struct chassisStruct
 	incrementalEnconderStruct* pchassisEnconder_t;
 	CAN_HandleTypeDef *hcanx;
   powerBufferPoolStruct*ppowerBufferPool_t;
+	
+	// struct State
+	// {
+	// 	uint8_t r_area;//当前所处区域
+	// 	uint8_t last_area;//上次所处区域//
+	// 	uint32_t 
+	// }State;//解析机器人所有状态
+	
   uint32_t status;
 
 }chassisStruct;
