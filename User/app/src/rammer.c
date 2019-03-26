@@ -108,14 +108,6 @@
         rammer_t.target = MCycleNumerical( rammer_t.target);
         stuct_lock_count =-1;
       }
-
-//		int16_t pid_out = -500;
-//		rammer_t.target = 3*(DbusAntiShake(20,dbus->ch1)); //目标值
-//		rammer_t.error = rammer_t.target - rammer_t.real_speed;
-//		pid_out = SpeedPid(&rammerInnerLoopPid_t,rammer_t.error);
-//		pid_out = MAX(pid_out,2000); //限做大值
-//	  pid_out = MIN(pid_out,-2000); //限做小值
-//		GimbalCanTx(pid_out,0);
 	}
 	/**
 		* @Data    2019-03-16 19:43
@@ -162,6 +154,27 @@
       
   //   }
   // }
+/**
+	* @Data    2019-03-26 15:34
+	* @brief   拨弹pid设置
+	* @param   uint8_t speed 拨弹速度一秒x发
+	* @retval  void
+	*/
+	void SetRammerPID(uint8_t speed)
+	{
+    if(speed == 0)
+    {
+      rammer_t.target = rammer_t.real_angle;
+    }
+    else 
+         RAMMER_TIME = (int16_t)(100/(float)(speed));
+//				rammerOuterLoopPid_t.kp = 0;
+//				rammerOuterLoopPid_t.kd = 0;
+//				rammerOuterLoopPid_t.ki = 0;
+//				rammerInnerLoopPid_t.kp = 0;
+//				rammerInnerLoopPid_t.kd = 0;
+//				rammerInnerLoopPid_t.ki = 0;
+	}
 /*-----------------------------------file of end------------------------------*/
 
 

@@ -799,11 +799,6 @@
               <FilePath>..\User\app\inc\parse.h</FilePath>
             </File>
             <File>
-              <FileName>rammer.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\User\app\inc\rammer.h</FilePath>
-            </File>
-            <File>
               <FileName>send_message.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\User\app\inc\send_message.h</FilePath>
@@ -862,6 +857,11 @@
               <FileName>sys_selfchecking.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\User\app\inc\sys_selfchecking.h</FilePath>
+            </File>
+            <File>
+              <FileName>rammer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\app\inc\rammer.h</FilePath>
             </File>
           </Files>
         </Group>

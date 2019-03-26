@@ -90,8 +90,8 @@
 		 #define FRICTIONGEAR (&htim4)//摩擦轮定时器电机红接口
 		 #define FRICTIONGEAR_1 (TIM_CHANNEL_1)//摩擦轮1PWM通道
 		 #define FRICTIONGEAR_2 (TIM_CHANNEL_2)//摩擦轮2PWM通道
-		 #define FRICTIONGEAR_1_START_V (10U)//摩擦轮1启动型号
-		 #define FRICTIONGEAR_2_START_V (10U)//摩擦轮2启动型号
+		 #define FRICTIONGEAR_1_START_V (1000U)//摩擦轮1启动型号
+		 #define FRICTIONGEAR_2_START_V (1000U)//摩擦轮2启动型号
 		 #define GIMBAL_CAN (&hcan1)    //云台电机的can
      #define CHASSIS_CAN (&hcan1)    //云台电机的can
      #define PC_DATA_UASRT (&huart6)//小电脑数据接收串口

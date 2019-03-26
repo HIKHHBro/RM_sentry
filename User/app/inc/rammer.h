@@ -43,7 +43,7 @@
 	void RammerControl(void);
 		int16_t PCycleNumerical(int16_t data);
 		int16_t MCycleNumerical(int16_t data);
-    void RammerShake(void);
+    	void SetRammerPID(uint8_t speed);
 #endif	// __RAMMER_H
 /*-----------------------------------file of end------------------------------*/
 

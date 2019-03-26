@@ -26,6 +26,10 @@
  **/
 #ifndef __USERFREERTOSCONFIG_H 
 #define __USERFREERTOSCONFIG_H 
+/* -------------- 软件定时器 ----------------- */
+	//  #define configUSE_TIMERS 
+	//  #define configTIMER_TASK_PRIORITY 1
+	//   #define configTIMER_QUEUE_LENGTH 
 	/* ----------------- 任务堆栈大小设置 -------------------- */
    #define SYS_INIT_HEAP_SIZE    512//系统初始任务
    #define PARSE_HEAP_SIZE       1024//数据解析任务

@@ -25,7 +25,9 @@
  **/
 #include "pc_data.h" 
 #define PC_CHECK_BYTE (0x55)//校验位
-uint8_t pc_databuff[8];
+#define PC_DATA_LEN 10//接收数据长度
+#define  PC_DATA_LEN_BSP (PC_DATA_LEN+3)
+uint8_t pc_databuff[10];
 static pcDataStruct lastpc;
     /**
     * @Data    2019-03-21 00:22
@@ -44,7 +46,7 @@ static pcDataStruct lastpc;
       pc->yaw_target_angle = 0;
       pc->commot = 0;
       pc->status = 0;
-      if(UsartAndDMAInit(PC_DATA_UASRT,11,ENABLE) != HAL_OK)
+      if(UsartAndDMAInit(PC_DATA_UASRT,PC_DATA_LEN_BSP,ENABLE) != HAL_OK)
       {
         //报错机制
         return HAL_ERROR;
@@ -71,15 +73,22 @@ void Pc_ParseData(pcDataStruct* pc)
     if(pc_databuff[0] == PC_CHECK_BYTE)
     {
     tem_yaw = (int16_t)((pc_databuff[1]<<8) | pc_databuff[2]);
-      __tem_yaw = (tem_yaw-220);
+      __tem_yaw = (tem_yaw-334);
     pc->yaw_target_angle = YawDataConversion(__tem_yaw);
     tem_pitch= (int16_t)((pc_databuff[3]<<8) | pc_databuff[4]);
-      __tem_pitch = (tem_pitch-223);
+      __tem_pitch = (tem_pitch-165);
     pc->pitch_target_angle = PitchDataConversion(__tem_pitch);
-     pc->commot = pc_databuff[5];
+     pc->commot =1 ;//pc_databuff[5];
+      pc->shoot_commot = pc_databuff[6];
+      pc->fps = (pc_databuff[8]<<8)|pc_databuff[9];
       lastpc  = *pc;
     }
-    
+    else
+    {
+       pc->commot = 1;//pc_databuff[5];
+       pc->shoot_commot = 1;
+       lastpc  = *pc;
+    }    
 //    
 //    else if((pc->yaw_target_angle > 320)||(pc->yaw_target_angle <-320))
 //    {
