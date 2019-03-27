@@ -903,6 +903,16 @@
               <FileType>1</FileType>
               <FilePath>..\User\task\src\user.c</FilePath>
             </File>
+            <File>
+              <FileName>use_times.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\task\inc\use_times.h</FilePath>
+            </File>
+            <File>
+              <FileName>use_times.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\task\src\use_times.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

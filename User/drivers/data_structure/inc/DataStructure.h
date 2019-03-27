@@ -27,15 +27,37 @@
 #define __DATASTRUCTURE_H 
 #include "baseclass.h "
 #define MAXSIZE    8
+#define QUEUE_ADDER   10
 typedef struct SqQueue{
 	float data[MAXSIZE];
 	unsigned char front;//队首指针
 	unsigned char rear;//队尾指针
+	unsigned char size;//队列长度
 }SqQueue;
 SqQueue GyinitQueue(void);
-float isEmpty(SqQueue qu);
+char isEmpty(SqQueue qu);
 float enQueue(SqQueue *qu,float x,uint8_t size);
 float deQueue(SqQueue *qu,float *y,uint8_t size);
+
+/* -------------- int16_t 循环队列 ----------------- */
+
+typedef struct Int16Queue
+{
+   	int16_t *data;
+	uint16_t front;//队首指针
+	uint16_t rear;//队尾指针
+	uint16_t  size;//队列长度
+	uint16_t (*isEmpty)(struct Int16Queue qu);
+	int16_t (*enQueue)(struct Int16Queue *qu,int16_t x);
+  int16_t (*deQueue)(struct Int16Queue *qu,int16_t *y);
+	int16_t (*print)(struct Int16Queue *qu);
+}Int16Queue;
+	void Int16QueueCreate(Int16Queue *sq,uint16_t size);
+		uint16_t Int16isEmpty(Int16Queue qu);
+			int16_t Int16enQueue(Int16Queue *qu,int16_t x);
+				int16_t Int16deQueue(Int16Queue *qu,int16_t *y);
+//					int16_t Int16printQueue(Int16Queue qu);
+	int16_t Int16printQueue(Int16Queue* qu);
 #endif	// __DATASTRUCTURE_H
 /*-----------------------------------file of end------------------------------*/
 

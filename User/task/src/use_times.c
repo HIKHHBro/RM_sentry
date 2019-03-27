@@ -1,17 +1,17 @@
 /**
 	|--------------------------------- Copyright --------------------------------|
 	|                                                                            |
-	|                      (C) Copyright 2018,海康平头哥,                         |
+	|                      (C) Copyright 2019,海康平头哥,                         |
 	|           1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China      |
 	|                           All Rights Reserved                              |
 	|                                                                            |
 	|           By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)         |
 	|                    https://github.com/GCUWildwolfteam                      |
 	|----------------------------------------------------------------------------|
-	|--FileName    : user.c                                              
+	|--FileName    : use_times.c                                              
 	|--Version     : v1.0                                                          
 	|--Author      : 海康平头哥                                                     
-	|--Date        : 2018-11-27             
+	|--Date        : 2019-03-27             
 	|--Libsupports : 
 	|--Description :                                                     
 	|--FunctionList                                                     
@@ -23,23 +23,27 @@
 	|-------2. ...                                                       
 	|-----------------------------declaration of end-----------------------------|
  **/
-#include "user.h" 
-//#include "use_times.h" 
- /**
-	* @Data    2019-01-16 19:28
-	* @brief  系统初始化
-	* @param   void
-	* @retval  void
-	*/
-		void SysInit(void)
-		{ 
-			SysInitCreate();
-#ifdef DEBUG_BY_KEIL //keil调试初始化
-			DebugByKeilInit();
-#endif
-		}
-/*-----------------------------------file of end------------------------------*/
- 
+#include "use_times.h" 
+//osTimerId gimbalGetStatusTimerHandle;
+//void GimbalGetStatusCallback(void const * argument);
+//	/**
+//		* @Data    2019-03-27 09:37
+//		* @brief   软件定时器的创建
+//		* @param   void
+//		* @retval  void
+//		*/
+//		void UserTimeCreate(void)
+//		{
+//       osStatus timerresult = osOK;
+//			osTimerDef(GimbalGetStatusTimer, GimbalGetStatusCallback);
+//      gimbalGetStatusTimerHandle = osTimerCreate(osTimer(GimbalGetStatusTimer), osTimerPeriodic, NULL);
+//        timerresult = osTimerStart(gimbalGetStatusTimerHandle,100);
+//      if(timerresult !=osOK)
+//      {
+//        //添加报错机制
+//      }
+//		}
 
+/*-----------------------------------file of end------------------------------*/
 
 

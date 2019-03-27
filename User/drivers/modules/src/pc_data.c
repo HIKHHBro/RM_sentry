@@ -78,15 +78,15 @@ void Pc_ParseData(pcDataStruct* pc)
     tem_pitch= (int16_t)((pc_databuff[3]<<8) | pc_databuff[4]);
       __tem_pitch = (tem_pitch-165);
     pc->pitch_target_angle = PitchDataConversion(__tem_pitch);
-     pc->commot =1 ;//pc_databuff[5];
+     pc->commot =pc_databuff[5];
       pc->shoot_commot = pc_databuff[6];
       pc->fps = (pc_databuff[8]<<8)|pc_databuff[9];
       lastpc  = *pc;
     }
     else
     {
-       pc->commot = 1;//pc_databuff[5];
-       pc->shoot_commot = 1;
+       pc->commot = 0;//pc_databuff[5];
+    pc->shoot_commot = 0;
        lastpc  = *pc;
     }    
 //    

@@ -43,10 +43,19 @@
 				{																									\
 					CLEAR_BIT(gimbal_t.status,DISABLE_MOD_RUNNING);	\
 					SET_BIT(gimbal_t.status,_status_);							\
+				}while(0)	
+#define SET_READ_STATUS(__status_)  											\
+				do																								\
+				{																									\
+					CLEAR_BIT(gimbal_t.status,DISABLE_MOD_READ);	\
+					SET_BIT(gimbal_t.status,__status_);							\
 				}while(0)																					\
 /* -------------- 私有宏 ----------------- */
 	#define QUEUE_LEN      5U//深度为5
 	#define  QUEUE_SIZE    8U//长度为5;
+  #define  MEMORY_SPAN   (50)          //   1000ms = 50*20
+  #define  QUEUE_YAW_STATUS_SIZE      20//则记忆长度为1s 精度为50
+ #define   QUEUE_PITCH_STATUS_SIZE    20//长度10，则记忆长度为1s
 /* -------------- 结构体声明 ----------------- */
 	gimbalStruct gimbal_t;//云台结构体
   RM6623Struct yaw_t;//yaw轴电机
@@ -63,7 +72,13 @@
   xQueueHandle gimbal_queue;
 /* ----------------- 任务钩子函数 -------------------- */
 	void StartRammerTask(void const *argument);
-/* -------------- 私有函数 ----------------- */
+        
+ /* -------------- 软件定时器 ----------------- */       
+osTimerId gimbalGetStatusTimerHandle;
+void GimbalGetStatusCallback(void const * argument);
+/* ------------ 记录云台历史状态队列 ---------------- */
+Int16Queue yawStatusQu;
+Int16Queue pitchStatusQu;
 /* ----------------- 临时变量 -------------------- */
     int16_t taddd =0;
     int16_t xianfuweizhi =3000;
@@ -89,6 +104,9 @@
 		BrushlessMotorInit();
   /* ------ 创建云台发送队列 ------- */
 	  gimbal_queue	= xQueueCreate(QUEUE_LEN,QUEUE_SIZE);//一定要在用之前创建队列
+  /* ------ 创建云台历史状态队列 ------- */
+    Int16QueueCreate(&yawStatusQu,QUEUE_YAW_STATUS_SIZE);
+    Int16QueueCreate(&pitchStatusQu,QUEUE_PITCH_STATUS_SIZE);
  	/* ------ 设置初始化标志位 ------- */
 		SET_BIT(gimbal_t.status,INIT_OK);
 	/* ------ 挂起任务，等待初始化 ------- */
@@ -96,8 +114,16 @@
 	/* ------ 设置机器人初始化状态 ------- */
 		SetGimBalInitStatus();
  /* ------ 创建拨弹任务 ------- */
-	osThreadDef(startRammerTask,StartRammerTask,osPriorityNormal,0,RAMMER_HEAP_SIZE);
-	startRammerTaskHandle = osThreadCreate(osThread(startRammerTask),NULL);
+    osThreadDef(startRammerTask,StartRammerTask,osPriorityNormal,0,RAMMER_HEAP_SIZE);
+    startRammerTaskHandle = osThreadCreate(osThread(startRammerTask),NULL);
+    osStatus timerresult = osOK;
+    osTimerDef(GimbalGetStatusTimer, GimbalGetStatusCallback);
+    gimbalGetStatusTimerHandle = osTimerCreate(osTimer(GimbalGetStatusTimer), osTimerPeriodic, NULL);
+    timerresult = osTimerStart(gimbalGetStatusTimerHandle,MEMORY_SPAN);
+    if(timerresult !=osOK)
+    {
+      //添加报错机制
+    }
 	}
 /**
 	* @Data    2019-01-28 11:40
@@ -354,7 +380,7 @@
 
   /**
   * @Data    2019-03-21 01:39
-  * @brief   yaw轴pid控制
+  * @brief   yaw 轴pid控制
   * @param   void
   * @retval  void
   */
@@ -371,7 +397,7 @@
   }
   /**
   * @Data    2019-03-21 01:40
-  * @brief   pitch轴pid控制
+  * @brief   pitch 轴pid控制
   * @param   void
   * @retval  void
   */
@@ -543,7 +569,10 @@ void ControlSwitch(uint32_t commot)
      break;
    case GIMBAL_PC_SHOOT_MODE_READ:
      PcControlMode();
-     break;
+		  break;
+	case FRAME_DROP_BUFFER_READ:
+	   FrameDropBufferMode();
+    break;
       case RC_MODE_READ:
         GimbalRcControlMode();
      break;
@@ -570,24 +599,28 @@ void ControlSwitch(uint32_t commot)
        switch (gimbal_t.pPc_t->commot)
        {
          case 0:
-             SET_BIT(gimbal_t.status,SCAN_MODE_READ);
-             CLEAR_BIT(gimbal_t.status,GIMBAL_PC_SHOOT_MODE_READ);
-             CLEAR_BIT(gimbal_t.status,RC_MODE_READ);
+				 SET_READ_STATUS(FRAME_DROP_BUFFER_READ);
+            //  SET_BIT(gimbal_t.status,SCAN_MODE_READ);
+            //  CLEAR_BIT(gimbal_t.status,GIMBAL_PC_SHOOT_MODE_READ);
+            //  CLEAR_BIT(gimbal_t.status,RC_MODE_READ);
            break;
          case 1:
-            SET_BIT(gimbal_t.status,GIMBAL_PC_SHOOT_MODE_READ);
-           CLEAR_BIT(gimbal_t.status,SCAN_MODE_READ);
-             CLEAR_BIT(gimbal_t.status,RC_MODE_READ);
+				  SET_READ_STATUS(GIMBAL_PC_SHOOT_MODE_READ);
+          //   SET_BIT(gimbal_t.status,GIMBAL_PC_SHOOT_MODE_READ);
+          //  CLEAR_BIT(gimbal_t.status,SCAN_MODE_READ);
+          //    CLEAR_BIT(gimbal_t.status,RC_MODE_READ);
            break;
+					
          default:
             break;
        }
     }
     else if(gimbal_t.pRc_t->switch_right ==2)
     {
-      SET_BIT(gimbal_t.status,RC_MODE_READ);
-      CLEAR_BIT(gimbal_t.status,SCAN_MODE_READ);
-      CLEAR_BIT(gimbal_t.status,GIMBAL_PC_SHOOT_MODE_READ);
+			 SET_READ_STATUS(RC_MODE_READ);
+      // SET_BIT(gimbal_t.status,RC_MODE_READ);
+      // CLEAR_BIT(gimbal_t.status,SCAN_MODE_READ);
+      // CLEAR_BIT(gimbal_t.status,GIMBAL_PC_SHOOT_MODE_READ);
     }   
     return (gimbal_t.status & JUDGE_READ);
   }
@@ -603,7 +636,7 @@ void ControlSwitch(uint32_t commot)
     int16_t rcscok_up = 400;
   int16_t rcscok_down = 3000;
   int16_t rctemp;
-  int16_t seepdd =1;
+  int16_t seepdd =7;
 void GimbalRcControlMode(void)
 {
   if((gimbal_t.status&RC_MODE_RUNING) != RC_MODE_RUNING)
@@ -639,14 +672,6 @@ void GimbalRcControlMode(void)
                    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
   rctemp =(int16_t)(gimbal_t.pRc_t->ch3 * iii);
   
-//        if( gimbal_t.pYaw_t->target>20480)
-//        {
-//          gimbal_t.pYaw_t->target = gimbal_t.pYaw_t->target-20480;
-//        }
-//        else if( gimbal_t.pYaw_t->target < 0)
-//        {
-//          gimbal_t.pYaw_t->target = 20480 + gimbal_t.pYaw_t->target;
-//        } 
         gimbal_t.pPitch_t->target -= (int16_t)(gimbal_t.pRc_t->ch4 * yyyy);
         gimbal_t.pPitch_t->target = MAX(gimbal_t.pPitch_t->target,rcscok_down);
         gimbal_t.pPitch_t->target = MIN(gimbal_t.pPitch_t->target,rcscok_up);
@@ -765,17 +790,42 @@ void GimbalDeinit(void)
 }
 /**
 	* @Data    2019-03-26 21:17
-	* @brief   掉帧缓冲
+	* @brief   掉帧缓冲模式
 	* @param   void
 	* @retval  void
 	*/
+int16_t ayaw;
+int16_t apitch;
+int16_t f_lock_yawshijue;
+int16_t lock_ptichshij;
 	void FrameDropBufferMode(void)
 	{
+//		int16_t yaw_er;
+//		int16_t pitch_er;
+//		int16_t loyaw_er;
+//		int16_t lopitch_er;
 		if((gimbal_t.status&FRAME_DROP_BUFFER_RUNING) != FRAME_DROP_BUFFER_RUNING)
 		{
 			SetFrameDropBufferStatus();
+			
+		 gimbal_t.pPitch_t->ppostionPid_t->error = -gimbal_t.pPitch_t->ppostionPid_t->error;
+     gimbal_t.pYaw_t->ppostionPid_t->error = -gimbal_t.pYaw_t->ppostionPid_t->error ;
+			// lock_yawshijue = gimbal_t.pYaw_t->real_angle;
+			// lock_ptichshij = gimbal_t.pPitch_t->real_angle;
+			// GetTrend(yaw_er,pitch_er);
+			// gimbal_t.pPitch_t->ppostionPid_t->error = pitch_er*ayaw;
+			// gimbal_t.pYaw_t->ppostionPid_t->error =  yaw_er*apitch;
+			// if(gimbal_t.pPitch_t->ppostionPid_t->error >0)
+			// lock_ptichshij = lock_ptichshij+600;
+			// else 	lock_ptichshij = lock_ptichshij-300;
+			// if ( gimbal_t.pYaw_t->ppostionPid_t->error >0)
+			// lock_yawshijue += 1700;
+			// else 	lock_yawshijue -= 1700;
 		}
+		// if(gimbal_t.pYaw_t->real_angle > lock_yawshijue)
+		// {
 
+		// }
 	}
 	/**
 		* @Data    2019-03-26 21:32
@@ -786,6 +836,40 @@ void GimbalDeinit(void)
 		void SetFrameDropBufferStatus(void)
 		{
 			SET_RUNING_STATUS(FRAME_DROP_BUFFER_RUNING);
-			
+     __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_SPEED);
+		__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_SPEED);
+     HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
+		 SetPcControlPID();
 		}
+/**
+	* @Data    2019-03-27 15:16
+	* @brief   掉出视野趋势计算
+	* @param   void
+	* @retval  void
+	*/
+	void GetTrend(int16_t* yaw_tr,int16_t* pitch_tr)
+	{
+		int16_t yawtrend[8];
+		int16_t pitchtrend[8];
+		for(uint8_t i=0;i<8;i++)
+		{
+	   	yawStatusQu.deQueue(&yawStatusQu,&yawtrend[i]);
+	   	pitchStatusQu.deQueue(&pitchStatusQu,&pitchtrend[i]);
+			*yaw_tr += yawtrend[i];
+			*pitch_tr += pitchtrend[i];
+		}
+		*yaw_tr = (int16_t)(*yaw_tr/8.0);
+		*pitch_tr = (int16_t)(*pitch_tr/8.0);
+	}
+/**
+  * @Data    2019-03-27 10:16
+  * @brief   云台软件定时器钩子函数
+  * @param   void
+  * @retval  void
+  */
+ void GimbalGetStatusCallback(void const * argument)
+  {
+    yawStatusQu.enQueue(&yawStatusQu,gimbal_t.pYaw_t->real_angle);
+    pitchStatusQu.enQueue(&pitchStatusQu,gimbal_t.pPitch_t->real_angle);
+  }
 /*-----------------------------------file of end------------------------------*/

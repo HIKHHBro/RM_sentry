@@ -26,16 +26,18 @@
 #ifndef __GIMBAL_H 
 #define __GIMBAL_H 
 #include "rammer.h" 
+#include "DataStructure.h" 
 /* -------------- 宏定义 ----------------- */
 #define GIMBAL_CAN_ID_L 0x204
 #define GIMBAL_CAN_ID_H 0x208
 	#define YAW_RX_ID 								0x205//YAW轴电机接收 id
 	#define PITCH_RX_ID 							0x206//PITCH轴电机接收 id
 	#define GIMBAL_CAN_TX_ID 					0x1ff//云台电机发送id
-	#define FRICTIONGEAR_SPEED 				(1700)	//摩擦轮速度
- #define YAW_LIMIMT_CUT                 (5000)//电流限幅
+	#define FRICTIONGEAR_SPEED 				(1000)	//摩擦轮速度
+ #define YAW_LIMIMT_CUT                 (6000)//电流限幅
   #define PITCH_LIMIMT_CUT                 (29000)//电流限幅
-  #define LINT_LIMINT                    (5000)
+  #define LINT_LIMINT                    (6000)
+	#define PASS_STATUS_LEN                 10//历史状态记忆长度
 typedef struct gimbalStruct
 {
   uint32_t status;
@@ -47,15 +49,11 @@ typedef struct gimbalStruct
   int16_t yaw_scan_target;
   int16_t pitch_scan_target;
 	
-	struct frameDropBuffer_t
-	{
-		int16_t yaw_last_position;
-		int16_t yaw_before_position;
-		int16_t yaw_last_before_position;
-		int16_t pitch_last_position;
-		int16_t pitch_before_position;
-		int16_t pitch_last_before_position;
-	}frameDropBuffer_t;
+	// struct frameDropBuffer_t
+	// {
+	// 	int16_t yaw_pass_position[PASS_STATUS_LEN];
+	// 	int16_t pitch_pass_position[PASS_STATUS_LEN];
+	// }frameDropBuffer_t;
 	
 } gimbalStruct;
 	void GimbalStructInit(const dbusStruct* pRc_t,const pcDataStruct* pPc_t);
@@ -80,8 +78,8 @@ void SetGeneralMode(void);
 void SetPcControlPID(void);
 void GimbalDeinit(void);
 		void SetFrameDropBufferStatus(void);
-
-
+	void GetTrend(int16_t* yaw_tr,int16_t* pitch_tr);
+		void FrameDropBufferMode(void);
 
 
 #define GIMBAL_CAL_ERROR(target,real) (CalculateError((target),(real),5500,(8192)))

@@ -55,7 +55,8 @@ void StartDebugByKeilTask(void const *argument);
      startDebugByKeilTaskHandle = osThreadCreate(osThread(debugByKeilTask), NULL); 
 //    pdebug_t.d_rc= GetRcStructAddr();
 //    pdebug_t.d_pchassis_t = GetChassisStructAddr();
-//			 DebugClassInit();      
+//			 DebugClassInit();   
+
     
   }
 /**
@@ -64,6 +65,7 @@ void StartDebugByKeilTask(void const *argument);
   * @param   void
   * @retval  void
   */
+  int16_t gggfffdg =0;
 void StartDebugByKeilTask(void const *argument)
 {
 #ifdef PRINTFTASKSTATUS
@@ -91,8 +93,7 @@ void StartDebugByKeilTask(void const *argument)
      taskEXIT_CRITICAL();
         osDelay(100);      
 #endif
-	osDelay(60);
-      
+        osDelay(100); 
 		}
 }
 /**

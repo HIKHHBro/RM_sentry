@@ -27,9 +27,14 @@
 #ifndef __USERFREERTOSCONFIG_H 
 #define __USERFREERTOSCONFIG_H 
 /* -------------- 软件定时器 ----------------- */
-	//  #define configUSE_TIMERS 
-	//  #define configTIMER_TASK_PRIORITY 1
-	//   #define configTIMER_QUEUE_LENGTH 
+//是否编译定时器相关代码， 如需要使用定时器， 设置为 1 
+#define configUSE_TIMERS 1
+//设置定时器Daemon 任务优先级， 如果优先级太低， 可能导致定时器无法及时执行 
+#define configTIMER_TASK_PRIORITY  (2)
+//设置定时器Daemon 任务的命令队列深度， 设置定时器都是通过发送消息到该队列实现的。 
+#define configTIMER_QUEUE_LENGTH   10
+//设置定时器Daemon 任务的栈大小
+#define configTIMER_TASK_STACK_DEPTH  256
 	/* ----------------- 任务堆栈大小设置 -------------------- */
    #define SYS_INIT_HEAP_SIZE    512//系统初始任务
    #define PARSE_HEAP_SIZE       1024//数据解析任务
@@ -54,7 +59,8 @@
 						 SYS_DETEC_HEAP_SIZE+					\
 						 RAMMER_HEAP_SIZE +          \
 						 TX_HEAP_SIZE +               \
-             QUEUE_HEAP_SIZE              \
+             QUEUE_HEAP_SIZE +             \
+						 configTIMER_TASK_STACK_DEPTH   \
 																			 ) * 7))
 		
 
