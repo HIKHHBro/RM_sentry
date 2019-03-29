@@ -175,6 +175,37 @@
 //				rammerInnerLoopPid_t.kd = 0;
 //				rammerInnerLoopPid_t.ki = 0;
 	}
+  
+int16_t hot_flag=0;
+void Shoot(uint8_t speed,uint8_t buffer_on)
+{
+  if(speed ==0)
+  {
+    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_1_START_V);
+    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_2_START_V);
+    SetRammerPID(0);
+//    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
+
+  }
+  else if(speed >0)
+  {
+    if(speed >8&& buffer_on ==1)
+    {
+      if(hot_flag > 100)
+     buffer_on =0;
+      hot_flag++;
+    }
+    else if(speed >8&& buffer_on ==0)
+    {
+      speed =8;
+    }
+    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,1700);
+    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,1700);
+//    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
+    SetRammerPID(speed);
+  }
+}
+
 /*-----------------------------------file of end------------------------------*/
 
 

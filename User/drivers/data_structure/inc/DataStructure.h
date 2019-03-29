@@ -26,18 +26,18 @@
 #ifndef __DATASTRUCTURE_H 
 #define __DATASTRUCTURE_H 
 #include "baseclass.h "
-#define MAXSIZE    8
+#define MAXSIZE    5
 #define QUEUE_ADDER   10
 typedef struct SqQueue{
-	float data[MAXSIZE];
+	int16_t data[MAXSIZE];
 	unsigned char front;//队首指针
 	unsigned char rear;//队尾指针
 	unsigned char size;//队列长度
 }SqQueue;
-SqQueue GyinitQueue(void);
+	void GyinitQueue(SqQueue *sq);
 char isEmpty(SqQueue qu);
-float enQueue(SqQueue *qu,float x,uint8_t size);
-float deQueue(SqQueue *qu,float *y,uint8_t size);
+int16_t enQueue(SqQueue *qu,int16_t x,uint8_t size);
+int16_t deQueue(SqQueue *qu,int16_t *y,uint8_t size);
 
 /* -------------- int16_t 循环队列 ----------------- */
 

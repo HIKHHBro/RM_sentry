@@ -32,13 +32,9 @@
 	* @param   void
 	* @retval  void
 	*/
-	SqQueue GyinitQueue(void)
+	void GyinitQueue(SqQueue *sq)
 	{
-		SqQueue *sq=(struct SqQueue*)malloc(sizeof(struct SqQueue));
-		if(sq ==NULL)
-			return (*sq);
 		sq->rear=sq->front=0;
-		return *sq;
 	}
 /**
 	* @Data    2019-02-21 15:03
@@ -56,7 +52,7 @@
 	* @param   void
 	* @retval  void
 	*/
-	float enQueue(SqQueue *qu,float x,uint8_t size)
+	int16_t enQueue(SqQueue *qu,int16_t x,uint8_t size)
 	{
 		if((qu->rear+1)%size ==qu->front){
 			return 0;
@@ -71,7 +67,7 @@
 	* @param   void
 	* @retval  void
 	*/
-	float deQueue(SqQueue *qu,float *y,uint8_t size)
+	int16_t deQueue(SqQueue *qu,int16_t *y,uint8_t size)
 	{
 		if(qu->rear ==qu->front){
 			return 0;

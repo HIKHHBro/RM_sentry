@@ -541,16 +541,16 @@ void PcControlMode(void)
   if((gimbal_t.status&PC_SHOOT_MODE_RUNING) != PC_SHOOT_MODE_RUNING)
   {
     //目标值切换，状态切换
-     CLEAR_BIT(gimbal_t.status,SCAN_MODE_RUNING);//清除pc控制标志位
-     CLEAR_BIT(gimbal_t.status,RC_MODE_RUNING);
-     SET_BIT(gimbal_t.status,PC_SHOOT_MODE_RUNING);
+    SET_RUNING_STATUS(PC_SHOOT_MODE_RUNING);
      gimbal_t.pPitch_t->ppostionPid_t->error =0;
     gimbal_t.pYaw_t->ppostionPid_t->error =0;
     SetPcControlPID();
+    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
       __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_SPEED);
 		__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_SPEED);
 //    if(gimbal_t.pPitch_t->ppostionPid_t->error - gimbal_t.pPc_t->pitch_target_angle)
   }
+  Shoot(5,0);
    gimbal_t.pPitch_t->ppostionPid_t->error  = (int16_t)(gimbal_t.pPc_t->pitch_target_angle * pitchcin);
   gimbal_t.pYaw_t->ppostionPid_t->error = (int16_t)(gimbal_t.pPc_t->yaw_target_angle * pitchcin);
 }
@@ -641,10 +641,7 @@ void GimbalRcControlMode(void)
 {
   if((gimbal_t.status&RC_MODE_RUNING) != RC_MODE_RUNING)
   {
-
-     CLEAR_BIT(gimbal_t.status,PC_SHOOT_MODE_RUNING);//清除pc控制标志位
-     CLEAR_BIT(gimbal_t.status,SCAN_MODE_RUNING);
-     SET_BIT(gimbal_t.status,RC_MODE_RUNING);
+     SET_RUNING_STATUS(RC_MODE_RUNING);
         //目标值切换，状态切换
     gimbal_t.pPitch_t->target = gimbal_t.pPitch_t->real_angle;
     gimbal_t.pYaw_t->target = gimbal_t.pYaw_t->real_angle;
@@ -666,9 +663,9 @@ void GimbalRcControlMode(void)
   }
   if(gimbal_t.pRc_t->ch2 >600)
   {
-    SetRammerPID(seepdd);
+     Shoot(6,0);
   }
-  else SetRammerPID(0);
+  else  Shoot(0,0);
                    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
   rctemp =(int16_t)(gimbal_t.pRc_t->ch3 * iii);
   
@@ -716,10 +713,13 @@ void GImbalAnticipation(void)
 * @param   void
 * @retval  void
 */
+float kp_test=13;
+float ki_test=0.2;
+float kd_test=30;
 void SetPcControlPID(void)
 {
-  			gimbal_t.pYaw_t->ppostionPid_t->kp = -3;
-				gimbal_t.pYaw_t->ppostionPid_t->kd = 0;
+  			gimbal_t.pYaw_t->ppostionPid_t->kp = -1.3;
+				gimbal_t.pYaw_t->ppostionPid_t->kd = -5;
 				gimbal_t.pYaw_t->ppostionPid_t->ki = 0;
 				gimbal_t.pYaw_t->ppostionPid_t->error = 0;
 				gimbal_t.pYaw_t->ppostionPid_t->last_error = 0;//上次误差
@@ -731,9 +731,9 @@ void SetPcControlPID(void)
 				gimbal_t.pYaw_t->ppostionPid_t->pid_out = 0;//pid输出
   
   						/* ------ 外环pid参数 ------- */
-				gimbal_t.pPitch_t->ppostionPid_t->kp = 24;
-				gimbal_t.pPitch_t->ppostionPid_t->kd = 85;
-				gimbal_t.pPitch_t->ppostionPid_t->ki = 0.5;
+				gimbal_t.pPitch_t->ppostionPid_t->kp = kp_test;
+				gimbal_t.pPitch_t->ppostionPid_t->kd = kd_test;
+				gimbal_t.pPitch_t->ppostionPid_t->ki = ki_test;
 				gimbal_t.pPitch_t->ppostionPid_t->error = 0;
 				gimbal_t.pPitch_t->ppostionPid_t->last_error = 0;//上次误差
 				gimbal_t.pPitch_t->ppostionPid_t->integral_er = 0;//误差积分
@@ -788,45 +788,6 @@ void GimbalDeinit(void)
 		__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_2_START_V);
     HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
 }
-/**
-	* @Data    2019-03-26 21:17
-	* @brief   掉帧缓冲模式
-	* @param   void
-	* @retval  void
-	*/
-int16_t ayaw;
-int16_t apitch;
-int16_t f_lock_yawshijue;
-int16_t lock_ptichshij;
-	void FrameDropBufferMode(void)
-	{
-//		int16_t yaw_er;
-//		int16_t pitch_er;
-//		int16_t loyaw_er;
-//		int16_t lopitch_er;
-		if((gimbal_t.status&FRAME_DROP_BUFFER_RUNING) != FRAME_DROP_BUFFER_RUNING)
-		{
-			SetFrameDropBufferStatus();
-			
-		 gimbal_t.pPitch_t->ppostionPid_t->error = -gimbal_t.pPitch_t->ppostionPid_t->error;
-     gimbal_t.pYaw_t->ppostionPid_t->error = -gimbal_t.pYaw_t->ppostionPid_t->error ;
-			// lock_yawshijue = gimbal_t.pYaw_t->real_angle;
-			// lock_ptichshij = gimbal_t.pPitch_t->real_angle;
-			// GetTrend(yaw_er,pitch_er);
-			// gimbal_t.pPitch_t->ppostionPid_t->error = pitch_er*ayaw;
-			// gimbal_t.pYaw_t->ppostionPid_t->error =  yaw_er*apitch;
-			// if(gimbal_t.pPitch_t->ppostionPid_t->error >0)
-			// lock_ptichshij = lock_ptichshij+600;
-			// else 	lock_ptichshij = lock_ptichshij-300;
-			// if ( gimbal_t.pYaw_t->ppostionPid_t->error >0)
-			// lock_yawshijue += 1700;
-			// else 	lock_yawshijue -= 1700;
-		}
-		// if(gimbal_t.pYaw_t->real_angle > lock_yawshijue)
-		// {
-
-		// }
-	}
 	/**
 		* @Data    2019-03-26 21:32
 		* @brief   掉帧缓冲状态设置
@@ -838,8 +799,7 @@ int16_t lock_ptichshij;
 			SET_RUNING_STATUS(FRAME_DROP_BUFFER_RUNING);
      __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_SPEED);
 		__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_SPEED);
-     HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
-		 SetPcControlPID();
+     HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
 		}
 /**
 	* @Data    2019-03-27 15:16
@@ -872,4 +832,114 @@ int16_t lock_ptichshij;
     yawStatusQu.enQueue(&yawStatusQu,gimbal_t.pYaw_t->real_angle);
     pitchStatusQu.enQueue(&pitchStatusQu,gimbal_t.pPitch_t->real_angle);
   }
+
+/**
+	* @Data    2019-03-26 21:17
+	* @brief   掉帧缓冲模式
+	* @param   void
+	* @retval  void
+	*/
+int16_t y_lock;
+int16_t p_lock;
+uint8_t buffer_flag =0;
+  int16_t go_back = 10;
+  int16_t go_back_lock = 800;
+	void FrameDropBufferMode(void)
+	{
+		if((gimbal_t.status&FRAME_DROP_BUFFER_RUNING) != FRAME_DROP_BUFFER_RUNING)
+		{
+			
+			SetFrameDropBufferStatus();
+			if(gimbal_t.pYaw_t->ppostionPid_t->error > 100)///右边
+			{
+         y_lock = 1000;
+			 gimbal_t.pYaw_t->target	= SetLock(gimbal_t.pYaw_t->real_angle,y_lock);
+			}
+		 if(gimbal_t.pYaw_t->ppostionPid_t->error < -100)//左边
+			{
+				 y_lock = -1000;
+		  	gimbal_t.pYaw_t->target	= SetLock(gimbal_t.pYaw_t->real_angle,y_lock);
+			}
+			SetGeneralMode();
+      
+      gimbal_t.pPitch_t->target = gimbal_t.pPitch_t->real_angle;
+      if(gimbal_t.pPitch_t->target >go_back_lock)
+      {
+        go_back = (0 -go_back);
+      }
+        
+		}
+    Shoot(0,0);
+//   gimbal_t.pPitch_t->target  +=  go_back;
+		  gimbal_t.pPitch_t->ppostionPid_t->error = CalculateError(gimbal_t.pPitch_t->target,( gimbal_t.pPitch_t->real_angle),5500,(8192));//待测试
+      gimbal_t.pYaw_t->ppostionPid_t->error = CalculateError((gimbal_t.pYaw_t->target),(gimbal_t.pYaw_t->real_angle),15000,(20480));//待测试
+	if(ABS(gimbal_t.pYaw_t->ppostionPid_t->error) < 100)
+    {
+	     gimbal_t.pYaw_t->target	= SetLock(gimbal_t.pYaw_t->real_angle,-y_lock);
+        buffer_flag =1;
+    }
+    else if((ABS(gimbal_t.pYaw_t->ppostionPid_t->error) < 100) && (buffer_flag ==1))
+    {
+			CLEAR_BIT(gimbal_t.status,DISABLE_GIMBAL);
+    }
+
+	}
+
+int16_t SetLock(int16_t r,int16_t t)
+{
+  if(r + t > 20480)
+   r = 20480 -(r + t );
+   else if (r + t <0)
+   r =  t+20480+r;
+  else r = t+r;
+	return r;
+}
+//发射
+//  //热量
+//  uint8_t hot_bool(void)
+//  {
+//    if(shoot_data_t.bullet_freq > 200)
+//     return 2;
+//   if(shoot_data_t.bullet_freq<=200)
+//     return 1;
+//  }
+// int16_t aa=0;
+// void Shoot(uint8_t speed,uint8_t e)
+// {
+//   if(speed ==0)
+//   {
+//     __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_1_START_V);
+//     __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_2_START_V);
+//     HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
+
+//   }
+//   else if(speed >0)
+//   {
+//     if(speed >8&& e ==1)
+//     {
+//       if(aa > 100)
+//       e =0;
+//       aa++;
+//     }
+//     else if(speed >8&& e ==0)
+//     {
+//       speed =5;
+//     }
+//     __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,1700);
+//     __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,1700);
+//     HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
+//     SetRammerPID(speed);
+//   }
+// }
+
+// void AiShoot(uint32_t status)
+// {
+//   // get(dis);
+//   if(dis > 300)
+//   {
+//     Shoot()
+//   }
+// }
+
+	
 /*-----------------------------------file of end------------------------------*/

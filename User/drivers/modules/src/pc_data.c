@@ -29,6 +29,8 @@
 #define  PC_DATA_LEN_BSP (PC_DATA_LEN+3)
 uint8_t pc_databuff[10];
 static pcDataStruct lastpc;
+SqQueue pc_yaw_queue;
+SqQueue pc_pitch_queue;
     /**
     * @Data    2019-03-21 00:22
     * @brief   小电脑数据接收初始化
@@ -46,6 +48,8 @@ static pcDataStruct lastpc;
       pc->yaw_target_angle = 0;
       pc->commot = 0;
       pc->status = 0;
+      GyinitQueue(&pc_yaw_queue);
+      GyinitQueue(&pc_pitch_queue);
       if(UsartAndDMAInit(PC_DATA_UASRT,PC_DATA_LEN_BSP,ENABLE) != HAL_OK)
       {
         //报错机制
@@ -60,6 +64,8 @@ static pcDataStruct lastpc;
 * @param   void
 * @retval  void
 */
+      int16_t flagdf=0;
+    int16_t temmmm;
       int16_t tem_yaw;
   int16_t tem_pitch;
      int16_t __tem_yaw;
@@ -76,18 +82,46 @@ void Pc_ParseData(pcDataStruct* pc)
       __tem_yaw = (tem_yaw-334);
     pc->yaw_target_angle = YawDataConversion(__tem_yaw);
     tem_pitch= (int16_t)((pc_databuff[3]<<8) | pc_databuff[4]);
-      __tem_pitch = (tem_pitch-165);
+      __tem_pitch = (tem_pitch-365);
     pc->pitch_target_angle = PitchDataConversion(__tem_pitch);
      pc->commot =pc_databuff[5];
       pc->shoot_commot = pc_databuff[6];
       pc->fps = (pc_databuff[8]<<8)|pc_databuff[9];
+      enQueue(&pc_yaw_queue,pc->yaw_target_angle,MAXSIZE);
+      deQueue(&pc_yaw_queue,&temmmm,MAXSIZE);
+//      enQueue(&pc_pitch_queue,pc->pitch_target_angle,MAXSIZE);
+//      deQueue(&pc_pitch_queue,&temmmm,MAXSIZE);
+      for(uint8_t i=0;i<MAXSIZE;i++)
+      {
+        pc->yaw_target_angle +=pc_yaw_queue.data[i];
+//         pc->pitch_target_angle += pc_pitch_queue.data[i];
+      }
+      pc->yaw_target_angle = (int16_t)(pc->yaw_target_angle * 0.2);
+//      pc->pitch_target_angle  = (int16_t)(pc->pitch_target_angle* 0.2);
       lastpc  = *pc;
+      if(flagdf <-20)
+      {
+        flagdf =0;
+      }
+      else   flagdf--;
+     
     }
-    else
+    else if(pc_databuff[0] == 0xA5)
     {
+      if(flagdf > 20)
+      {
+        pc->yaw_target_angle =0;
+      pc->pitch_target_angle =0;
        pc->commot = 0;//pc_databuff[5];
-    pc->shoot_commot = 0;
-       lastpc  = *pc;
+       pc->shoot_commot = 0;
+      }
+      else 
+      {
+        flagdf++;
+         *pc =  lastpc;
+      }
+
+      
     }    
 //    
 //    else if((pc->yaw_target_angle > 320)||(pc->yaw_target_angle <-320))
@@ -102,7 +136,7 @@ void Pc_ParseData(pcDataStruct* pc)
   }
   else
   {
-     *pc = lastpc;
+     
   }
   
 }
@@ -128,10 +162,10 @@ int16_t pzhengxiao = 0;
 float pzhengxixiaoen = 0;
 int16_t YawDataConversion(int16_t yaw)
 {
-   if((yaw > lockqu)||(yaw <-lockqu))
-    {
-     return 0;
-    }
+//   if((yaw > lockqu)||(yaw <-lockqu))
+//    {
+//     return 0;
+//    }
 //  else if((yaw > zhengda) || (yaw < -zhengda))
 //  {
 //    return (int16_t)(yaw*(-zhengdacen));
@@ -140,18 +174,18 @@ int16_t YawDataConversion(int16_t yaw)
 //  {
 //    return (int16_t)(yaw*(-zhengzhongcen));
 //  }
-  else
-  {
+//  else
+//  {
      return (int16_t)(yaw*(-zhengxixiaoen));
-  }
+//  }
 }
-
+int16_t pitch_coe =1;
 int16_t PitchDataConversion(int16_t pitch)
 {
-   if((pitch > plockqu)||(pitch <-plockqu))
-    {
-     return 0;
-    }
+//   if((pitch > plockqu)||(pitch <-plockqu))
+//    {
+//     return 0;
+//    }
 //  if((pitch >pzhengda) || (pitch < -pzhengda))
 //  {
 //   
@@ -161,11 +195,12 @@ int16_t PitchDataConversion(int16_t pitch)
 //  {
 //    return (int16_t)(pitch*pzhengzhongcen);
 //  }
-  else
-  {
-     return pitch;
-  }
+//  else
+//  {
+//     return pitch *pitch_coe;
+//  }
 }
+
 
 /*------------------------------------file of end-------------------------------*/
 

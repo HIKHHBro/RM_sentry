@@ -120,7 +120,6 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>?皐般??皐般?</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -164,7 +163,7 @@
           <Type>0</Type>
           <LineNumber>957</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134224650</Address>
+          <Address>134225274</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -250,277 +249,317 @@
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pc_t,0x0A</ItemText>
+          <ItemText>stemptme____,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>stemptme____,0x0A</ItemText>
+          <ItemText>stemp__,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>stemp__,0x0A</ItemText>
+          <ItemText>flaff__</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
           <WinNumber>1</WinNumber>
-          <ItemText>flaff__</ItemText>
+          <ItemText>ssssss,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>18</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ssssss,0x0A</ItemText>
+          <ItemText>pitchspeed_,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>19</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pitchspeed_,0x0A</ItemText>
+          <ItemText>yawspeed_,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>20</count>
           <WinNumber>1</WinNumber>
-          <ItemText>yawspeed_,0x0A</ItemText>
+          <ItemText>ccccc</ItemText>
         </Ww>
         <Ww>
           <count>21</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ccccc</ItemText>
+          <ItemText>pitchcin</ItemText>
         </Ww>
         <Ww>
           <count>22</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pitchcin</ItemText>
+          <ItemText>yawcin</ItemText>
         </Ww>
         <Ww>
           <count>23</count>
           <WinNumber>1</WinNumber>
-          <ItemText>yawcin</ItemText>
+          <ItemText>lockqu,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>24</count>
           <WinNumber>1</WinNumber>
-          <ItemText>lockqu,0x0A</ItemText>
+          <ItemText>zhengda,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>25</count>
           <WinNumber>1</WinNumber>
-          <ItemText>zhengda,0x0A</ItemText>
+          <ItemText>zhengdacen,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>26</count>
           <WinNumber>1</WinNumber>
-          <ItemText>zhengdacen,0x0A</ItemText>
+          <ItemText>zhengzhong,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>27</count>
           <WinNumber>1</WinNumber>
-          <ItemText>zhengzhong,0x0A</ItemText>
+          <ItemText>zhengzhongcen,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>28</count>
           <WinNumber>1</WinNumber>
-          <ItemText>zhengzhongcen,0x0A</ItemText>
+          <ItemText>zhengxiao,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>29</count>
           <WinNumber>1</WinNumber>
-          <ItemText>zhengxiao,0x0A</ItemText>
+          <ItemText>zhengxixiaoen,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>30</count>
           <WinNumber>1</WinNumber>
-          <ItemText>zhengxixiaoen,0x0A</ItemText>
+          <ItemText>plockqu,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>31</count>
           <WinNumber>1</WinNumber>
-          <ItemText>plockqu,0x0A</ItemText>
+          <ItemText>pzhengda,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>32</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pzhengda,0x0A</ItemText>
+          <ItemText>pzhengdacen,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>33</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pzhengdacen,0x0A</ItemText>
+          <ItemText>pzhengzhong,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>34</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pzhengzhong,0x0A</ItemText>
+          <ItemText>pzhengzhongcen,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>35</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pzhengzhongcen,0x0A</ItemText>
+          <ItemText>pzhengxiao,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>36</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pzhengxiao,0x0A</ItemText>
+          <ItemText>pzhengxixiaoen,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>37</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pzhengxixiaoen,0x0A</ItemText>
+          <ItemText>tem_yaw,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>38</count>
           <WinNumber>1</WinNumber>
-          <ItemText>tem_yaw,0x0A</ItemText>
+          <ItemText>\\F427HIIxRMOLD\../User/drivers/modules/src/pc_data.c\tem_yaw</ItemText>
         </Ww>
         <Ww>
           <count>39</count>
           <WinNumber>1</WinNumber>
-          <ItemText>\\F427HIIxRMOLD\../User/drivers/modules/src/pc_data.c\tem_yaw</ItemText>
+          <ItemText>__tem_pitch,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>40</count>
           <WinNumber>1</WinNumber>
-          <ItemText>__tem_pitch,0x0A</ItemText>
+          <ItemText>__tem_yaw,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>41</count>
           <WinNumber>1</WinNumber>
-          <ItemText>__tem_yaw,0x0A</ItemText>
+          <ItemText>i,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>42</count>
           <WinNumber>1</WinNumber>
-          <ItemText>i,0x0A</ItemText>
+          <ItemText>pitchspeed_,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>43</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pitchspeed_,0x0A</ItemText>
+          <ItemText>robot_state_t,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>44</count>
           <WinNumber>1</WinNumber>
-          <ItemText>robot_state_t,0x0A</ItemText>
+          <ItemText>power_heat_data_t,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>45</count>
           <WinNumber>1</WinNumber>
-          <ItemText>power_heat_data_t,0x0A</ItemText>
+          <ItemText>game_robot_pos_t,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>46</count>
           <WinNumber>1</WinNumber>
-          <ItemText>game_robot_pos_t,0x0A</ItemText>
+          <ItemText>buff_musk_t,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>47</count>
           <WinNumber>1</WinNumber>
-          <ItemText>buff_musk_t,0x0A</ItemText>
+          <ItemText>robot_hurt_t,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>48</count>
           <WinNumber>1</WinNumber>
-          <ItemText>robot_hurt_t,0x0A</ItemText>
+          <ItemText>shoot_data_t,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>49</count>
           <WinNumber>1</WinNumber>
-          <ItemText>shoot_data_t,0x0A</ItemText>
+          <ItemText>cmd_id</ItemText>
         </Ww>
         <Ww>
           <count>50</count>
           <WinNumber>1</WinNumber>
-          <ItemText>cmd_id</ItemText>
+          <ItemText>reebuff,0x10</ItemText>
         </Ww>
         <Ww>
           <count>51</count>
           <WinNumber>1</WinNumber>
-          <ItemText>reebuff,0x10</ItemText>
+          <ItemText>chassis_t,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>52</count>
           <WinNumber>1</WinNumber>
-          <ItemText>chassis_t,0x0A</ItemText>
+          <ItemText>currrtext,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>53</count>
           <WinNumber>1</WinNumber>
-          <ItemText>currrtext,0x0A</ItemText>
+          <ItemText>xong,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>54</count>
           <WinNumber>1</WinNumber>
-          <ItemText>xong,0x0A</ItemText>
+          <ItemText>cur,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>55</count>
           <WinNumber>1</WinNumber>
-          <ItemText>cur,0x0A</ItemText>
+          <ItemText>pid_out,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>56</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pid_out,0x0A</ItemText>
+          <ItemText>sssy1,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>57</count>
           <WinNumber>1</WinNumber>
-          <ItemText>sssy1,0x0A</ItemText>
+          <ItemText>ssss1,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>58</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ssss1,0x0A</ItemText>
+          <ItemText>aaaaaaaaaa,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>59</count>
           <WinNumber>1</WinNumber>
-          <ItemText>aaaaaaaaaa,0x0A</ItemText>
+          <ItemText>rctemp,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>60</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rctemp,0x0A</ItemText>
+          <ItemText>iii</ItemText>
         </Ww>
         <Ww>
           <count>61</count>
           <WinNumber>1</WinNumber>
-          <ItemText>iii</ItemText>
+          <ItemText>dddd,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>62</count>
           <WinNumber>1</WinNumber>
-          <ItemText>dddd,0x0A</ItemText>
+          <ItemText>htim4,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>63</count>
           <WinNumber>1</WinNumber>
-          <ItemText>htim4,0x0A</ItemText>
+          <ItemText>RAMMER_TIME,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>64</count>
           <WinNumber>1</WinNumber>
-          <ItemText>RAMMER_TIME,0x0A</ItemText>
+          <ItemText>seepdd,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>65</count>
           <WinNumber>1</WinNumber>
-          <ItemText>seepdd,0x0A</ItemText>
+          <ItemText>rcscok_up,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>66</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rcscok_up,0x0A</ItemText>
+          <ItemText>pc_databuff</ItemText>
         </Ww>
         <Ww>
           <count>67</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pc_databuff</ItemText>
+          <ItemText>ieee,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>68</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ieee,0x0A</ItemText>
+          <ItemText>pc_t,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>69</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>zhengxixiaoen</ItemText>
+        </Ww>
+        <Ww>
+          <count>70</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>pc_yaw_queue,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>71</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>y_lock</ItemText>
+        </Ww>
+        <Ww>
+          <count>72</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>flagdf,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>73</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>kp_test</ItemText>
+        </Ww>
+        <Ww>
+          <count>74</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>ki_test</ItemText>
+        </Ww>
+        <Ww>
+          <count>75</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>kd_test</ItemText>
+        </Ww>
+        <Ww>
+          <count>76</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>go_back_lock,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>
@@ -533,6 +572,11 @@
           <count>1</count>
           <WinNumber>2</WinNumber>
           <ItemText>plockqu</ItemText>
+        </Ww>
+        <Ww>
+          <count>2</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>pitch_coe,0x0A</ItemText>
         </Ww>
       </WatchWindow2>
       <Tracepoint>

@@ -26,6 +26,7 @@
 #ifndef __PC_DATA_H 
 #define __PC_DATA_H 
 #include "bsp_usart.h"
+#include "DataStructure.h" 
 typedef struct pcDataStruct
 {
   uint32_t status;

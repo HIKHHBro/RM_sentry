@@ -44,6 +44,7 @@
 		int16_t PCycleNumerical(int16_t data);
 		int16_t MCycleNumerical(int16_t data);
     	void SetRammerPID(uint8_t speed);
+      void Shoot(uint8_t speed,uint8_t buffer_on);
 #endif	// __RAMMER_H
 /*-----------------------------------file of end------------------------------*/
 
