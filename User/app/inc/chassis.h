@@ -32,6 +32,9 @@
 #include "ultrasonic.h" 
 #include "currentmeter.h" 
 #include "power_buffer_pool.h"
+#include "communicate.h"
+#include "gyro.h" 
+#include "pc_data.h" 
 typedef struct chassisStruct
 {
 	RM3508Struct *pwheel1_t;
@@ -40,13 +43,16 @@ typedef struct chassisStruct
 	incrementalEnconderStruct* pchassisEnconder_t;
 	CAN_HandleTypeDef *hcanx;
   powerBufferPoolStruct*ppowerBufferPool_t;
-	
-	// struct State
-	// {
-	// 	uint8_t r_area;//当前所处区域
-	// 	uint8_t last_area;//上次所处区域//
-	// 	uint32_t 
-	// }State;//解析机器人所有状态
+  refereeSystemStruct* p_refereeSystem_t;
+	gy955Struct* pgyroByCan_t;
+	 const pcDataStruct* pPc_t;
+	struct State
+	{
+		int16_t  r_dire;
+		uint8_t r_area;//当前所处区域
+		uint8_t last_area;//上次所处区域//
+		uint8_t hurt;//被攻击的情况
+	}State;//解析机器人所有状态
 	
   uint32_t status;
 
@@ -62,7 +68,14 @@ typedef struct chassisStruct
 	#define W2_LIMIT_SPEED    			 6000  //轮子2速度限幅
 	#define RADIUS            			 30    //编码器轮子半径单位 mm
 	#define ENCONDER_POLES    			 500 
-	void ChassisInit(CAN_HandleTypeDef *hcan,const dbusStruct*rc);
+  #define  AHEAD_OF_ARMOR          0//前装甲
+	#define  BACK_OF_ARMOR           1 //前装甲
+	#define UP_ROAD                 0//上路靠启动区
+	#define MID_ROAD                 1//直道中路
+	#define DOWN_ROAD                 2//下路靠桥
+	#define TURNING_ANGLE             30//拐弯角度差
+  
+	void ChassisInit(CAN_HandleTypeDef *hcan,const dbusStruct*rc,const pcDataStruct* pPc_t);
 	void ChassisParseDate(uint16_t id,uint8_t *data);
 //	void ChassisUserCanTx(int16_t w1,int16_t w2);
 	HAL_StatusTypeDef ChassisCanTx(int16_t w1,int16_t w2);
@@ -76,6 +89,15 @@ const chassisStruct* GetChassisStructAddr(void);
      RM3508Struct* wheel2Init(void);
        RM3508Struct* wheel1Init(void);
         	void SetSetInitStatus(void);
+          uint8_t GetHurtStatus(void);
+				void ChassisCruiseModeInit(void);
+				void ChassisControlSwitch(uint32_t commot);
+				  uint32_t ChassisControlDecision(void);
+					void ChassisDeinit(void);
+						int16_t GetGyroDire(void);
+							uint8_t GetOrgans(void);
+								void SetArea(void);//激光和陀螺仪
+				//	void SetArea(void);
 #endif	// __CHASSIS_H
 	
 /*-----------------------------------file of end------------------------------*/

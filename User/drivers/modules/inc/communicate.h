@@ -121,8 +121,8 @@ typedef  struct ext_buff_musk_t
 }ext_buff_musk_t;
 typedef  struct ext_robot_hurt_t
 { 
-  uint8_t armor_id : 4; 
-  uint8_t hurt_type : 4; 
+  uint8_t armor_id; 
+  uint8_t hurt_type; 
 } ext_robot_hurt_t;
 typedef  struct shoot_data_t
 { 
@@ -130,6 +130,22 @@ typedef  struct shoot_data_t
   uint8_t bullet_freq; 
   float bullet_speed; 
 } ext_shoot_data_t;
+typedef  struct refereeSystemStruct
+{
+ ext_game_robot_state_t* p_robot_state_t;
+ ext_power_heat_data_t *p_power_heat_data_t;
+ ext_game_robot_pos_t*  p_game_robot_pos_t;
+ ext_buff_musk_t * p_buff_musk_t;
+ ext_robot_hurt_t* p_robot_hurt_t;
+ ext_shoot_data_t* p_shoot_data_t;
+}refereeSystemStruct;
+extern refereeSystemStruct ext_refereeSystem_t;
+//extern ext_game_robot_state_t robot_state_t;
+//extern ext_power_heat_data_t power_heat_data_t;
+//extern ext_game_robot_pos_t  game_robot_pos_t;
+//extern ext_buff_musk_t  buff_musk_t;
+//extern ext_robot_hurt_t robot_hurt_t;
+//extern ext_shoot_data_t shoot_data_t;
 #endif	// __COMMUNICATE_H
 /*-----------------------------------file of end------------------------------*/
 

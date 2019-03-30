@@ -73,7 +73,14 @@ HAL_StatusTypeDef CanFilterInit(CAN_HandleTypeDef* hcanx)
 	addr->filter.FilterScale = CAN_FILTERSCALE_32BIT;
 	addr->filter.FilterMode = CAN_FILTERMODE_IDMASK;
 	addr->filter.FilterActivation = ENABLE; //使能过滤器
-	addr->filter.SlaveStartFilterBank = 14;
+    if(hcanx->Instance ==CAN1)
+  {
+    	addr->filter.SlaveStartFilterBank = 0;
+  }
+  if(hcanx->Instance ==CAN2)
+  {
+        addr->filter.SlaveStartFilterBank = 14;
+  }
 	return (HAL_CAN_ConfigFilter(hcanx, &addr->filter)); //使能筛选器
 }
 /**
@@ -176,7 +183,11 @@ HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
 		canDataStrcut *addr;
 	  addr = GetCanAddr(hcan); //获取相应用户can结构体地址
 		HAL_CAN_GetRxMessage(hcan,CAN_RX_FIFO0,&addr->rxMsg,addr->rxdata);
+        if(hcan->Instance ==CAN1)
     can_rx(addr->rxMsg.StdId,addr->rxdata);
+    if(hcan->Instance ==CAN2)
+      can2_rx(addr->rxMsg.StdId,addr->rxdata);
+//    can_rx(addr->rxMsg.StdId,addr->rxdata);
 //待解决can高速中断造成队列满之后卡死现象
 //		MultibyteToByle(addr->rxMsg.StdId,&can1_rx[8]);
 //		memcpy(&can1_rx,&addr->rxdata,8);
@@ -240,6 +251,10 @@ HAL_StatusTypeDef CanRxInit(CAN_HandleTypeDef* hcanx)
 }
  
 __weak void can_rx(uint32_t id,uint8_t *data)
+{
+  
+}
+__weak void can2_rx(uint32_t id,uint8_t *data)
 {
   
 }

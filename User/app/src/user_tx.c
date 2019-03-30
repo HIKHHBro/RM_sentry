@@ -79,7 +79,7 @@ void UserTxControl(void)
 //          CanTxMsg(CHASSIS_CAN,CHASSIS_CAN_TX_ID,pc_data);
    }
   }
-else if((chassis_status & RUNING_OK) ==RUNING_OK)
+if((chassis_status & RUNING_OK) ==RUNING_OK)
 {
    if(userTx_t.rc->switch_left ==1)
    {

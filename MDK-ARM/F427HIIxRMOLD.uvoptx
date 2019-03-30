@@ -120,6 +120,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
+          <Name>冈??瞱冈??瞱冈?</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -163,7 +164,7 @@
           <Type>0</Type>
           <LineNumber>957</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134225274</Address>
+          <Address>134225774</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -229,7 +230,7 @@
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
-          <ItemText>chassis_t,0x0A</ItemText>
+          <ItemText>chassis_t,0x10</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
@@ -560,6 +561,16 @@
           <count>76</count>
           <WinNumber>1</WinNumber>
           <ItemText>go_back_lock,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>77</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>reebuff</ItemText>
+        </Ww>
+        <Ww>
+          <count>78</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>i</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>

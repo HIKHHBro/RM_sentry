@@ -114,8 +114,10 @@ extern CAN_HandleTypeDef hcan1;
 	void StartChassisTask(void const *argument)
 	{
     const dbusStruct* pRc_t;
+		const pcDataStruct* pPc_t;
     pRc_t = GetRcStructAddr();
-    ChassisInit(&hcan1,pRc_t);
+    pPc_t = GetPcDataStructAddr();//小电脑数据
+    ChassisInit(CHASSIS_CAN,pRc_t,pPc_t);
 		for (;;)
 		{
         ChassisControl();

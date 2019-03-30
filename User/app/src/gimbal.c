@@ -49,7 +49,7 @@
 				{																									\
 					CLEAR_BIT(gimbal_t.status,DISABLE_MOD_READ);	\
 					SET_BIT(gimbal_t.status,__status_);							\
-				}while(0)																					\
+				}while(0)																					
 /* -------------- 私有宏 ----------------- */
 	#define QUEUE_LEN      5U//深度为5
 	#define  QUEUE_SIZE    8U//长度为5;
@@ -102,6 +102,7 @@ Int16Queue pitchStatusQu;
 		gimbal_t.pPitch_t = PitchInit();
   /* ------ 开启摩擦轮 ------- */
 		BrushlessMotorInit();
+    UserCanConfig(GIMBAL_CAN);
   /* ------ 创建云台发送队列 ------- */
 	  gimbal_queue	= xQueueCreate(QUEUE_LEN,QUEUE_SIZE);//一定要在用之前创建队列
   /* ------ 创建云台历史状态队列 ------- */

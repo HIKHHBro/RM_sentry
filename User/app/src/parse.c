@@ -107,11 +107,20 @@ void ParseInit(void)
   {
     return (&pc_t);
   }
-void can_rx(uint32_t id,uint8_t *data)
+//void can_rx(uint32_t id,uint8_t *data)
+//  {
+//    ChassisParseDate(id,data);
+//    GimbalParseDate(id,data);
+//  }
+  void can_rx(uint32_t id,uint8_t *data)
   {
-    ChassisParseDate(id,data);
-    GimbalParseDate(id,data);
+
+     GimbalParseDate(id,data);
   }
+void can2_rx(uint32_t id,uint8_t *data)
+{
+         ChassisParseDate(id,data);
+}
 /*-----------------------------------file of end------------------------------*/
 
 

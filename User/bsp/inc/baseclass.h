@@ -94,6 +94,16 @@
 	#define FREE_ADDR(CACHES) 	(CACHES = NULL)		//释放地址  
 	/* -------------- 宏 ----------------- */
 	#define	CYCLE_NUMERICAL(data,max) ((data+1)%max)
+  
+typedef union  
+{   
+  float  f;   
+  int16_t s_16[2];
+  unsigned char u_8[4];
+   uint32_t u_32;  
+}floatToUnion; 
+
+
 /* -------------- 函数定义 ----------------- */
 	UART_HandleTypeDef* RecognizeUSARTType(UART_HandleTypeDef* huartx);
   CAN_HandleTypeDef* RecognizeCanType(CAN_HandleTypeDef* hcanx);

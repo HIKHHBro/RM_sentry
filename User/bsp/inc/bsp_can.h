@@ -44,6 +44,7 @@ HAL_StatusTypeDef UserCanQueueRX(CAN_HandleTypeDef *hcanx,\
 																		void* const pvBuffer);
 HAL_StatusTypeDef CanTxMsg(CAN_HandleTypeDef* hcanx,int id,uint8_t *message);		
 __weak void can_rx(uint32_t id,uint8_t *data);
+void can2_rx(uint32_t id,uint8_t *data);
 #endif // __BSP_CAN_H
 
 /*-----------------------------------file of end------------------------------*/

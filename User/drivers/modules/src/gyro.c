@@ -72,6 +72,21 @@ void AnalysisGyro(gy955Struct* Gyc)
 		}
 	 }
 }
+void BingeGyroByCan(gy955Struct* Gyc,uint8_t *data)
+{
+  floatToUnion p;
+  p.u_8[0] = data[0];
+  p.u_8[1] = data[1];
+  p.u_8[2] = data[2];
+  p.u_8[3] = data[3];
+  Gyc->Yaw = p.f;
+  p.f = 0;
+  p.u_8[0] = data[4];
+  p.u_8[1] = data[5];
+  p.u_8[2] = data[6];
+  p.u_8[3] = data[7];
+  Gyc->Gyrz = p.f;
+}
 /*------------------------------------file of end-------------------------------*/
 
 

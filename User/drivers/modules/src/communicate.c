@@ -45,7 +45,7 @@
 #define THE_DAMAGE_STATE_LEN   (REF_HEADER_CRC_CMDID_LEN + 1)
 #define REAL_TIME_SHOOTING_INFORMATION_LEN   (REF_HEADER_CRC_CMDID_LEN + 6)
 
-
+refereeSystemStruct ext_refereeSystem_t;
 ext_game_robot_state_t robot_state_t;
 ext_power_heat_data_t power_heat_data_t;
 ext_game_robot_pos_t  game_robot_pos_t;
@@ -66,6 +66,12 @@ void CommunicateInit(void)
 {
     HAL_UART_Receive_DMA(&huart3,reebuff,COMMUN_RX_BUFF);
   UsartAndDMAInit(&huart3,COMMUN_RX_BUFF,ENABLE);
+  ext_refereeSystem_t. p_robot_state_t  = &robot_state_t;
+  ext_refereeSystem_t. p_power_heat_data_t  = &power_heat_data_t;
+  ext_refereeSystem_t. p_game_robot_pos_t  = &game_robot_pos_t;
+  ext_refereeSystem_t. p_buff_musk_t  = &buff_musk_t;
+  ext_refereeSystem_t. p_robot_hurt_t  = &robot_hurt_t;
+  ext_refereeSystem_t. p_shoot_data_t  = &shoot_data_t;
 
 }
   /**
@@ -178,16 +184,31 @@ void CommunicateInit(void)
 	}
 /**
 	* @Data    2019-03-24 14:02
-	* @brief   机器人位置
+	* @brief   机器人位置//看真实裁判系统数据对不对
 	* @param   void
 	* @retval  void
-	*/
+	*/ 
 	void GameRobotPosParse(uint8_t *data)
 	{
-		game_robot_pos_t.x =   (float)((*(data+3))<<24 |(*(data+2))<<16 | (*(data+1))<<8 | (*(data+0)));
-		game_robot_pos_t.y =   (float)((*(data+7))<<24 |(*(data+6))<<16 | (*(data+5))<<8 | (*(data+4)));
-		game_robot_pos_t.yaw = (float)((*(data+11))<<24 |(*(data+10))<<16 | (*(data+9))<<8 | (*(data+8)));
-		game_robot_pos_t.z   = (float)((*(data+13))<<8 |(*(data+12)));
+    floatToUnion p;
+    p.u_8[0] = *(data+0);//如果不对，则是3210
+    p.u_8[1] = *(data+1);
+    p.u_8[2] = *(data+2);
+    p.u_8[3] = *(data+3);
+		game_robot_pos_t.x = p.f;
+    p.f = 0;
+    p.u_8[0] = *(data+4);
+    p.u_8[1] = *(data+5);
+    p.u_8[2] = *(data+6);
+    p.u_8[3] = *(data+7);
+		game_robot_pos_t.y =  p.f;
+    p.f = 0;
+    p.u_8[0] = *(data+8);
+    p.u_8[1] = *(data+9);
+    p.u_8[2] = *(data+10);
+    p.u_8[3] = *(data+11);
+		game_robot_pos_t.yaw =  p.f;
+		game_robot_pos_t.z   = (float)((*(data+12))<<8 |(*(data+13)));
 	}
 /**
 	* @Data    2019-03-24 14:42
@@ -207,20 +228,25 @@ void CommunicateInit(void)
 	*/
 	void RobotHurt(uint8_t *data)
 	{
-		robot_hurt_t.armor_id = *data;
-		robot_hurt_t.hurt_type = *data;
+		robot_hurt_t.armor_id =  (*data) &0x0f;
+		robot_hurt_t.hurt_type = (*data) >>4 &0x0f; 
 	}
 /**
 	* @Data    2019-03-24 14:54
 	* @brief   实时射击信
 	* @param   void
 	* @retval  void
-	*/
+	*/ 
 	void ShootData(uint8_t *data)
 	{
-		shoot_data_t.bullet_type = *(data);
+    floatToUnion m1;
+    m1.u_8[0] = *(data+2);
+    m1.u_8[1] = *(data+3);
+    m1.u_8[2] = *(data+4);
+    m1.u_8[3] = *(data+5);
+		shoot_data_t.bullet_type = *(data) ;
 		shoot_data_t.bullet_freq =  *(data+1);
-		shoot_data_t.bullet_speed =  (float)((*(data+5))<<24 |(*(data+4))<<16 | (*(data+3))<<8 | (*(data+2)));
+		shoot_data_t.bullet_speed =  m1.f;
 	}
 /**
 	* @Data    2019-03-24 13:38
