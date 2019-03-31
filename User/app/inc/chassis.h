@@ -1,16 +1,16 @@
 /**
 	|------------------------------- Copyright ----------------------------------|
 	|                                                                            |
-	|                       (C) Copyright 2019,娴峰悍骞冲ご鍝?,                        |
+	|                        (C) Copyright 2019,海康平头哥,                       |
 	|          1 Xuefu Rd, Huadu Qu, Guangzhou Shi, Guangdong Sheng, China       |
-	|                          All Rights Reserved                               |
+	|                            All Rights Reserved                             |
 	|                                                                            |
-	|           By(GCU The wold of team | 鍗庡崡鐞嗗伐澶у?﹀箍宸炲?﹂櫌鏈哄櫒浜洪噹鐙奸槦)         |
-	|                   https://github.com/GCUWildwolfteam                       |
+	|           By(GCU The wold of team | 华南理工大学广州学院机器人野狼队)         |
+	|                    https://github.com/GCUWildwolfteam                      |
 	|----------------------------------------------------------------------------|
 	|--FileName    : chassis.h                                                
 	|--Version     : v1.0                                                            
-	|--Author      : 娴峰悍骞冲ご鍝?                                                       
+	|--Author      : 海康平头哥                                                       
 	|--Date        : 2019-01-19               
 	|--Libsupports : 
 	|--Description :                                                       
@@ -74,7 +74,6 @@ typedef struct chassisStruct
 	#define MID_ROAD                 1//直道中路
 	#define DOWN_ROAD                 2//下路靠桥
 	#define TURNING_ANGLE             30//拐弯角度差
-  
 	void ChassisInit(CAN_HandleTypeDef *hcan,const dbusStruct*rc,const pcDataStruct* pPc_t);
 	void ChassisParseDate(uint16_t id,uint8_t *data);
 //	void ChassisUserCanTx(int16_t w1,int16_t w2);
@@ -91,12 +90,17 @@ const chassisStruct* GetChassisStructAddr(void);
         	void SetSetInitStatus(void);
           uint8_t GetHurtStatus(void);
 				void ChassisCruiseModeInit(void);
+        void ChassisEludeControlMode(void);
 				void ChassisControlSwitch(uint32_t commot);
 				  uint32_t ChassisControlDecision(void);
 					void ChassisDeinit(void);
 						int16_t GetGyroDire(void);
 							uint8_t GetOrgans(void);
 								void SetArea(void);//激光和陀螺仪
+									int16_t Go(int16_t target,int16_t speed);
+										void ChassisPcShootModeInit(void);
+											void ChassisEludeControlModeInit(void);
+                      	void ChassisPcShootMode(void);
 				//	void SetArea(void);
 #endif	// __CHASSIS_H
 	

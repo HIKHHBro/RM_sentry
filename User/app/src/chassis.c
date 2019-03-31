@@ -13,7 +13,7 @@
 	|--Author      : 海康平头哥                                                       
 	|--Date        : 2019-01-19               
 	|--Libsupports : 
-	|--Description :                                                       
+	|--Description :  3508 顺时针为正                                                     
 	|--FunctionList                                                       
 	|-------1. ....                                                       
 	|          <version>:                                                       
@@ -315,7 +315,7 @@ int16_t rc_coe=7;
 	void ChassisCruiseModeControl(void)
 	{
 //			uint32_t position;
-		if((chassis_t.status & CHASSIS_CRUISE_MODE_READ) != CHASSIS_CRUISE_MODE_READ)
+		if((chassis_t.status & CHASSIS_CRUISE_MODE_RUNING) != CHASSIS_CRUISE_MODE_RUNING)
 		{
 			ChassisCruiseModeInit();
 		}
@@ -363,15 +363,25 @@ int16_t rc_coe=7;
 	* @param   void
 	* @retval  void
 	*/
-uint8_t f_hurt_flag=0;
-uint8_t f_hurt_fre=0;
-uint8_t b_hurt_flag=0;
-uint8_t b_hurt_fre=0;
+int16_t f_hurt_flag=0;
+int16_t f_hurt_fre=0;
+int16_t b_hurt_flag=0;
+int16_t b_hurt_fre=0;
 uint8_t GetHurtStatus(void)
 {
 	if(chassis_t.p_refereeSystem_t->p_robot_hurt_t->hurt_type ==0)
-	return (chassis_t.p_refereeSystem_t->p_robot_hurt_t->armor_id);
-	else return 0x55;
+	{
+		f_hurt_flag++;
+		if(f_hurt_flag >100)
+  	return (chassis_t.p_refereeSystem_t->p_robot_hurt_t->armor_id);
+	}
+	else
+	{
+		if(f_hurt_flag <0)
+		f_hurt_flag = 0;
+    f_hurt_flag --;
+	}
+  	 return 0x55;
 }
 
 /**
@@ -388,10 +398,10 @@ void ChassisControlSwitch(uint32_t commot)
        ChassisRcControlMode();
      break;
    case CHASSIS_ELUDE_MODE_READ:
-    //  PcControlMode();
+    		ChassisEludeControlMode();
 		  break;
 	case CHASSIS_PC_SHOOT_MODE_READ:
-	  //  FrameDropBufferMode();
+	    ChassisPcShootMode();
     break;
       case CHASSIS_CRUISE_MODE_READ:
        ChassisCruiseModeControl();
@@ -416,11 +426,13 @@ void ChassisControlSwitch(uint32_t commot)
     }
     else if(chassis_t.rc_t->switch_right ==1)
     {
-//			if(GetHurtStatus() !=0x55)
-//        
-      if(chassis_t.pPc_t->commot ==1)
+		 if(GetHurtStatus() !=0x55)
       {
-        
+        SET_CHA_READ_STATUS(CHASSIS_ELUDE_MODE_READ);
+      }
+      else if(chassis_t.pPc_t->commot ==1)
+      {
+        SET_CHA_READ_STATUS(CHASSIS_PC_SHOOT_MODE_READ);
       }
       else 	SET_CHA_READ_STATUS(CHASSIS_CRUISE_MODE_READ);
     }
@@ -449,18 +461,19 @@ chassis_t.pwheel2_t->target = 0;
 */
 void ChassisEludeControlMode(void)
 {
+	ChassisEludeControlModeInit();
 	if(GetHurtStatus() == AHEAD_OF_ARMOR)
 	{
 		switch (chassis_t.State.r_area) 
 		{
 			case UP_ROAD:
-			
+			  Go(DOWN_ROAD,4000);
 				break;
 			case MID_ROAD:
-			
+		  	Go(UP_ROAD,4000);
 				break;
 			case DOWN_ROAD:
-			
+		  	Go(UP_ROAD,4000);
 				break;
 			default:
 				break;
@@ -469,18 +482,62 @@ void ChassisEludeControlMode(void)
 }
 
 /**
+	* @Data    2019-03-31 12:06
+	* @brief   躲避模式初始化
+	* @param   void
+	* @retval  void
+	*/
+	void ChassisEludeControlModeInit(void)
+	{
+	if((chassis_t.status & CHASSIS_ELUDE_MODE_RUNING) != CHASSIS_ELUDE_MODE_RUNING)
+		{
+			SET_CHA_RUNING_STATUS(CHASSIS_ELUDE_MODE_RUNING);
+		}
+	}
+
+/**
 	* @Data    2019-03-30 22:13
 	* @brief   跑到指定目的地
 	* @param   void
 	* @retval  void
 	*/
-	// void Go(int16_t target)
-	// {
-		
-	// }
+	int16_t Go(int16_t target,int16_t speed)
+	{
+		int16_t dire;
+		dire =chassis_t.State.r_area  - target;
+			if(ABS(dire) >1)
+			dire =(int16_t)( dire *0.5);
+			speed = dire * speed;
+			SetMotorTarget(speed,speed); 
+			return dire;
 
 
+	}
 
+/**
+	* @Data    2019-03-31 12:02
+	* @brief   击打模式控制
+	* @param   void
+	* @retval  void
+	*/
+	void ChassisPcShootMode(void)
+	{
+		ChassisPcShootModeInit();
+		SetMotorTarget(0,0);
+	}
+/**
+	* @Data    2019-03-31 12:03
+	* @brief   击打模式初始化
+	* @param   void
+	* @retval  void
+	*/
+	void ChassisPcShootModeInit(void)
+	{
+	 if((chassis_t.status & CHASSIS_PC_SHOOT_MODE_RUNING) != CHASSIS_PC_SHOOT_MODE_RUNING)
+		{
+			SET_CHA_RUNING_STATUS(CHASSIS_PC_SHOOT_MODE_RUNING);
+		}
+	}
 
 
 

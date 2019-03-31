@@ -199,6 +199,7 @@ int16_t PitchDataConversion(int16_t pitch)
 //  {
 //     return pitch *pitch_coe;
 //  }
+     return pitch *pitch_coe;
 }
 
 

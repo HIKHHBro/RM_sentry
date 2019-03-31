@@ -25,17 +25,19 @@
  **/
 #include "gimbal.h" 
 /* -------------- 模块自定义标志位宏 ----------------- */
-#define  SCAN_MODE_RUNING           (0x80000000U)//扫描模式执行
-#define  PC_SHOOT_MODE_RUNING       (0x40000000U)//自瞄打击模式执行
-#define  RC_MODE_RUNING             (0x20000000U)//遥控模式执行
-#define  FRAME_DROP_BUFFER_RUNING   (0x10000000U)//掉帧缓冲执行
-#define  DISABLE_MOD_RUNNING        (0xF0000000U)//使能运行模块
-#define  SCAN_MODE_READ             (0x08000000U)//扫描模式准备就绪
-#define  GIMBAL_PC_SHOOT_MODE_READ  (0x04000000U)//自瞄打击模式准备就绪
-#define  RC_MODE_READ               (0x02000000U)//遥控模式准备就绪
-#define  FRAME_DROP_BUFFER_READ     (0x01000000U)//掉帧缓冲准备就绪
-#define  JUDGE_READ                 (0x0F000000U)//判断决策
-#define  DISABLE_MOD_READ           (0x0F000000U)//使能运行模块
+#define  RC_MODE_READ               (0x80000000U) //遥控模式准备就绪
+#define  GIMBAL_PC_SHOOT_MODE_READ  (0x40000000U) //自瞄打击模式准备就绪
+#define  FRAME_DROP_BUFFER_READ     (0x20000000U) //掉帧缓冲准备就绪
+#define  SCAN_MODE_READ             (0x10000000U) //扫描模式准备就绪
+#define  DISABLE_MOD_READ           (0xF0000000U)//使能运行模块
+#define  JUDGE_READ                 (0xF0000000U) //判断决策
+
+#define  RC_MODE_RUNING             (0x08000000U)//遥控模式执行
+#define  PC_SHOOT_MODE_RUNING       (0x04000000U)//自瞄打击模式执行
+#define  FRAME_DROP_BUFFER_RUNING   (0x02000000U)//掉帧缓冲执行
+#define  SCAN_MODE_RUNING           (0x01000000U)//扫描模式执行
+#define  DISABLE_MOD_RUNNING        (0x0F000000U)//使能运行模块
+
 #define  DISABLE_GIMBAL             (0xFF000000U)//失能云台
 #define  DELEC_USER_MODE            (0x00FFFFFFU)//清除用户自定义标志位
 #define SET_RUNING_STATUS(_status_)  											\
@@ -588,6 +590,7 @@ void ControlSwitch(uint32_t commot)
 * @param   void
 * @retval  void
 */
+int16_t conflag =0;
   uint32_t ControlDecision(void)
   {
     if(gimbal_t.pRc_t->switch_left ==2)
@@ -600,13 +603,22 @@ void ControlSwitch(uint32_t commot)
        switch (gimbal_t.pPc_t->commot)
        {
          case 0:
-				 SET_READ_STATUS(FRAME_DROP_BUFFER_READ);
+         if(conflag > 100)
+         {
+           SET_READ_STATUS(SCAN_MODE_READ);
+         }
+         else 
+         {
+              conflag ++;
+           	SET_READ_STATUS(FRAME_DROP_BUFFER_READ);
+         }
             //  SET_BIT(gimbal_t.status,SCAN_MODE_READ);
             //  CLEAR_BIT(gimbal_t.status,GIMBAL_PC_SHOOT_MODE_READ);
             //  CLEAR_BIT(gimbal_t.status,RC_MODE_READ);
            break;
          case 1:
 				  SET_READ_STATUS(GIMBAL_PC_SHOOT_MODE_READ);
+         conflag =0;
           //   SET_BIT(gimbal_t.status,GIMBAL_PC_SHOOT_MODE_READ);
           //  CLEAR_BIT(gimbal_t.status,SCAN_MODE_READ);
           //    CLEAR_BIT(gimbal_t.status,RC_MODE_READ);
