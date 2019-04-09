@@ -112,16 +112,26 @@
 	int16_t PostionPid(postionPidStruct *pps,int16_t error)
 	{
 	  pps->error	= error;
-		pps->integral_er += pps->error;
-    pps->integral_er = MAX(pps->integral_er,pps->integral_limint);
-    pps->integral_er = MIN(pps->integral_er,(-pps->integral_limint));
 		pps->pout = pps->kp * pps->error;
-		pps->iout = pps->ki * pps->integral_er;
+		pps->iout =  IntegralSeparationCallback(pps);
 		pps->dout = pps->kd * (pps->error - pps->last_error);
 		pps->pid_out = pps->pout + pps->iout + pps->dout;
 		pps->last_error = pps->error;
 		return pps->pid_out;
 	}
+__weak int16_t IntegralSeparationCallback(postionPidStruct *pps)
+{
+  if(pps->integral_threshold ==0)
+    return 0;
+    pps->integral_er += pps->error;
+    pps->integral_er = MAX(pps->integral_er,pps->integral_limint);
+    pps->integral_er = MIN(pps->integral_er,(-pps->integral_limint));
+  if(ABS(pps->error) > pps->integral_threshold)
+  {
+    pps->integral_er = 0;
+  }
+  return  pps->ki * pps->integral_er;
+}
 /**
 	* @Data    2019-01-26 16:55
 	* @brief   ËÙ¶Èpid¿ØÖÆÆ÷

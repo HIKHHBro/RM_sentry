@@ -55,12 +55,14 @@
 		int16_t last_error;//上次误差
 		int16_t integral_er;//误差积分
     int16_t integral_limint;
+    int16_t integral_threshold;
 		float pout;//p输出
 		float iout;//i输出
 		float dout;//k输出
 		float pid_out;//pid输出
 	}postionPidStruct;
 	int16_t PostionPid(postionPidStruct *pps, int16_t error);
+   int16_t IntegralSeparationCallback(postionPidStruct *pps);
 /* -------------- 速度式pid ----------------- */
 	typedef struct speedPidStruct
 	{

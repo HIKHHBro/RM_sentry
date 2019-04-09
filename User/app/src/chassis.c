@@ -116,6 +116,7 @@ extern	osThreadId startChassisTaskHandle;
     	vTaskSuspend(startChassisTaskHandle);
 	/* ------ 设置机器人初始化状态 ------- */
      SetSetInitStatus();
+//    vTaskSuspend(startChassisTaskHandle);
 	}
 /**
 	* @Data    2019-01-28 11:40
@@ -235,7 +236,7 @@ int16_t rc_coe=7;
 		{
 			chassis_t.pwheel1_t->target = 0;
 			chassis_t.pwheel2_t->target = 0;
-			SET_BIT(chassis_t.status,CHASSIS_RC_MODE_RUNING);
+			SET_CHA_RUNING_STATUS(CHASSIS_RC_MODE_RUNING);
 		}
 		chassis_t.pwheel1_t->target = chassis_t.rc_t->ch1 *rc_coe;
 		chassis_t.pwheel2_t->target = chassis_t.rc_t->ch1 *rc_coe;
@@ -310,7 +311,7 @@ int16_t rc_coe=7;
 	* @retval  void
 	*/
 		 int16_t zhongd = 1500;
-		 int16_t cru_speed = 4000;
+		 int16_t cru_speed = 800;
 		 int16_t direction =0;
 	void ChassisCruiseModeControl(void)
 	{
@@ -318,16 +319,17 @@ int16_t rc_coe=7;
 		if((chassis_t.status & CHASSIS_CRUISE_MODE_RUNING) != CHASSIS_CRUISE_MODE_RUNING)
 		{
 			ChassisCruiseModeInit();
+      chassis_t.pwheel1_t->target = cru_speed;
 		}
 		if(chassis_t.State.r_area == MID_ROAD)
 		{
-			 direction = chassis_t.State.r_area - chassis_t.State.last_area;//看3508的方向
+			 direction = chassis_t.State.last_area -chassis_t.State.r_area;//看3508的方向
 			 chassis_t.pwheel1_t->target = direction*chassis_t.pwheel1_t->target;
 			 chassis_t.pwheel2_t->target = chassis_t.pwheel1_t->target;
 		}
 		else if(chassis_t.State.r_area != MID_ROAD)
 		{
-			 direction = -(chassis_t.State.r_area - chassis_t.State.last_area);//看3508的方向
+			 direction = -(chassis_t.State.last_area -chassis_t.State.r_area);//看3508的方向
 			 chassis_t.pwheel1_t->target = direction*chassis_t.pwheel1_t->target;
 			 chassis_t.pwheel2_t->target = chassis_t.pwheel1_t->target;
 		}
@@ -371,15 +373,19 @@ uint8_t GetHurtStatus(void)
 {
 	if(chassis_t.p_refereeSystem_t->p_robot_hurt_t->hurt_type ==0)
 	{
-		f_hurt_flag++;
-		if(f_hurt_flag >100)
-  	return (chassis_t.p_refereeSystem_t->p_robot_hurt_t->armor_id);
+		f_hurt_flag =500;
 	}
 	else
 	{
-		if(f_hurt_flag <0)
-		f_hurt_flag = 0;
-    f_hurt_flag --;
+    
+		if(f_hurt_flag >0)
+    {
+      f_hurt_flag --;
+     return (chassis_t.p_refereeSystem_t->p_robot_hurt_t->armor_id);
+    }
+ else f_hurt_flag =0;
+ 
+    
 	}
   	 return 0x55;
 }
@@ -430,11 +436,11 @@ void ChassisControlSwitch(uint32_t commot)
       {
         SET_CHA_READ_STATUS(CHASSIS_ELUDE_MODE_READ);
       }
-      else if(chassis_t.pPc_t->commot ==1)
+     if(chassis_t.pPc_t->commot ==1)
       {
         SET_CHA_READ_STATUS(CHASSIS_PC_SHOOT_MODE_READ);
       }
-      else 	SET_CHA_READ_STATUS(CHASSIS_CRUISE_MODE_READ);
+      else SET_CHA_READ_STATUS(CHASSIS_CRUISE_MODE_READ);
     }
     else if(chassis_t.rc_t->switch_right ==2)
     {
@@ -670,13 +676,14 @@ void ChassisEludeControlMode(void)
 		* @param   void
 		* @retval  void
 		*/
-uint8_t up_turn = 0;
+uint8_t up_turn = 1;
+ uint8_t road_flag =0;
 	void SetArea(void)
 	{
-	if(GetOrgans() != 0)
-	{
+//	if(GetOrgans() != 0)
+//	{
    up_turn =GetOrgans();
-	}
+//	}
 		if(GetGyroDire()<TURNING_ANGLE)//陀螺仪状态//up
 		{
 				// temp = UP_ROAD;
@@ -687,9 +694,8 @@ uint8_t up_turn = 0;
 						chassis_t.State.last_area = chassis_t.State.r_area;
 					}
 					chassis_t.State.r_area = UP_ROAD;
-					up_turn = 0;
 				}
-			else 
+			else
 			{
 				if(chassis_t.State.r_area  != DOWN_ROAD)
 				{
@@ -720,21 +726,68 @@ uint8_t up_turn = 0;
 		dire = chassis_t.State.r_dire - (int16_t)chassis_t.pgyroByCan_t->Yaw;
 		return ABS(dire);
 	}
-int16_t organs_flag;
-int16_t organs = 0;
+int16_t organs_flag =1;//初始化为1，既是初始化为上路
+int16_t organs = 1;
+int16_t temp_organs =0;
 	uint8_t GetOrgans(void)
 	{
-		 organs = HAL_GPIO_ReadPin(LASER_SWITCH_GPIO,LASER_SWITCH);//读io口
+    	 temp_organs = HAL_GPIO_ReadPin(LASER_SWITCH_GPIO,LASER_SWITCH);//读io口
+    
+//   	if(temp_organs ==0)//激光开关
+//	  {
+//		  organs_flag ++;
+//	  }
+//    if(GetGyroDire() >= TURNING_ANGLE  && organs_flag >10)//
+//    {
+      if(GetGyroDire() <= 50  && temp_organs == 0) //1是被遮住，0是没遮住
+      {
+        organs_flag  =1;//从上路回到中路
+      }
+      if(GetGyroDire() >= 50)
+      {
+        organs_flag = 0;
+      }
+//      else if(GetGyroDire() >= TURNING_ANGLE &&organs_flag ==1)
+//      {
+//        organs_flag  =0;//从中路回到上路
+//      }
+       return  organs_flag;
+		// temp_organs = HAL_GPIO_ReadPin(LASER_SWITCH_GPIO,LASER_SWITCH);//读io口
+//  	if(temp_organs ==0)//激光开关
+//	{
+//		organs_flag ++;
+//	}
+//	else organs_flag --;
+//	if(organs_flag <0)
+//    return  0;  
+//	else if(organs_flag >30)
+//   	return  1; 
+//    if(temp_organs !=0 )
+//    {
+//      organs = 0;
+//    }
+//    
+//    return  organs;
 		// uint8_t temp;
-	if(organs ==1)//激光开关
-	{
-		organs_flag ++;
+//	if(organs ==0)//激光开关
+//	{
+//		organs_flag ++;
+//	}
+//	else organs_flag --;
+//	if(organs_flag <0)
+//    return  0;  
+//	else if(organs_flag >30)
+//   	return  1; 
+//  else   return  0; 
 	}
-	else organs_flag --;
-	if(organs_flag <0)
-    return  0;  
-	else if(organs_flag >5)
-   	return  1; 
-  else   return  0; 
-	}
+	/**
+		* @Data    2019-03-30 17:16
+		* @brief   底盘自检
+		* @param   void
+		* @retval  void
+		*/
+ uint8_t AutoCalibratorMode(void)
+ {
+   
+ }
 /*----------------------------------file of end-------------------------------*/

@@ -116,11 +116,12 @@ void ParseInit(void)
   {
 
      GimbalParseDate(id,data);
+    ChassisParseDate(id,data);
   }
-void can2_rx(uint32_t id,uint8_t *data)
-{
-         ChassisParseDate(id,data);
-}
+//void can2_rx(uint32_t id,uint8_t *data)
+//{
+//         ChassisParseDate(id,data);
+//}
 /*-----------------------------------file of end------------------------------*/
 
 

@@ -33,7 +33,6 @@
 	#define YAW_RX_ID 								0x205//YAW轴电机接收 id
 	#define PITCH_RX_ID 							0x206//PITCH轴电机接收 id
 	#define GIMBAL_CAN_TX_ID 					0x1ff//云台电机发送id
-	#define FRICTIONGEAR_SPEED 				(2000)	//摩擦轮速度
  #define YAW_LIMIMT_CUT                 (6000)//电流限幅
   #define PITCH_LIMIMT_CUT                 (29000)//电流限幅
   #define LINT_LIMINT                    (6000)

@@ -104,7 +104,7 @@ Int16Queue pitchStatusQu;
 		gimbal_t.pPitch_t = PitchInit();
   /* ------ 开启摩擦轮 ------- */
 		BrushlessMotorInit();
-    UserCanConfig(GIMBAL_CAN);
+//    UserCanConfig(GIMBAL_CAN);
   /* ------ 创建云台发送队列 ------- */
 	  gimbal_queue	= xQueueCreate(QUEUE_LEN,QUEUE_SIZE);//一定要在用之前创建队列
   /* ------ 创建云台历史状态队列 ------- */
@@ -127,6 +127,7 @@ Int16Queue pitchStatusQu;
     {
       //添加报错机制
     }
+ 		//vTaskSuspend(startGimbalTaskHandle);
 	}
 /**
 	* @Data    2019-01-28 11:40
@@ -306,6 +307,7 @@ Int16Queue pitchStatusQu;
 				gimbal_t.pPitch_t->ppostionPid_t->dout = 0;//k输出
 				gimbal_t.pPitch_t->ppostionPid_t->pid_out = 0;//pid输出
         gimbal_t.pPitch_t->ppostionPid_t->integral_limint = LINT_LIMINT;//积分限幅
+        gimbal_t.pPitch_t->ppostionPid_t->integral_threshold =300;
 			/* ------ 内环pid参数 ------- */
 				gimbal_t.pPitch_t->pspeedPid_t->kp = 9;
 				gimbal_t.pPitch_t->pspeedPid_t->kd = 30;
@@ -479,10 +481,10 @@ Int16Queue pitchStatusQu;
 * @retval  void
 */
 uint8_t scflag = 0;
-  int16_t pitchspeed_= 6;
-    int16_t yawspeed_= 15;
-  int16_t scok_up = 400;
-  int16_t scok_down = 2000;
+  int16_t pitchspeed_= 25;
+    int16_t yawspeed_= 20;
+  int16_t scok_up = 1000;
+  int16_t scok_down = 2200;
 void ScanningToExplore(void)
 {
   if((gimbal_t.status&SCAN_MODE_RUNING) != SCAN_MODE_RUNING)
@@ -492,21 +494,18 @@ void ScanningToExplore(void)
     gimbal_t.yaw_scan_target = gimbal_t.pYaw_t->real_angle;
     gimbal_t.pPitch_t->ppostionPid_t->error =0;
     gimbal_t.pYaw_t->ppostionPid_t->error =0;
-    if((gimbal_t.pitch_scan_target) > 2000)
+    if((gimbal_t.pitch_scan_target) > scok_down)
     {
       gimbal_t.pitch_scan_target = scok_down;
     }
-    else if ((gimbal_t.pitch_scan_target )< 400) 
+    else if ((gimbal_t.pitch_scan_target )< scok_up) 
     {
       gimbal_t.pitch_scan_target = scok_up;
     }
     //清除pc控制标志位，设置标志位
-    CLEAR_BIT(gimbal_t.status,RC_MODE_RUNING);
-     CLEAR_BIT(gimbal_t.status,PC_SHOOT_MODE_RUNING);
-     SET_BIT(gimbal_t.status,SCAN_MODE_RUNING);
+    SET_RUNING_STATUS(SCAN_MODE_RUNING);
     SetGeneralMode();
-    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_SPEED);
-		__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_SPEED);
+     Shoot(0,0);
   }
     if(((gimbal_t.pitch_scan_target < scok_down) || (gimbal_t.pitch_scan_target == scok_down)) && (scflag ==0) )
     {
@@ -553,7 +552,7 @@ void PcControlMode(void)
 		__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_SPEED);
 //    if(gimbal_t.pPitch_t->ppostionPid_t->error - gimbal_t.pPc_t->pitch_target_angle)
   }
-  Shoot(5,0);
+  Shoot(0,0);
    gimbal_t.pPitch_t->ppostionPid_t->error  = (int16_t)(gimbal_t.pPc_t->pitch_target_angle * pitchcin);
   gimbal_t.pYaw_t->ppostionPid_t->error = (int16_t)(gimbal_t.pPc_t->yaw_target_angle * pitchcin);
 }
@@ -612,18 +611,11 @@ int16_t conflag =0;
               conflag ++;
            	SET_READ_STATUS(FRAME_DROP_BUFFER_READ);
          }
-            //  SET_BIT(gimbal_t.status,SCAN_MODE_READ);
-            //  CLEAR_BIT(gimbal_t.status,GIMBAL_PC_SHOOT_MODE_READ);
-            //  CLEAR_BIT(gimbal_t.status,RC_MODE_READ);
            break;
          case 1:
 				  SET_READ_STATUS(GIMBAL_PC_SHOOT_MODE_READ);
          conflag =0;
-          //   SET_BIT(gimbal_t.status,GIMBAL_PC_SHOOT_MODE_READ);
-          //  CLEAR_BIT(gimbal_t.status,SCAN_MODE_READ);
-          //    CLEAR_BIT(gimbal_t.status,RC_MODE_READ);
            break;
-					
          default:
             break;
        }
@@ -631,9 +623,6 @@ int16_t conflag =0;
     else if(gimbal_t.pRc_t->switch_right ==2)
     {
 			 SET_READ_STATUS(RC_MODE_READ);
-      // SET_BIT(gimbal_t.status,RC_MODE_READ);
-      // CLEAR_BIT(gimbal_t.status,SCAN_MODE_READ);
-      // CLEAR_BIT(gimbal_t.status,GIMBAL_PC_SHOOT_MODE_READ);
     }   
     return (gimbal_t.status & JUDGE_READ);
   }
@@ -646,8 +635,8 @@ int16_t conflag =0;
     int16_t i = 0;
   float iii = 10;
    float yyyy = 0.1;
-    int16_t rcscok_up = 400;
-  int16_t rcscok_down = 3000;
+    int16_t rcscok_up = 200;
+  int16_t rcscok_down = 2800;
   int16_t rctemp;
   int16_t seepdd =7;
 void GimbalRcControlMode(void)
@@ -676,7 +665,7 @@ void GimbalRcControlMode(void)
   }
   if(gimbal_t.pRc_t->ch2 >600)
   {
-     Shoot(6,0);
+     Shoot(8,0);
   }
   else  Shoot(0,0);
                    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
@@ -726,13 +715,13 @@ void GImbalAnticipation(void)
 * @param   void
 * @retval  void
 */
-float kp_test=13;
-float ki_test=0.2;
-float kd_test=30;
+float kp_test=20;
+float ki_test=0.3;
+float kd_test=180;
 void SetPcControlPID(void)
 {
-  			gimbal_t.pYaw_t->ppostionPid_t->kp = -1.3;
-				gimbal_t.pYaw_t->ppostionPid_t->kd = -5;
+  			gimbal_t.pYaw_t->ppostionPid_t->kp = -1.8;
+				gimbal_t.pYaw_t->ppostionPid_t->kd = -11;
 				gimbal_t.pYaw_t->ppostionPid_t->ki = 0;
 				gimbal_t.pYaw_t->ppostionPid_t->error = 0;
 				gimbal_t.pYaw_t->ppostionPid_t->last_error = 0;//上次误差
@@ -777,8 +766,8 @@ void SetGeneralMode(void)
 				gimbal_t.pYaw_t->ppostionPid_t->pid_out = 0;//pid输出
   
   						/* ------ 外环pid参数 ------- */
-				gimbal_t.pPitch_t->ppostionPid_t->kp = 10;
-				gimbal_t.pPitch_t->ppostionPid_t->kd = 10;
+				gimbal_t.pPitch_t->ppostionPid_t->kp = 11;
+				gimbal_t.pPitch_t->ppostionPid_t->kd = 200;
 				gimbal_t.pPitch_t->ppostionPid_t->ki = 0.1;
 				gimbal_t.pPitch_t->ppostionPid_t->error = 0;
 				gimbal_t.pPitch_t->ppostionPid_t->last_error = 0;//上次误差
@@ -797,8 +786,7 @@ void SetGeneralMode(void)
 */
 void GimbalDeinit(void)
 {
-  	__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_1_START_V);
-		__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_2_START_V);
+   Shoot(0,0);
     HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
 }
 	/**
@@ -865,17 +853,23 @@ uint8_t buffer_flag =0;
 			SetFrameDropBufferStatus();
 			if(gimbal_t.pYaw_t->ppostionPid_t->error > 100)///右边
 			{
-         y_lock = 1000;
+         y_lock = 2000;
 			 gimbal_t.pYaw_t->target	= SetLock(gimbal_t.pYaw_t->real_angle,y_lock);
 			}
 		 if(gimbal_t.pYaw_t->ppostionPid_t->error < -100)//左边
 			{
-				 y_lock = -1000;
+				 y_lock = -2000;
 		  	gimbal_t.pYaw_t->target	= SetLock(gimbal_t.pYaw_t->real_angle,y_lock);
 			}
 			SetGeneralMode();
-      
-      gimbal_t.pPitch_t->target = gimbal_t.pPitch_t->real_angle;
+      if(gimbal_t.pPitch_t->ppostionPid_t->error >450)
+      {
+        gimbal_t.pPitch_t->target = gimbal_t.pPitch_t->real_angle +200;
+      }
+      if(gimbal_t.pPitch_t->ppostionPid_t->error <-300)
+      {
+      gimbal_t.pPitch_t->target = gimbal_t.pPitch_t->real_angle -200;
+      }
       if(gimbal_t.pPitch_t->target >go_back_lock)
       {
         go_back = (0 -go_back);

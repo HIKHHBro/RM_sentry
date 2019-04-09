@@ -83,6 +83,7 @@ void CommunicateInit(void)
  uint16_t flagju=0;
   void CommunicateParse(uint16_t datalen)
   {
+             robot_hurt_t.hurt_type =5;
    if(UserUsartQueueRX(&huart3,reebuff) ==HAL_OK)
    {
      for(int i=0;i< datalen;)

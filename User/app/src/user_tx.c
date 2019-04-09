@@ -68,7 +68,7 @@ void UserTxControl(void)
       if(xStatus == pdPASS)
       {
         taskENTER_CRITICAL();
-        CanTxMsg(GIMBAL_CAN,GIMBAL_CAN_TX_ID,pc_data);
+     //  CanTxMsg(GIMBAL_CAN,GIMBAL_CAN_TX_ID,pc_data);
         taskEXIT_CRITICAL();
       }
     }

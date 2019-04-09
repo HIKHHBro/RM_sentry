@@ -37,8 +37,10 @@ extern	osThreadId startTxTaskHandle;//发送任务
 /* ----------------- 私有函数 -------------------- */ 
 //  static void DetectControlMode(void);
   static void RcCalibratorMode(sysDetectStruct* sds);
+  static void AutoCalibratorMode(sysDetectStruct* sds);
   static void SysDetectControl(sysDetectStruct* sds);
   static void SysDetectInit(sysDetectStruct* sds);
+  
 //  static void DetectControlMode(void);
 /* -------------- 临时变量 ----------------- */
 	// uint32_t temp11 = 0;
@@ -112,11 +114,13 @@ void SysDetectControl(sysDetectStruct* sds)
      RcCalibratorMode(sds);
       break;
     case 3:
+      AutoCalibratorMode(sds);
       break;
     default:
       break;
   }
 }
+
   /**
   * @Data    2019-03-16 00:09
   * @brief   手动遥控校准模式
@@ -161,7 +165,9 @@ void SysDetectControl(sysDetectStruct* sds)
 //      //temp3 = GetGimbalStatus();
 //       osDelay(5);
 //   }
-        WarningLed(5,100);
+        WarningLed(10,100);
+//   vTaskResume(startChassisTaskHandle);
+//   vTaskResume(startGimbalTaskHandle);
      /* -------- 删除校准任务 --------- */
 			vTaskDelete(startSysDetectTaskHandle);
       }
@@ -172,6 +178,18 @@ void SysDetectControl(sysDetectStruct* sds)
 //       RcControlMode();
     else crtl_mode_flag = 0;
   }
+  
+  /**
+  * @Data    2019-03-16 00:09
+  * @brief   自动校准遥控校准模式
+  * @param   void
+  * @retval  void
+  */
+ void AutoCalibratorMode(sysDetectStruct* sds)
+ {
+   vTaskResume(startChassisTaskHandle);
+   vTaskResume(startGimbalTaskHandle);
+ }
   /**
   * @Data    2019-03-13 03:21
   * @brief   校验数据模式

@@ -82,7 +82,7 @@ void Pc_ParseData(pcDataStruct* pc)
       __tem_yaw = (tem_yaw-334);
     pc->yaw_target_angle = YawDataConversion(__tem_yaw);
     tem_pitch= (int16_t)((pc_databuff[3]<<8) | pc_databuff[4]);
-      __tem_pitch = (tem_pitch-365);
+      __tem_pitch = (tem_pitch-400);
     pc->pitch_target_angle = PitchDataConversion(__tem_pitch);
      pc->commot =pc_databuff[5];
       pc->shoot_commot = pc_databuff[6];
@@ -110,8 +110,6 @@ void Pc_ParseData(pcDataStruct* pc)
     {
       if(flagdf > 20)
       {
-        pc->yaw_target_angle =0;
-      pc->pitch_target_angle =0;
        pc->commot = 0;//pc_databuff[5];
        pc->shoot_commot = 0;
       }
@@ -179,7 +177,7 @@ int16_t YawDataConversion(int16_t yaw)
      return (int16_t)(yaw*(-zhengxixiaoen));
 //  }
 }
-int16_t pitch_coe =1;
+int16_t pitch_coe =-1;
 int16_t PitchDataConversion(int16_t pitch)
 {
 //   if((pitch > plockqu)||(pitch <-plockqu))

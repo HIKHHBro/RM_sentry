@@ -39,6 +39,7 @@
   #define SHAKE_VAULE               (600)//抖动范围
   #define RAMMER_LIMIMT_CUT                 (3000)//电流限幅
   // #define ANTI_CLOCK_WISE	        //逆时针为正方向
+  	#define FRICTIONGEAR_SPEED 				(1400)	//摩擦轮速度
 	M2006Struct* RammerInit(void);
 	void RammerControl(void);
 		int16_t PCycleNumerical(int16_t data);

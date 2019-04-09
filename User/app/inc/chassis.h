@@ -68,12 +68,12 @@ typedef struct chassisStruct
 	#define W2_LIMIT_SPEED    			 6000  //轮子2速度限幅
 	#define RADIUS            			 30    //编码器轮子半径单位 mm
 	#define ENCONDER_POLES    			 500 
-  #define  AHEAD_OF_ARMOR          0//前装甲
-	#define  BACK_OF_ARMOR           1 //前装甲
+  #define  AHEAD_OF_ARMOR          0//前装甲0
+	#define  BACK_OF_ARMOR           1 //前装甲1
 	#define UP_ROAD                 0//上路靠启动区
 	#define MID_ROAD                 1//直道中路
 	#define DOWN_ROAD                 2//下路靠桥
-	#define TURNING_ANGLE             30//拐弯角度差
+	#define TURNING_ANGLE             20//拐弯角度差
 	void ChassisInit(CAN_HandleTypeDef *hcan,const dbusStruct*rc,const pcDataStruct* pPc_t);
 	void ChassisParseDate(uint16_t id,uint8_t *data);
 //	void ChassisUserCanTx(int16_t w1,int16_t w2);
