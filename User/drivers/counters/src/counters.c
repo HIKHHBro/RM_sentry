@@ -113,10 +113,14 @@
 	{
 	  pps->error	= error;
 		pps->pout = pps->kp * pps->error;
+    pps->pout = MAX(pps->pout,pps->motor_lim);
+    pps->pout = MIN(pps->pout,(-pps->motor_lim));
 		pps->iout =  IntegralSeparationCallback(pps);
 		pps->dout = pps->kd * (pps->error - pps->last_error);
-		pps->pid_out = pps->pout + pps->iout + pps->dout;
 		pps->last_error = pps->error;
+     pps->pid_out = (int32_t)(pps->pout + pps->iout + pps->dout);
+    pps->pid_out = MAX(pps->pid_out,pps->motor_lim);
+    pps->pid_out = MIN(pps->pid_out,(-pps->motor_lim));
 		return pps->pid_out;
 	}
 __weak int16_t IntegralSeparationCallback(postionPidStruct *pps)
@@ -152,12 +156,16 @@ __weak int16_t IntegralSeparationCallback(postionPidStruct *pps)
 		sps->iout = sps->ki * sps->error;
 		sps->dout = sps->kd * (sps->error - 2*sps->last_error + \
 													 sps->before_last_error);
-		sps->pid_out += (int16_t)(sps->pout + sps->iout + sps->dout);
+		sps->pid_out += (int32_t)(sps->pout + sps->iout + sps->dout);
+    sps->pid_out = MAX(sps->pid_out,sps->motor_lim);
+    sps->pid_out = MIN(sps->pid_out,(-sps->motor_lim));
+    
     sps->pid_out = MAX(sps->pid_out,sps->limiting);
     sps->pid_out = MIN(sps->pid_out,(-sps->limiting));
+    
     sps->before_last_error = sps->last_error;
 		sps->last_error = sps->error;
-		return (int16_t)(sps->pid_out);
+		return sps->pid_out;
 	}
 /* ============================ PID¿ØÖÆÆ÷ of end ============================ */
 

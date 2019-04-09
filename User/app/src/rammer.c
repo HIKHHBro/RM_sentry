@@ -58,6 +58,7 @@
 				rammerOuterLoopPid_t.iout = 0;//i输出
 				rammerOuterLoopPid_t.dout = 0;//k输出
 				rammerOuterLoopPid_t.pid_out = 0;//pid输出
+        rammerOuterLoopPid_t.motor_lim = RM2006_LIM;//2006最大电流范围
 			/* ------ 内环pid参数 ------- */
 				rammer_t.pspeedPid_t = &rammerInnerLoopPid_t;
 				rammerInnerLoopPid_t.kp = 0;
@@ -71,7 +72,7 @@
 				rammerInnerLoopPid_t.iout = 0;//i输出
 				rammerInnerLoopPid_t.dout = 0;//k输出
 				rammerInnerLoopPid_t.pid_out = 0;//pid输出
-        
+        rammerInnerLoopPid_t.motor_lim = RM2006_LIM;//2006最大电流范围
 				return &rammer_t;
 	}
 	/**
@@ -184,7 +185,7 @@ void Shoot(uint8_t speed,uint8_t buffer_on)
     __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_1_START_V);
     __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_2_START_V);
     SetRammerPID(0);
-//    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
 
   }
   else if(speed >0)
@@ -199,8 +200,9 @@ void Shoot(uint8_t speed,uint8_t buffer_on)
     {
       speed =8;
     }
-    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_SPEED);
-    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_SPEED);
+    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,(FRICTIONGEAR_SPEED-200));
+    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,(FRICTIONGEAR_SPEED-200));
+         HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
 //    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
     SetRammerPID(speed);
   }

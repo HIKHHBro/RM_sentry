@@ -64,8 +64,8 @@ typedef struct chassisStruct
 	#define WHEEL2_RX_ID       			 0x202
 	#define CURRENT_METER_RX_ID      0x401//电流计接收id
 	#define CHASSIS_CAN_TX_ID  			 0x200
-	#define W1_LIMIT_SPEED    			 6000  //轮子1速度限幅
-	#define W2_LIMIT_SPEED    			 6000  //轮子2速度限幅
+	#define W1_LIMIT_SPEED    			 8000  //轮子1速度限幅
+	#define W2_LIMIT_SPEED    			 8000  //轮子2速度限幅
 	#define RADIUS            			 30    //编码器轮子半径单位 mm
 	#define ENCONDER_POLES    			 500 
   #define  AHEAD_OF_ARMOR          0//前装甲0

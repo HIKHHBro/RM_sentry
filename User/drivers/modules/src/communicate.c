@@ -142,6 +142,7 @@ void CommunicateInit(void)
 					 	 else i++;
 							 break;
 					 default:
+              i++;
 						 break;
 				 }
            

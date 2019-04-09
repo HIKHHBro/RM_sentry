@@ -56,10 +56,11 @@
 		int16_t integral_er;//误差积分
     int16_t integral_limint;
     int16_t integral_threshold;
+    int32_t motor_lim;
 		float pout;//p输出
 		float iout;//i输出
 		float dout;//k输出
-		float pid_out;//pid输出
+		int32_t pid_out;//pid输出
 	}postionPidStruct;
 	int16_t PostionPid(postionPidStruct *pps, int16_t error);
    int16_t IntegralSeparationCallback(postionPidStruct *pps);
@@ -76,8 +77,9 @@
 		float pout;//p输出
 		float iout;//i输出
 		float dout;//k输出
-		float pid_out;//pid输出
-		uint16_t limiting;
+		int32_t pid_out;//pid输出
+		int16_t limiting;
+    int32_t motor_lim;
 }speedPidStruct;
 int16_t SpeedPid(speedPidStruct *sps, int16_t error);
 /* =========================== 贝塞尔曲线 of begin =========================== */

@@ -25,9 +25,9 @@
  **/
 #include "pc_data.h" 
 #define PC_CHECK_BYTE (0x55)//校验位
-#define PC_DATA_LEN 10//接收数据长度
+#define PC_DATA_LEN 12//接收数据长度
 #define  PC_DATA_LEN_BSP (PC_DATA_LEN+3)
-uint8_t pc_databuff[10];
+uint8_t pc_databuff[PC_DATA_LEN_BSP];
 static pcDataStruct lastpc;
 SqQueue pc_yaw_queue;
 SqQueue pc_pitch_queue;
@@ -87,6 +87,7 @@ void Pc_ParseData(pcDataStruct* pc)
      pc->commot =pc_databuff[5];
       pc->shoot_commot = pc_databuff[6];
       pc->fps = (pc_databuff[8]<<8)|pc_databuff[9];
+      pc->distance = (pc_databuff[10]<<8)|pc_databuff[11];
       enQueue(&pc_yaw_queue,pc->yaw_target_angle,MAXSIZE);
       deQueue(&pc_yaw_queue,&temmmm,MAXSIZE);
 //      enQueue(&pc_pitch_queue,pc->pitch_target_angle,MAXSIZE);

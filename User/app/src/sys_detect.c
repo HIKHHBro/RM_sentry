@@ -114,7 +114,7 @@ void SysDetectControl(sysDetectStruct* sds)
      RcCalibratorMode(sds);
       break;
     case 3:
-      AutoCalibratorMode(sds);
+//      AutoCalibratorMode(sds);
       break;
     default:
       break;

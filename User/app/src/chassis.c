@@ -167,9 +167,10 @@ extern	osThreadId startChassisTaskHandle;
 	* @retval  void
 	*/
   uint32_t chassiscommot =0;
+  int16_t pid_out[2];
 	void ChassisControl(void)
 	{
-		int16_t pid_out[2];
+		
     Inject(&powerBufferPool_t);//更新功率缓存池状态
 		SetArea();//待测试
  chassiscommot	= ChassisControlDecision();
@@ -306,12 +307,12 @@ int16_t rc_coe=7;
 // 	}
 /**
 	* @Data    2019-03-25 19:13
-	* @brief   巡航模式
+	* @brief   巡航模式  3508上路到中路目标值为负值，反之为正值
 	* @param   void
 	* @retval  void
 	*/
 		 int16_t zhongd = 1500;
-		 int16_t cru_speed = 800;
+		 int16_t cru_speed = 1200;
 		 int16_t direction =0;
 	void ChassisCruiseModeControl(void)
 	{
@@ -319,18 +320,17 @@ int16_t rc_coe=7;
 		if((chassis_t.status & CHASSIS_CRUISE_MODE_RUNING) != CHASSIS_CRUISE_MODE_RUNING)
 		{
 			ChassisCruiseModeInit();
-      chassis_t.pwheel1_t->target = cru_speed;
 		}
 		if(chassis_t.State.r_area == MID_ROAD)
 		{
 			 direction = chassis_t.State.last_area -chassis_t.State.r_area;//看3508的方向
-			 chassis_t.pwheel1_t->target = direction*chassis_t.pwheel1_t->target;
+			 chassis_t.pwheel1_t->target = direction*cru_speed;//修改目标值出现正负变化的bug
 			 chassis_t.pwheel2_t->target = chassis_t.pwheel1_t->target;
 		}
 		else if(chassis_t.State.r_area != MID_ROAD)
 		{
 			 direction = -(chassis_t.State.last_area -chassis_t.State.r_area);//看3508的方向
-			 chassis_t.pwheel1_t->target = direction*chassis_t.pwheel1_t->target;
+			 chassis_t.pwheel1_t->target = direction*cru_speed;
 			 chassis_t.pwheel2_t->target = chassis_t.pwheel1_t->target;
 		}
 	}
@@ -342,7 +342,7 @@ int16_t rc_coe=7;
 	*/
 	void ChassisCruiseModeInit(void)
 	{
-		SET_CHA_RUNING_STATUS(CHASSIS_CRUISE_MODE_READ);
+		SET_CHA_RUNING_STATUS(CHASSIS_CRUISE_MODE_RUNING);
 	}
 
 /**
@@ -561,11 +561,11 @@ void ChassisEludeControlMode(void)
     powerBufferPool_t.r_p = 0.0;
     powerBufferPool_t.r_w = 200.0;//功率单位mW
     powerBufferPool_t.current_mapp_coe = 0.00122;//电流映射系数
-    powerBufferPool_t.high_water_level = 150.0;
+    powerBufferPool_t.high_water_level = 100.0;
     powerBufferPool_t.low_water_level = 30.0;
-    powerBufferPool_t.mid_water_level = 80.0;
+    powerBufferPool_t.mid_water_level = 50.0;
     powerBufferPool_t.period = 0.01;//运行周期，单位/s
-    powerBufferPool_t.high_current_threshold = 5.0;//mA
+    powerBufferPool_t.high_current_threshold = 7.0;//mA
     powerBufferPool_t.mid_current_threshold = 2.0;//mA
     powerBufferPool_t.low_current_threshold = 0.9;//mA
     powerBufferPool_t.safe_current_threshold = 0.7;//mA
@@ -604,6 +604,7 @@ void ChassisEludeControlMode(void)
 				wheel1Speed_t.iout = 0;//i输出
 				wheel1Speed_t.dout = 0;//k输出
 				wheel1Speed_t.pid_out = 0;//pid输出
+        wheel1Speed_t.motor_lim = RM3508_LIM;//3508最大电流范围
 //				wheel1Speed_t.limiting = W1_LIMIT_SPEED;//轮子1速度限幅
         return &wheel1_t;
   }
@@ -640,6 +641,7 @@ void ChassisEludeControlMode(void)
 				wheel2Speed_t.iout = 0;//i输出
 				wheel2Speed_t.dout = 0;//k输出
 				wheel2Speed_t.pid_out = 0;//pid输出
+        wheel2Speed_t.motor_lim = RM3508_LIM;//3508最大电流范围
 //				wheel2Speed_t.limiting = W2_LIMIT_SPEED;//轮子2速度限幅
       return &wheel2_t;
   }
@@ -786,8 +788,8 @@ int16_t temp_organs =0;
 		* @param   void
 		* @retval  void
 		*/
- uint8_t AutoCalibratorMode(void)
- {
-   
- }
+// uint8_t AutoCalibratorMode(void)
+// {
+//   
+// }
 /*----------------------------------file of end-------------------------------*/

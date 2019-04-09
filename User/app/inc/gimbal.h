@@ -37,6 +37,8 @@
   #define PITCH_LIMIMT_CUT                 (29000)//电流限幅
   #define LINT_LIMINT                    (6000)
 	#define PASS_STATUS_LEN                 10//历史状态记忆长度
+  #define DOWN_BUFF_POSI                     6000//仰角位置限制值
+  #define UP_BUFF_POSI                     7000//俯角位置限制值
 typedef struct gimbalStruct
 {
   uint32_t status;

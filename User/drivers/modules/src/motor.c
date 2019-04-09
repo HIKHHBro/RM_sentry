@@ -122,11 +122,13 @@
   * @param    int16_t max_speed 一个计算周期内的最大速度
   * @retval  当前误差
   */
+  int16_t error_t;
   int16_t CalculateError(int16_t target,int16_t real,int16_t max_speed,int16_t linesnumb)
   {
     int16_t error;
-    error = target - real;
-    if(   ((error < (max_speed))&&(error > (-max_speed))) ||  ((error == (max_speed))||(error == (-max_speed)))  )
+    error_t = target - real;
+    error = error_t;
+    if(ABS(error) <= max_speed)
     {
       return error;
     }
