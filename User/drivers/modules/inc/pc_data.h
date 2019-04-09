@@ -36,6 +36,7 @@ typedef struct pcDataStruct
   uint8_t shoot_commot;
   int16_t fps;
   int16_t distance;//µ¥Î»cm
+  CounterStruct counter_t;
 }pcDataStruct;
      void Pc_ParseData(pcDataStruct* pc);
      HAL_StatusTypeDef PcDataRxInit(pcDataStruct* pc);

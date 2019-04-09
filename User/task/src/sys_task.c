@@ -101,7 +101,7 @@ extern CAN_HandleTypeDef hcan1;
 		for(;;)
 		{
 				ParseData();
-				osDelay(2);
+				osDelay(PARSE_DELAY);
 		}
 	}
 

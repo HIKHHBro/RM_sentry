@@ -77,19 +77,23 @@
     /* -------------- 激光红外开关引脚宏定义 ----------------- */
     #define LASER_SWITCH   GPIO_PIN_5
     #define LASER_SWITCH_GPIO  GPIOI 
+    /* ----------------- 帧率计算宏定义 -------------------- */
+    #define COUNTER_ARR  (10000)
     /* ----------------- 编码器宏定义接口 -------------------- */
     extern UART_HandleTypeDef huart1;//串口1
     extern UART_HandleTypeDef huart2;//串口2
     extern UART_HandleTypeDef huart6;
     extern UART_HandleTypeDef huart3;
     extern CAN_HandleTypeDef hcan1;
-      extern CAN_HandleTypeDef hcan2;
+    extern CAN_HandleTypeDef hcan2;
     extern TIM_HandleTypeDef htim5;
     extern TIM_HandleTypeDef htim2;
+    extern TIM_HandleTypeDef htim7;
 		extern TIM_HandleTypeDef htim4;//摩擦轮电机
 		extern CAN_HandleTypeDef hcan1;
      #define ENCOER_TIM (&htim5)//编码器宏接口
      #define HCSR04_TIM (&htim2)//超声波接口
+     #define CAL_COUNTER_TIM (&htim7)//折率计算宏接口
 		 #define FRICTIONGEAR (&htim4)//摩擦轮定时器电机红接口
 		 #define FRICTIONGEAR_1 (TIM_CHANNEL_1)//摩擦轮1PWM通道
 		 #define FRICTIONGEAR_2 (TIM_CHANNEL_2)//摩擦轮2PWM通道

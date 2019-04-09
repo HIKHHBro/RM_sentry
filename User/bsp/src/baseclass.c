@@ -225,4 +225,66 @@ HAL_StatusTypeDef RCREncryption(uint8_t* pdata,uint8_t size)
 				*(pdata+i) = s;
 			}
 		}
+  /**
+  * @Data    2019-04-10 01:10
+  * @brief   帧率计算 单位1s
+  * @param   void
+  * @retval  void
+  */
+  // void CalCounter(int16_t counter)
+  // {
+  //   counter++;
+  //   if( > COUNTER_ARR)
+  //   {
+  //     base_time =0;
+  //     counter =0;
+  //   }
+  // }
+//   /**
+//   * @Data    2019-04-10 01:36
+//   * @brief   获取1s间隔时间
+//   * @param   interval 时间间隔长度 
+//   * @param   uint32_t flag 累计标记
+//   * @retval  返回时间间隔
+//   */
+// uint32_t Getsecond(void)
+// {
+//   static uint32_t flag;
+//   if(CAL_COUNTER_TIM->Instance->CNT > 9999)
+//   {
+//     flag++;
+//     if(flag > (interval*10))
+//     {
+//       flag =0;
+//     }
+//   }
+// }
+  // /**
+  // * @Data    2019-04-10 01:57
+  // * @brief   帧率时间获取回调函数
+  // * @param   void
+  // * @retval  void
+  // */
+  // uint32_t ext_Tick_s;
+  // void CounterCallback(void)
+  // {
+  //  if(CAL_COUNTER_TIM->Instance->CNT > 9999)
+  //  {
+  //   ext_Tick_s++;
+  //   if(ext_Tick_s > 9)
+  //   {
+  //     ext_Tick_s =0;
+  //   }
+  //  }
+  // }
+  // /**
+  // * @Data    2019-04-10 02:02
+  // * @brief   获取1秒间隔时间
+  // * @param   void
+  // * @retval  void
+  // */
+  // uint8_t GetSecondTick(void)
+  // {
+  //   return ext_Tick_s;
+  // }
 /*--------------------------------file of end-------------------------------*/

@@ -25,7 +25,7 @@
  **/
 #include "DJI_dbus.h" 
 uint8_t databuff[21];//数据接收
-//static dbusStruct lostdata;
+// static dbusStruct lostdata;
 /**
 	* @Data    2019-01-15 20:24
 	* @brief   大疆遥控初始化
@@ -82,6 +82,11 @@ uint8_t databuff[21];//数据接收
 //          taskENTER_CRITICAL();
 		if(UserUsartQueueRX(dbs->huartx,databuff) == HAL_OK)
 		{
+      if(dbs->counter_t.counter_flag == 1)
+      {
+        dbs->counter_t.counter = HAL_GetTick() - dbs->counter_t.temp_counter;
+        dbs->counter_t.counter_flag =0;
+      }
 		dbs->ch1 = (databuff[0] | databuff[1]<<8) & 0x07FF;
 		dbs->ch1 -= 1024;
     dbs->ch1 = DbusAntiShake(20,dbs->ch1);
@@ -107,27 +112,43 @@ uint8_t databuff[21];//数据接收
 		
 		dbs->keyBoard.key_code 	= databuff[14] | databuff[15] << 8; //key broad code
     SET_BIT(dbs->status,RX_OK);
-//      lostdata = *dbs;
+      // lostdata = *dbs;
+     if(dbs->counter_t.counter_flag == 0)
+     {
+       dbs->counter_t.temp_counter = HAL_GetTick();
+       dbs->counter_t.counter_flag =1;
+     }
 		}
-		else
+
+
+		if(dbs->counter_t.counter > COUNTER_FRE_IN)
 		{
-//    *dbs = lostdata;
-//		dbs->ch1 = 0;
-//		dbs->ch2 = 0;
-//		dbs->ch3 = 0;
-//		dbs->ch4 = 0;
-// 
-//		dbs->switch_left = 0;
-//		dbs->switch_right = 0;
-//		
-//		dbs->mouse.x = 0;
-//		dbs->mouse.y = 0;
-//		dbs->mouse.z = 0;
-//		
-//		dbs->mouse.press_left	= 0;
-//		dbs->mouse.press_right	= 0;
-//		dbs->keyBoard.key_code	= 0;
+      dbs->counter_t.counter_Fre ++;
+      if(dbs->counter_t.counter_Fre > 5)
+      {
+	    	dbs->ch1 = 0;
+	    	dbs->ch2 = 0;
+	    	dbs->ch3 = 0;
+	    	dbs->ch4 = 0;
+	    	dbs->mouse.x = 0;
+	    	dbs->mouse.y = 0;
+	    	dbs->mouse.z = 0;
+
+	    	dbs->mouse.press_left	= 0;
+	    	dbs->mouse.press_right	= 0;
+	    	dbs->keyBoard.key_code	= 0;
+
+        dbs->counter_t.counter_Fre=0;
+      }
 		}
+    else 
+    {
+      dbs->counter_t.counter_Fre --;
+      if( dbs->counter_t.counter_Fre < 0)
+      {
+        dbs->counter_t.counter_Fre =0;
+      }
+    }
 //        taskEXIT_CRITICAL()	;
 	}
 	/**

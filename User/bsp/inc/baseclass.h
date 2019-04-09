@@ -49,7 +49,11 @@
  * 外设| 8bit | 9bit | 10bit  | 11bit  | 12bit  | 13bit | 14~15bit | 
  * 初始-------------------------------------------------------------
  * 化位| can1 | CAN2 | UASRT1 | UASRT3 | UASRT6 | UART7 |   保留    | 
- * -----------------------------------------------------------------
+ * ----------------------------------------------------------------------------
+ * 模块|  16bit  | 17bit    | 18bit     | 19bit    | 20bit      | 21bit~23bit | 
+ * 正常------------------------------------------------------------------------
+ * 使用| 超声波左 | 超声波右 | 底盘陀螺仪 | 激光开关 | 欧姆龙编码器 |   保留      | 
+ * ----------------------------------------------------------------------------
  * |        24~31bit      | 
  * -------------------------
  * |  保留(模块自定义位)  | 
@@ -63,6 +67,14 @@
   #define CAN1_INIT_OK                0x00000100U//can1正常
   #define CAN2_INIT_OK	              0x00000200U//can2正常
   #define UASRT1_INIT_OK	            0x00000400U//UASRT1正常
+/* -------- 模块使用标志位 --------- */
+	#define ULTRASONIC_LEFT_OK             0x00100000U//左边超声波正常
+	#define ULTRASONIC_RIHGT_OK            0x00200000U//右边超声波正常
+	#define CHASSIS_GYRO_OK                0x00400000U//底盘陀螺仪正常
+  #define LASER_SWITCH_OK                0x00800000U//激光开关正常
+  #define IMPORTANT_MODULE_OK            0x00F00000U//重要模块正常
+  #define OMRON_ENCODER_OK               0x00010000U//欧姆龙编码器正常
+  #define SECONDARY_MODULE_OK            0x000F0000U//次要模块正常
 /* ----------------- 外设使用标志位表  -------------------- */
 	#define USART1_BY_USED    						0x0001U//串口1被使用
 	#define USART2_BY_USED    						0x0002U//串口2被使用
@@ -102,7 +114,13 @@ typedef union
   unsigned char u_8[4];
    uint32_t u_32;  
 }floatToUnion; 
-
+typedef struct CounterStruct
+{
+   uint32_t counter;//帧率，数据传输之间间隔
+   uint32_t temp_counter;//临时缓存时间
+   int16_t counter_Fre;//持续掉帧次数
+   uint8_t counter_flag;//时间计算标志
+}CounterStruct;
 
 /* -------------- 函数定义 ----------------- */
 	UART_HandleTypeDef* RecognizeUSARTType(UART_HandleTypeDef* huartx);

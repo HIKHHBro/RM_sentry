@@ -32,6 +32,8 @@ extern osThreadId startParseTaskHandle;
 extern UART_HandleTypeDef huart1;//串口1
 extern uint8_t can1_rx[12];
 extern uint32_t lenjuu;
+/* ----------------- 变量 -------------------- */
+  const uint16_t base_time_c = (uint16_t)(COUNTER_TIME_I / PARSE_DELAY);
 	/**
 	* @Data    2019-02-14 14:36
 	* @brief   数据解析任务初始化
@@ -122,6 +124,31 @@ void ParseInit(void)
 //{
 //         ChassisParseDate(id,data);
 //}
+  /**
+  * @Data    2019-04-10 02:14
+  * @brief   帧率统计
+  * @param   void
+  * @retval  void
+  */
+  //    uint16_t counter[3];
+  //   uint16_t counter_f=0;
+  // void GetCounter(uint16_t *counter0,uint16_t *counter1,uint16_t *counter2)
+  // {
+
+  //   counter_f++;
+  //   uint16_t counter[3];
+
+  //   if(counter_f > base_time_c)
+  //   {
+  //     counter_f =0;
+  //     counter[0] = *counter0; 
+  //     counter[1] = *counter1;
+  //     counter[2] = *counter2;
+  //     *counter0 = 0;
+  //     *counter1 = 0;
+  //     *counter2 = 0;
+  //   }
+  // }
 /*-----------------------------------file of end------------------------------*/
 
 

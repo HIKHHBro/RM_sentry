@@ -27,6 +27,7 @@
 #define PC_CHECK_BYTE (0x55)//校验位
 #define PC_DATA_LEN 12//接收数据长度
 #define  PC_DATA_LEN_BSP (PC_DATA_LEN+3)
+#define PC_FRE_IN    200//最低每秒5帧
 uint8_t pc_databuff[PC_DATA_LEN_BSP];
 static pcDataStruct lastpc;
 SqQueue pc_yaw_queue;
@@ -78,6 +79,14 @@ void Pc_ParseData(pcDataStruct* pc)
   {
     if(pc_databuff[0] == PC_CHECK_BYTE)
     {
+
+    if(pc->counter_t.counter_flag == 1)
+      {
+        pc->counter_t.counter = HAL_GetTick() - pc->counter_t.temp_counter;
+        pc->counter_t.counter_flag =0;
+      }
+
+
     tem_yaw = (int16_t)((pc_databuff[1]<<8) | pc_databuff[2]);
       __tem_yaw = (tem_yaw-334);
     pc->yaw_target_angle = YawDataConversion(__tem_yaw);
@@ -100,28 +109,51 @@ void Pc_ParseData(pcDataStruct* pc)
       pc->yaw_target_angle = (int16_t)(pc->yaw_target_angle * 0.2);
 //      pc->pitch_target_angle  = (int16_t)(pc->pitch_target_angle* 0.2);
       lastpc  = *pc;
-      if(flagdf <-20)
-      {
-        flagdf =0;
-      }
-      else   flagdf--;
-     
+      // if(flagdf <-20)
+      // {
+      //   flagdf =0;
+      // }
+      // else   flagdf--;
+     if(pc->counter_t.counter_flag == 0)
+     {
+       pc->counter_t.temp_counter = HAL_GetTick();
+       pc->counter_t.counter_flag =1;
+     }
     }
-    else if(pc_databuff[0] == 0xA5)
-    {
-      if(flagdf > 20)
-      {
-       pc->commot = 0;//pc_databuff[5];
-       pc->shoot_commot = 0;
-      }
-      else 
-      {
-        flagdf++;
-         *pc =  lastpc;
-      }
 
-      
-    }    
+
+    if( pc->counter_t.counter > PC_FRE_IN)
+    {
+      pc->counter_t.counter_Fre ++;
+      if(pc->counter_t.counter_Fre > 5)
+      {
+        pc->commot = 0;//pc_databuff[5];
+        pc->shoot_commot = 0;
+        pc->counter_t.counter_Fre =0;
+      }
+      else  *pc = lastpc;
+    }
+    else 
+    {
+      pc->counter_t.counter_Fre --;
+      if( pc->counter_t.counter_Fre < 0)
+      {
+        pc->counter_t.counter_Fre =0;
+      }
+    }
+    // else if(pc_databuff[0] == 0xA5)
+    // {
+    //   // if(flagdf > 20)
+    //   // {
+    //   //  pc->commot = 0;//pc_databuff[5];
+    //   //  pc->shoot_commot = 0;
+    //   // }
+    //   // else 
+    //   // {
+    //   //   flagdf++;
+    //   //    *pc =  lastpc;
+    //   // }      
+    // }    
 //    
 //    else if((pc->yaw_target_angle > 320)||(pc->yaw_target_angle <-320))
 //    {
@@ -131,13 +163,30 @@ void Pc_ParseData(pcDataStruct* pc)
 //    {
 //      pc->pitch_target_angle = 0;
 //    }
-    
   }
   else
   {
-     
-  }
-  
+    pc->commot = 0;//pc_databuff[5];
+       pc->shoot_commot = 0;
+    // if( pc->counter_t.counter > PC_FRE_IN)
+    // {
+    //   pc->counter_t.counter_Fre ++;
+    //   if(pc->counter_t.counter_Fre > 5)
+    //   {
+    //     pc->commot = 0;//pc_databuff[5];
+    //     pc->shoot_commot = 0;
+    //     pc->counter_t.counter_Fre =0;
+    //   }
+    //   else  *pc = lastpc;
+    // }
+    // else 
+    // {
+    //   pc->counter_t.counter_Fre --;
+    //   if( pc->counter_t.counter_Fre < 0)
+    //   {
+    //     pc->counter_t.counter_Fre =0;
+    //   }
+   }
 }
 /**
 * @Data    2019-03-21 00:46
@@ -200,8 +249,4 @@ int16_t PitchDataConversion(int16_t pitch)
 //  }
      return pitch *pitch_coe;
 }
-
-
 /*------------------------------------file of end-------------------------------*/
-
-

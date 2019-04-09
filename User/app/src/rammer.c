@@ -200,14 +200,27 @@ void Shoot(uint8_t speed,uint8_t buffer_on)
     {
       speed =8;
     }
-    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,(FRICTIONGEAR_SPEED-200));
-    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,(FRICTIONGEAR_SPEED-200));
-         HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
-//    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
+    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
+    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,(CAL_SHOOT_SPEED(speed)));
+    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,(CAL_SHOOT_SPEED(speed)));
     SetRammerPID(speed);
   }
 }
-
+  /**
+  * @Data    2019-04-10 00:22
+  * @brief   »»¡øº∆À„
+  * @param   void
+  * @retval  void
+  */
+//  float HOOT_Q1 =0;
+//  float HOOT_Q0 =480;
+//   void CalHoot(float speed)
+//   {
+//     float q_t;
+//     q_t = HOOT_Q1 + speed;
+//     if()
+//     return ()
+//   }
 /*-----------------------------------file of end------------------------------*/
 
 

@@ -26,7 +26,7 @@
 #ifndef __DJI_DBUS_H 
 #define __DJI_DBUS_H 
 	#include "bsp_usart.h"
-
+#define COUNTER_FRE_IN 100//允许掉帧间隔
 #define KEY_V		0x4000
 #define KEY_C		0x2000
 #define KEY_X		0x1000
@@ -77,6 +77,7 @@
 		uint32_t state_flag;//标志位
 		uint8_t a_frame_len;//一帧数据长度
 		uint8_t check_byte;//帧尾校验
+    CounterStruct counter_t;
 		UART_HandleTypeDef *huartx; //获取串口地址指针
 	} dbusStruct;
 	HAL_StatusTypeDef DJIDbusInit(dbusStruct *dbs, UART_HandleTypeDef *huartx);

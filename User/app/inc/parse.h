@@ -29,6 +29,8 @@
  #include "gimbal.h"  
  #include "pc_data.h" 
  #include "communicate.h" 
+  #define PARSE_DELAY 2
+  #define COUNTER_TIME_I 1000  //帧率统计频率1s
  void ParseInit(void);
  void ParseData(void);
  	const dbusStruct* GetRcStructAddr(void);
