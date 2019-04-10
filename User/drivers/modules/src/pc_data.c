@@ -80,13 +80,6 @@ void Pc_ParseData(pcDataStruct* pc)
     if(pc_databuff[0] == PC_CHECK_BYTE)
     {
 
-    if(pc->counter_t.counter_flag == 1)
-      {
-        pc->counter_t.counter = HAL_GetTick() - pc->counter_t.temp_counter;
-        pc->counter_t.counter_flag =0;
-      }
-
-
     tem_yaw = (int16_t)((pc_databuff[1]<<8) | pc_databuff[2]);
       __tem_yaw = (tem_yaw-334);
     pc->yaw_target_angle = YawDataConversion(__tem_yaw);
@@ -109,51 +102,28 @@ void Pc_ParseData(pcDataStruct* pc)
       pc->yaw_target_angle = (int16_t)(pc->yaw_target_angle * 0.2);
 //      pc->pitch_target_angle  = (int16_t)(pc->pitch_target_angle* 0.2);
       lastpc  = *pc;
-      // if(flagdf <-20)
-      // {
-      //   flagdf =0;
-      // }
-      // else   flagdf--;
-     if(pc->counter_t.counter_flag == 0)
-     {
-       pc->counter_t.temp_counter = HAL_GetTick();
-       pc->counter_t.counter_flag =1;
-     }
-    }
-
-
-    if( pc->counter_t.counter > PC_FRE_IN)
-    {
-      pc->counter_t.counter_Fre ++;
-      if(pc->counter_t.counter_Fre > 5)
+       if(flagdf <-20)
       {
+         flagdf =0;
+       }
+       else   flagdf--;
+
+    }
+   else if(pc_databuff[0] == 0xA5)
+   {
+       if(flagdf > 20)
+       {
         pc->commot = 0;//pc_databuff[5];
         pc->shoot_commot = 0;
-        pc->counter_t.counter_Fre =0;
-      }
-      else  *pc = lastpc;
-    }
-    else 
-    {
-      pc->counter_t.counter_Fre --;
-      if( pc->counter_t.counter_Fre < 0)
-      {
-        pc->counter_t.counter_Fre =0;
-      }
-    }
-    // else if(pc_databuff[0] == 0xA5)
-    // {
-    //   // if(flagdf > 20)
-    //   // {
-    //   //  pc->commot = 0;//pc_databuff[5];
-    //   //  pc->shoot_commot = 0;
-    //   // }
-    //   // else 
-    //   // {
-    //   //   flagdf++;
-    //   //    *pc =  lastpc;
-    //   // }      
-    // }    
+       }
+       else 
+       {
+         flagdf++;
+          *pc =  lastpc;
+       } 
+     }
+   }   
+    
 //    
 //    else if((pc->yaw_target_angle > 320)||(pc->yaw_target_angle <-320))
 //    {
@@ -163,7 +133,6 @@ void Pc_ParseData(pcDataStruct* pc)
 //    {
 //      pc->pitch_target_angle = 0;
 //    }
-  }
   else
   {
     pc->commot = 0;//pc_databuff[5];

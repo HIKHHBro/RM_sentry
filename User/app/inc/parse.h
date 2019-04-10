@@ -37,6 +37,8 @@
 	uint32_t GetRcStatus(void);
 	uint32_t GetPcDataStatus(void);
   const pcDataStruct* GetPcDataStructAddr(void);
+    void SetCounterPc(int32_t counter);
+      void SetCounterRc(int32_t counter)
 #endif	// __PARSE_H
 /*-----------------------------------file of end------------------------------*/
 

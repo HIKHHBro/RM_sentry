@@ -24,6 +24,9 @@
 	|-----------------------------declaration of end-----------------------------|
  **/
 #include "parse.h" 
+/* -------------- 软件定时器 ----------------- */       
+ osTimerId counterCalTimerHandle;
+void CounterCalCallback(void const * argument);
 /* -------------- 结构体 ----------------- */
  dbusStruct dbus_t; //大疆遥控
  pcDataStruct pc_t;//小电脑数据
@@ -43,10 +46,18 @@ extern uint32_t lenjuu;
 void ParseInit(void)
 {
   CommunicateInit();
-    DJIDbusInit(&dbus_t,&huart1);//大疆遥控初始化
+  DJIDbusInit(&dbus_t,&huart1);//大疆遥控初始化
   PcDataRxInit(&pc_t);//小电脑数据接收初始化
   /* -------- 挂起等待任务系统初始化 --------- */
 	vTaskSuspend(startParseTaskHandle);
+  osStatus timerresult = osOK;
+  osTimerDef(CounterCalTimer, CounterCalCallback);
+  counterCalTimerHandle = osTimerCreate(osTimer(CounterCalTimer), osTimerPeriodic, NULL);
+  timerresult = osTimerStart(counterCalTimerHandle,BASE_TIME_COUNTER);
+  if(timerresult !=osOK)
+  {
+    //添加报错机制
+  }
 }
 
 	/**
@@ -149,6 +160,20 @@ void ParseInit(void)
   //     *counter2 = 0;
   //   }
   // }
+
+/**
+* @Data    2019-04-10 10:21
+* @brief   软定时回调函数，帧率更新
+* @param   void
+* @retval  void
+*/
+void CounterCalCallback(void const * argument)
+{
+  dbus_t.counter_t.counter = dbus_t.counter_t.counter_flag;
+  pc_t.counter_t.counter = pc_t.counter_t.counter_flag;
+  dbus_t.counter_t.counter_flag =0;
+  pc_t.counter_t.counter_flag =0;
+}
 /*-----------------------------------file of end------------------------------*/
 
 

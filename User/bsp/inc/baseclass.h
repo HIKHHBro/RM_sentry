@@ -33,7 +33,8 @@
 	#define MAX(X,Y) ((X)>(Y)?(Y):(X))  //限做大值
 	#define MIN(X,Y) ((X)<(Y)?(Y):(X))  //限做小值
 	#define ABS(X)  ( (X)<0?(-X):(X))    //取绝对值
-
+  #define MIN_COUNTER  1   //帧数最低值    单位BASE_TIME_COUNTER时间内，接收最低MIN_COUNTER次
+  #define BASE_TIME_COUNTER 200 //帧率更新时间 单位mm
 /* ----------------- 标志位变量外部链接 -------------------- */
 	extern unsigned int e_periphera_interface_flag; 	//外设接口使用状态变量定义
 	extern unsigned int e_periphera_error_flag;		//外设接口错误状态变量定义
@@ -118,7 +119,7 @@ typedef struct CounterStruct
 {
    uint32_t counter;//帧率，数据传输之间间隔
    uint32_t temp_counter;//临时缓存时间
-   int16_t counter_Fre;//持续掉帧次数
+   int32_t counter_Fre;//帧数累计
    uint8_t counter_flag;//时间计算标志
 }CounterStruct;
 
