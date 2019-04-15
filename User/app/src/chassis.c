@@ -23,40 +23,9 @@
 	|-------2. ...                                                       
 	|-------------------------------declaration of end---------------------------|
  **/
-#include "chassis.h"
-/* -------------- 模块标志位宏定义 ----------------- */
-#define   CHASSIS_RC_MODE_READ                 (0x80000000U)//遥控模式 
- #define  CHASSIS_ELUDE_MODE_READ              (0x40000000U) //躲避模式     
- #define  CHASSIS_PC_SHOOT_MODE_READ           (0x20000000U) //自瞄打击模式准备就绪
- #define  CHASSIS_CRUISE_MODE_READ             (0x10000000U)//巡航模式模式准备就绪
- #define  DISABLE_CHA_MOD_READ			           (0xF0000000U)//失能就绪标志位
- #define  CHASSIS_RC_MODE_RUNING               (0x08000000U)//遥控模式执行 
- #define  CHASSIS_ELUDE_MODE_RUNING            (0x04000000U) //躲避模式 
- #define  CHASSIS_PC_SHOOT_MODE_RUNING         (0x02000000U) //自瞄打击模式执行   
- #define  CHASSIS_CRUISE_MODE_RUNING           (0x01000000U) //巡航模式执行
-#define   DISABLE_CHA_MOD_RUNNING			         (0x0F000000U)//失能就绪标志位
-#define   DISABLE_CHASSIS                      (0xFF000000U)//失能底盘
-#define   CHASSIS_JUDGE_READ                   (0xF0000000U)//判断决策
-// #define  DISABLE_MOD                        (0xF0000000U)//使能运行模块
-
-// #define  RC_MODE_READ               (0x02000000U)//遥控模式准备就绪
-// #define  JUDGE_READ                 (0x0F000000U)//判断决策
-// #define  DELEC_USER_MODE            (0x00FFFFFFU)//清除用户自定义标志位
-
-
-#define SET_CHA_RUNING_STATUS(_status_)  											\
-				do																								\
-				{																									\
-					CLEAR_BIT(chassis_t.status,DISABLE_CHA_MOD_RUNNING);	\
-					SET_BIT(chassis_t.status,_status_);							\
-				}while(0)	
-#define SET_CHA_READ_STATUS(__status_)  											\
-				do																								\
-				{																									\
-					CLEAR_BIT(chassis_t.status,DISABLE_CHA_MOD_READ);	\
-					SET_BIT(chassis_t.status,__status_);							\
-				}while(0)																					
-
+#include "chassis.h"																			
+/* -------- 设置失常常和掉线模式 --------- */
+  
 /* -------------- 外部链接 ----------------- */
 extern TIM_HandleTypeDef htim5;
 extern	osThreadId startChassisTaskHandle;
@@ -168,37 +137,6 @@ extern	osThreadId startChassisTaskHandle;
 //		s[3] = (uint8_t)w2;
 //		CanTxMsg(chassis_t.hcanx,CHASSIS_CAN_TX_ID,s);
 //	}
-/**
-	* @Data    2019-03-12 16:25
-	* @brief   底盘控制函数
-	* @param   void
-	* @retval  void
-	*/
-  uint32_t chassiscommot =0;
-  int16_t pid_out[2];
-  uint32_t tsoncin3;
-  uint32_t tsoncin4;
-  int16_t saerr=0;
-  uint32_t ssssssss;
-	void ChassisControl(void)
-	{
-		ssssssss = GetPosition(&chassisEnconder_t);
-    Inject(&powerBufferPool_t);//更新功率缓存池状态
-	SetArea();//待测试
-   saerr =  jiujimoshi();
-    tsoncin3 = GetDistance(3);
- tsoncin4 = GetDistance(4);
-//    SetUltrasonic();
- chassiscommot	= ChassisControlDecision();
-	ChassisControlSwitch(chassiscommot);
-    chassis_t.pwheel1_t->error = chassis_t.pwheel1_t->target - chassis_t.pwheel1_t->real_speed;
-     chassis_t.pwheel2_t->error = chassis_t.pwheel2_t->target - chassis_t.pwheel2_t->real_speed;
-		pid_out[0] = SpeedPid(chassis_t.pwheel1_t->pspeedPid_t,chassis_t.pwheel1_t->error);
-  	pid_out[1] = SpeedPid(chassis_t.pwheel2_t->pspeedPid_t,chassis_t.pwheel2_t->error);
-    SetInPut(&powerBufferPool_t,pid_out,2);//开功率缓存池
-		ChassisCanTx(pid_out[0],pid_out[1]);
-    SET_BIT(chassis_t.status,RUNING_OK);
-	}
  /*
 * @Data    2019-02-24 11:59
 * @brief   获取底盘结构体地址
@@ -240,24 +178,7 @@ const chassisStruct* GetChassisStructAddr(void)
     	wheel1_t.target = w1;
       wheel2_t.target = w2;
   }
-  /**
-  * @Data    2019-03-13 03:19
-  * @brief   遥控模式
-  * @param   void
-  * @retval  void
-  */
-int16_t rc_coe=10;
-  void ChassisRcControlMode(void)
-  {
-		if((chassis_t.status & CHASSIS_RC_MODE_RUNING)!= CHASSIS_RC_MODE_RUNING)
-		{
-			chassis_t.pwheel1_t->target = 0;
-			chassis_t.pwheel2_t->target = 0;
-			SET_CHA_RUNING_STATUS(CHASSIS_RC_MODE_RUNING);
-		}
-		chassis_t.pwheel1_t->target = chassis_t.rc_t->ch1 *rc_coe;
-		chassis_t.pwheel2_t->target = chassis_t.rc_t->ch1 *rc_coe;
-  }
+
   /**
   * @Data    2019-03-25 00:28
   * @brief   控制优先权决策
@@ -300,96 +221,7 @@ int16_t rc_coe=10;
    	xQueueSendToBack(chassis_queue,s,0);
 		return HAL_OK;
 	}
-// /**
-// 	* @Data    2019-03-25 19:05
-// 	* @brief   获取云台命令
-// 	* @param   void
-// 	* @retval  void
-// 	*/
-// 	void GetGimbalCom(void)
-// 	{
-		
-// 	}
 
-// /**
-// 	* @Data    2019-03-25 19:11
-// 	* @brief   获取机器人状态
-// 	* @param   void
-// 	* @retval  void
-// 	*/
-// 	void GetRotbStatus(void)
-// 	{
-// 		if()
-// 	}
-/**
-	* @Data    2019-03-25 19:13
-	* @brief   巡航模式  3508上路到中路目标值为负值，反之为正值
-	* @param   void
-	* @retval  void
-	*/
-		 int16_t zhongd = 1500;
-		 int16_t cru_speed = 5000;
-		 int16_t direction =0;
-	void ChassisCruiseModeControl(void)
-	{
-//			uint32_t position;
-		if((chassis_t.status & CHASSIS_CRUISE_MODE_RUNING) != CHASSIS_CRUISE_MODE_RUNING)
-		{
-			ChassisCruiseModeInit();
-		}
-    //原来的-------------------------------------
-//		if(chassis_t.State.r_area == MID_ROAD)
-//		{
-//			 direction = chassis_t.State.last_area -chassis_t.State.r_area;//看3508的方向
-//			 chassis_t.pwheel1_t->target = direction*cru_speed;//修改目标值出现正负变化的bug
-//			 chassis_t.pwheel2_t->target = chassis_t.pwheel1_t->target;
-//		}
-//		else if(chassis_t.State.r_area != MID_ROAD)
-//		{
-//			 direction = -(chassis_t.State.last_area -chassis_t.State.r_area);//看3508的方向
-//			 chassis_t.pwheel1_t->target = direction*cru_speed;
-//			 chassis_t.pwheel2_t->target = chassis_t.pwheel1_t->target;
-//		}
-    //----------------------原来的----------------------------
-    //临时修改------------------------------
-    if(saerr ==0)
-    {
-      direction =1;
-
-    }
-    else if(saerr ==1)
-    {
-       direction =-1;
-    }
-    else direction=0;
-      chassis_t.pwheel1_t->target = direction*cru_speed;
-     chassis_t.pwheel2_t->target = chassis_t.pwheel1_t->target;
-    //-----------临时修改--------------------
-	}
-/**
-	* @Data    2019-03-30 15:50
-	* @brief   设置续航模式初始化
-	* @param   void
-	* @retval  void
-	*/
-	void ChassisCruiseModeInit(void)
-	{
-		SET_CHA_RUNING_STATUS(CHASSIS_CRUISE_MODE_RUNING);
-	}
-
-/**
-	* @Data    2019-03-25 19:16
-	* @brief   更新机器人位置和状态
-	* @param   void
-	* @retval  void
-	*/
-
-// 	void GetRobotStatus(void)
-// 	{
-// 		
-
-
-// 	}
 
 /**
 	* @Data    2019-03-25 19:16
@@ -421,64 +253,6 @@ uint8_t GetHurtStatus(void)
 }
 
 /**
-* @Data    2019-03-20 21:27
-* @brief   控制权切换
-* @param   void
-* @retval  void
-*/
-void ChassisControlSwitch(uint32_t commot)
-{
- switch (commot)
- {
-   case CHASSIS_RC_MODE_READ:
-       ChassisRcControlMode();
-     break;
-////   case CHASSIS_ELUDE_MODE_READ://测试注释掉
-////    		ChassisEludeControlMode();
-////		  break;
-	case CHASSIS_PC_SHOOT_MODE_READ:
-	    ChassisPcShootMode();
-    break;
-      case CHASSIS_CRUISE_MODE_READ:
-       ChassisCruiseModeControl();
-     break;
-   default:
-    ChassisDeinit();
-	    break;
- }
-}
-/**
-* @Data    2019-03-20 21:27
-* @brief   决策控制判断
-* @param   void
-* @retval  void
-*/
-  uint32_t ChassisControlDecision(void)
-  {
-    if(chassis_t.rc_t ->switch_left ==2)
-    {
-      CLEAR_BIT(chassis_t.status,DISABLE_CHASSIS);
-     return (chassis_t.status & CHASSIS_JUDGE_READ);
-    }
-    else if(chassis_t.rc_t->switch_right ==1)
-    {
-//		 if(GetHurtStatus() !=5)
-//      {
-//        SET_CHA_READ_STATUS(CHASSIS_ELUDE_MODE_READ);
-//      }
-     if(chassis_t.pPc_t->commot ==1 &&GetGyroDire()>=28)// else if(chassis_t.pPc_t->commot ==1)
-      {
-        SET_CHA_READ_STATUS(CHASSIS_PC_SHOOT_MODE_READ);
-      }
-      else SET_CHA_READ_STATUS(CHASSIS_CRUISE_MODE_READ);
-    }
-    else if(chassis_t.rc_t->switch_right ==2)
-    {
-			 SET_CHA_READ_STATUS(CHASSIS_RC_MODE_READ);
-    }   
-    return (chassis_t.status & CHASSIS_JUDGE_READ);
-  }
-/**
 * @Data    2019-03-21 00:46
 * @brief   底盘模块失能//待完善
 * @param   void
@@ -489,93 +263,8 @@ void ChassisDeinit(void)
 chassis_t.pwheel1_t->target = 0;
 chassis_t.pwheel2_t->target = 0;
 }
-/**
-* @Data    2019-03-21 00:46
-* @brief   躲避模式//待完善
-* @param   void
-* @retval  void
-*/
-uint8_t tempwwwwaaa;
-void ChassisEludeControlMode(void)
-{
-	ChassisEludeControlModeInit();
-//  tempwwwwaaa = GetHurtStatus();
-//	if( tempwwwwaaa== AHEAD_OF_ARMOR)
-//	{
-		switch (chassis_t.State.r_area) 
-		{
-			case UP_ROAD:
-			  Go(DOWN_ROAD,2000);
-				break;
-			case MID_ROAD:
-		  	Go(UP_ROAD,2000);
-				break;
-			case DOWN_ROAD:
-		  	Go(UP_ROAD,2000);
-				break;
-			default:
-				break;
-		}
-//	}
-}
-
-/**
-	* @Data    2019-03-31 12:06
-	* @brief   躲避模式初始化
-	* @param   void
-	* @retval  void
-	*/
-	void ChassisEludeControlModeInit(void)
-	{
-	if((chassis_t.status & CHASSIS_ELUDE_MODE_RUNING) != CHASSIS_ELUDE_MODE_RUNING)
-		{
-			SET_CHA_RUNING_STATUS(CHASSIS_ELUDE_MODE_RUNING);
-		}
-	}
-
-/**
-	* @Data    2019-03-30 22:13
-	* @brief   跑到指定目的地
-	* @param   void
-	* @retval  void
-	*/
-	int16_t Go(int16_t target,int16_t speed)
-	{
-		int16_t dire;
-		dire =chassis_t.State.r_area  - target;
-			if(ABS(dire) >1)
-			dire =(int16_t)( dire *0.5);
-			speed = dire * speed;
-			SetMotorTarget(speed,speed); 
-			return dire;
 
 
-	}
-
-/**
-	* @Data    2019-03-31 12:02
-	* @brief   击打模式控制
-	* @param   void
-	* @retval  void
-	*/
-	void ChassisPcShootMode(void)
-	{
-		ChassisPcShootModeInit();
-		SetMotorTarget(0,0);
-	}
-/**
-	* @Data    2019-03-31 12:03
-	* @brief   击打模式初始化
-	* @param   void
-	* @retval  void
-	*/
-	void ChassisPcShootModeInit(void)
-	{
-	 if((chassis_t.status & CHASSIS_PC_SHOOT_MODE_RUNING) != CHASSIS_PC_SHOOT_MODE_RUNING)
-		{
-			SET_CHA_RUNING_STATUS(CHASSIS_PC_SHOOT_MODE_RUNING);
-		}
-	}
 
 
 
@@ -701,6 +390,7 @@ void ChassisEludeControlMode(void)
 		/* ------ 设置初始化区域位置 ------- */
 			chassis_t.State.r_area  = UP_ROAD;
 			chassis_t.State.last_area = MID_ROAD;//添加超声波检测是否位置正确
+      chassis_t.State.out_of_flag =AUTO_CONTROL_OK;
      /* ------ 设置启动标志位 ------- */  
         SET_BIT(chassis_t.status,START_OK);  
   }
@@ -971,7 +661,10 @@ void ChassisSensorParse(uint8_t *data)
   floatToUnion p;
   chassis_t.Sensor.lim_sw_left = data[0]>>4 & 0x0f;
   chassis_t.Sensor.lim_sw_right = data[0] & 0x0f;
-  
+  if(data[1] >AUTO_CONTROL_OK)
+  {
+   chassis_t.State.out_of_flag =OUT_OF_CONTROL;
+  }
   chassis_t.Sensor.laser_sw_left = data[1]>>4 & 0x0f;
   chassis_t.Sensor.laser_sw_left = data[1] & 0x0f;
   
@@ -985,8 +678,24 @@ void ChassisSensorParse(uint8_t *data)
   
   chassis_t.Sensor.encoder = p.s_32;
 }
- 
-  
+/**
+	* @Data    2019-03-30 22:13
+	* @brief   跑到指定目的地
+	* @param   void
+	* @retval  void
+	*/
+	int16_t Go(int16_t target,int16_t speed)
+	{
+		int16_t dire;
+		dire =chassis_t.State.r_area  - target;
+			if(ABS(dire) >1)
+			dire =(int16_t)( dire *0.5);
+			speed = dire * speed;
+			SetMotorTarget(speed,speed); 
+			return dire;
+
+
+	}
 /*----------------------------------file of end-------------------------------*/
 //测试区
 //void midrun(void)
