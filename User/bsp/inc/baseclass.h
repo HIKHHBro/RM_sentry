@@ -100,7 +100,8 @@ typedef union
   float  f;   
   int16_t s_16[2];
   unsigned char u_8[4];
-   uint32_t u_32;  
+   uint32_t u_32; 
+   int32_t s_32;  
 }floatToUnion; 
 
 

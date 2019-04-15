@@ -81,9 +81,29 @@ void CommunicateInit(void)
   * @retval  void
   */
  uint16_t flagju=0;
+int16_t flag_hurt = 0;
+int16_t flag_hurt1 = 0;
   void CommunicateParse(uint16_t datalen)
   {
-             robot_hurt_t.hurt_type =5;
+    if( robot_hurt_t.hurt_type != 5)
+    {
+      if(flag_hurt1 ==0)
+      {
+        flag_hurt =100;
+        flag_hurt1 =1;
+      }
+      else  
+      {
+        if(flag_hurt <0)
+          robot_hurt_t.hurt_type =5; 
+        else flag_hurt --;
+      }
+    }
+    else 
+    {
+      flag_hurt1 =0;
+        robot_hurt_t.hurt_type =5;
+    }
    if(UserUsartQueueRX(&huart3,reebuff) ==HAL_OK)
    {
      for(int i=0;i< datalen;)

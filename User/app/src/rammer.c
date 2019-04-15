@@ -182,8 +182,8 @@ void Shoot(uint8_t speed,uint8_t buffer_on)
 {
   if(speed ==0)
   {
-    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_1_START_V);
-    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_2_START_V);
+    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_SPEED-100);
+    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_SPEED -100);
     SetRammerPID(0);
     HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
 
@@ -200,14 +200,26 @@ void Shoot(uint8_t speed,uint8_t buffer_on)
     {
       speed =8;
     }
-    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,(FRICTIONGEAR_SPEED-200));
-    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,(FRICTIONGEAR_SPEED-200));
+    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,(FRICTIONGEAR_SPEED-100));
+    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,(FRICTIONGEAR_SPEED-100));
          HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
 //    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
     SetRammerPID(speed);
   }
 }
 
+//²âÊÔ°æ¼Ó¼õËÙ
+//int16_t line_d =100;
+//float line_k =0.02;
+//int16_t Addmspeed(int16_t speed,int16_t k)
+//{
+//  int16_t y;
+//  if(k >0)
+//  {
+//    if(speed <300)
+//    y = speed +20;
+//  }
+//}
 /*-----------------------------------file of end------------------------------*/
 
 

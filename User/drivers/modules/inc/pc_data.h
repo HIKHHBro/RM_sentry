@@ -42,6 +42,7 @@ typedef struct pcDataStruct
 
 int16_t YawDataConversion(int16_t yaw);
 int16_t PitchDataConversion(int16_t pitch);
+void EscPc(int16_t key,int16_t ch1,int16_t ch2,int16_t ch3,int16_t ch4,int16_t key1);
 #endif	// __PC_DATA_H
   
  /*------------------------------------file of end-------------------------------*/

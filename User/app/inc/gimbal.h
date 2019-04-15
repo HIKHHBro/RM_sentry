@@ -82,6 +82,7 @@ void GimbalDeinit(void);
 	void GetTrend(int16_t* yaw_tr,int16_t* pitch_tr);
 		void FrameDropBufferMode(void);
 int16_t SetLock(int16_t r,int16_t t);
+ void GimbalWeakDeinit(void);
 
 #define GIMBAL_CAL_ERROR(target,real) (CalculateError((target),(real),5500,(8192)))
 //#define YAW_CAL_ERROR(target,real) (CalculateError((target),(real),15000,(20480)))

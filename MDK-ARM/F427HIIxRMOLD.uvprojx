@@ -834,6 +834,11 @@
               <FilePath>..\User\app\src\rammer.c</FilePath>
             </File>
             <File>
+              <FileName>laser_ranging.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\task\inc\laser_ranging.h</FilePath>
+            </File>
+            <File>
               <FileName>sys_detect.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\app\src\sys_detect.c</FilePath>
@@ -872,11 +877,6 @@
               <FileName>debug_by_keil.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\User\task\inc\debug_by_keil.h</FilePath>
-            </File>
-            <File>
-              <FileName>laser_ranging.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\User\task\inc\laser_ranging.h</FilePath>
             </File>
             <File>
               <FileName>sys_task.h</FileName>

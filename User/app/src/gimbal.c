@@ -484,10 +484,10 @@ Int16Queue pitchStatusQu;
 * @retval  void
 */
 uint8_t scflag = 0;
-  int16_t pitchspeed_= 25;
-    int16_t yawspeed_= 20;
-  int16_t scok_up = 1000;
-  int16_t scok_down = 2200;
+  int16_t pitchspeed_= 15;
+    int16_t yawspeed_= 8000;
+  int16_t scok_up = 1500;
+  int16_t scok_down = 2000;
 void ScanningToExplore(void)
 {
   if((gimbal_t.status&SCAN_MODE_RUNING) != SCAN_MODE_RUNING)
@@ -529,10 +529,11 @@ void ScanningToExplore(void)
          gimbal_t.pitch_scan_target = scok_down-1;
       }
     }
-    gimbal_t.yaw_scan_target =  ((gimbal_t.yaw_scan_target+yawspeed_) % 20480);
+    //gimbal_t.yaw_scan_target =  ((gimbal_t.yaw_scan_target+yawspeed_) % 20480);
      gimbal_t.pPitch_t->ppostionPid_t->error = CalculateError(gimbal_t.pitch_scan_target,( gimbal_t.pPitch_t->real_angle),6500,(8192));//´ý²âÊÔ
-     gimbal_t.pYaw_t->ppostionPid_t->error = CalculateError(( gimbal_t.yaw_scan_target),(gimbal_t.pYaw_t->real_angle),15000,(20480));//´ý²âÊÔ
-    
+     gimbal_t.pYaw_t->ppostionPid_t->error = yawspeed_;//CalculateError(( gimbal_t.yaw_scan_target),(gimbal_t.pYaw_t->real_angle),15000,(20480));//´ý²âÊÔ
+         Shoot(0,0);
+
 }
 /**
 * @Data    2019-03-20 21:27
@@ -548,15 +549,21 @@ void PcControlMode(void)
   {
     //Ä¿±êÖµÇÐ»»£¬×´Ì¬ÇÐ»»
     SET_RUNING_STATUS(PC_SHOOT_MODE_RUNING);
+//    //²âÊÔÇø
+//  gimbal_t.pPitch_t->ppostionPid_t->error  = (int16_t)(gimbal_t.pPc_t->pitch_target_angle * pitchcin);
+//  gimbal_t.pYaw_t->ppostionPid_t->error = (int16_t)(gimbal_t.pPc_t->yaw_target_angle * pitchcin);
+//    if(gimbal_t.pPitch_t->ppostionPid_t->pid_out )
      gimbal_t.pPitch_t->ppostionPid_t->error =0;
     gimbal_t.pYaw_t->ppostionPid_t->error =0;
     SetPcControlPID();
     HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
-      __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_SPEED);
-		__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_SPEED);
+//        __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_1_START_V+120);
+//    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_2_START_V +120);
 //    if(gimbal_t.pPitch_t->ppostionPid_t->error - gimbal_t.pPc_t->pitch_target_angle)
   }
-  Shoot(7,0);
+  if(gimbal_t.pPc_t->distance < 233)
+  Shoot(6,0);
+  else Shoot(0,0);
    gimbal_t.pPitch_t->ppostionPid_t->error  = (int16_t)(gimbal_t.pPc_t->pitch_target_angle * pitchcin);
   gimbal_t.pYaw_t->ppostionPid_t->error = (int16_t)(gimbal_t.pPc_t->yaw_target_angle * pitchcin);
 }
@@ -581,6 +588,9 @@ void ControlSwitch(uint32_t commot)
     break;
       case RC_MODE_READ:
         GimbalRcControlMode();
+     break;
+      case DISABLE_MOD_READ:
+        GimbalWeakDeinit();
      break;
    default:
      GimbalDeinit();
@@ -629,10 +639,10 @@ int16_t conflag =0;
         } 
         break;
       case 2:
-        CLEAR_BIT(gimbal_t.status,DISABLE_GIMBAL);
+        CLEAR_BIT(gimbal_t.status,DISABLE_GIMBAL);//ÍêÈ«¿ª±Õ
         break;
       default:
-        CLEAR_BIT(gimbal_t.status,DISABLE_GIMBAL);
+        SET_READ_STATUS(DISABLE_MOD_READ);//Ê§ÄÜ
         break;      
     } 
 //    if(gimbal_t.pRc_t->switch_left ==2)
@@ -691,8 +701,9 @@ void GimbalRcControlMode(void)
   if((gimbal_t.status&RC_MODE_RUNING) != RC_MODE_RUNING)
   {
      SET_RUNING_STATUS(RC_MODE_RUNING);
+    Shoot(0,0);
         //Ä¿±êÖµÇÐ»»£¬×´Ì¬ÇÐ»»
-    gimbal_t.pPitch_t->target = gimbal_t.pPitch_t->real_angle;
+    gimbal_t.pPitch_t->target = gimbal_t.pPitch_t->real_angle + 246;
     gimbal_t.pYaw_t->target = gimbal_t.pYaw_t->real_angle;
     gimbal_t.prammer_t->target = gimbal_t.prammer_t->real_angle ;
     if(gimbal_t.pPitch_t->target > (rcscok_down-1) && gimbal_t.pPitch_t->target< DOWN_BUFF_POSI)
@@ -709,7 +720,7 @@ void GimbalRcControlMode(void)
   }
   if(gimbal_t.pRc_t->ch2 >600)
   {
-     Shoot(10,0);
+     Shoot(5,0);
   }
   else  Shoot(0,0);
                    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
@@ -759,13 +770,13 @@ void GImbalAnticipation(void)
 * @param   void
 * @retval  void
 */
-float kp_test=20;
-float ki_test=0.3;
-float kd_test=180;
+float kp_test=24;
+float ki_test=0.7;
+float kd_test=220;
 void SetPcControlPID(void)
 {
-  			gimbal_t.pYaw_t->ppostionPid_t->kp = -1.8;
-				gimbal_t.pYaw_t->ppostionPid_t->kd = -11;
+  			gimbal_t.pYaw_t->ppostionPid_t->kp = -1.7;
+				gimbal_t.pYaw_t->ppostionPid_t->kd = -24;
 				gimbal_t.pYaw_t->ppostionPid_t->ki = 0;
 				gimbal_t.pYaw_t->ppostionPid_t->integral_er = 0;//Îó²î»ý·Ö
         gimbal_t.pYaw_t->ppostionPid_t->integral_limint = 3000;
@@ -773,7 +784,7 @@ void SetPcControlPID(void)
 				gimbal_t.pYaw_t->ppostionPid_t->iout = 0;//iÊä³ö
 				gimbal_t.pYaw_t->ppostionPid_t->dout = 0;//kÊä³ö
 				gimbal_t.pYaw_t->ppostionPid_t->pid_out = 0;//pidÊä³ö
-  
+       gimbal_t.pYaw_t->ppostionPid_t->integral_threshold =15;
   						/* ------ Íâ»·pid²ÎÊý ------- */
 				gimbal_t.pPitch_t->ppostionPid_t->kp = kp_test;
 				gimbal_t.pPitch_t->ppostionPid_t->kd = kd_test;
@@ -822,15 +833,31 @@ void SetGeneralMode(void)
 }
 /**
 * @Data    2019-03-21 00:46
-* @brief   ÔÆÌ¨Ä£¿éÊ§ÄÜ//´ýÍêÉÆ
+* @brief   ÔÆÌ¨¹Ø±Õ//´ýÍêÉÆ
 * @param   void
 * @retval  void
 */
 void GimbalDeinit(void)
 {
    Shoot(0,0);
+     __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_1_START_V);
+    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_2_START_V);
     HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
 }
+/**
+* @Data    2019-03-21 00:46
+* @brief   ÔÆÌ¨Ä£¿éÊ§ÄÜ//´ýÍêÉÆ
+* @param   void
+* @retval  void
+*/
+ void GimbalWeakDeinit(void)
+ {
+  CLEAR_BIT(gimbal_t.status,GIMBAL_MOD_RUNNING);
+    Shoot(0,0);
+    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_1_START_V);
+    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_2_START_V);
+    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
+ }
 	/**
 		* @Data    2019-03-26 21:32
 		* @brief   µôÖ¡»º³å×´Ì¬ÉèÖÃ
@@ -840,8 +867,6 @@ void GimbalDeinit(void)
 		void SetFrameDropBufferStatus(void)
 		{
 			SET_RUNING_STATUS(FRAME_DROP_BUFFER_RUNING);
-     __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_SPEED);
-		__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_SPEED);
      HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
 		}
 /**
@@ -887,6 +912,7 @@ int16_t p_lock;
 uint8_t buffer_flag =0;
   int16_t go_back = 10;
   int16_t go_back_lock = 800;
+  int16_t e_error = 260;
 	void FrameDropBufferMode(void)
 	{
 		if((gimbal_t.status&FRAME_DROP_BUFFER_RUNING) != FRAME_DROP_BUFFER_RUNING)
@@ -904,7 +930,7 @@ uint8_t buffer_flag =0;
 		  	gimbal_t.pYaw_t->target	= SetLock(gimbal_t.pYaw_t->real_angle,y_lock);
 			}
 			SetGeneralMode();
-       gimbal_t.pPitch_t->target = gimbal_t.pPitch_t->real_angle +400;
+       gimbal_t.pPitch_t->target = gimbal_t.pPitch_t->real_angle +e_error;
 //      if(gimbal_t.pPitch_t->ppostionPid_t->error >450)
 //      {
 //        gimbal_t.pPitch_t->target = gimbal_t.pPitch_t->real_angle +400;
@@ -991,5 +1017,6 @@ int16_t SetLock(int16_t r,int16_t t)
 //   }
 // }
 
+  
 	
 /*-----------------------------------file of end------------------------------*/

@@ -53,9 +53,19 @@ typedef struct chassisStruct
 		uint8_t last_area;//上次所处区域//
 		uint8_t hurt;//被攻击的情况
 	}State;//解析机器人所有状态
-	
+	struct Sensor
+  {
+    uint8_t  lim_sw_left;
+    uint8_t  lim_sw_right;
+    uint8_t  laser_sw_left;
+    uint8_t  laser_sw_right;
+    uint8_t  sonic_left;
+    uint8_t  sonic_right;
+    int32_t  encoder;
+  }Sensor;
   uint32_t status;
-
+int16_t left_dis_son;
+  int16_t right_dis_son;
 }chassisStruct;
 /* -------------- 宏 ----------------- */
 #define CAL_ERROR(target,real) (CalculatePationError((target),(real)))
@@ -63,10 +73,11 @@ typedef struct chassisStruct
 	#define WHEEL1_RX_ID      			 0x201
 	#define WHEEL2_RX_ID       			 0x202
 	#define CURRENT_METER_RX_ID      0x401//电流计接收id
+  #define CHASSIS_SENSOR_RX_ID     0x402//底盘传感器数据接收id
 	#define CHASSIS_CAN_TX_ID  			 0x200
 	#define W1_LIMIT_SPEED    			 8000  //轮子1速度限幅
 	#define W2_LIMIT_SPEED    			 8000  //轮子2速度限幅
-	#define RADIUS            			 30    //编码器轮子半径单位 mm
+	#define EN_RADIUS            			 30    //编码器轮子半径单位 mm
 	#define ENCONDER_POLES    			 500 
   #define  AHEAD_OF_ARMOR          0//前装甲0
 	#define  BACK_OF_ARMOR           1 //前装甲1
@@ -74,6 +85,7 @@ typedef struct chassisStruct
 	#define MID_ROAD                 1//直道中路
 	#define DOWN_ROAD                 2//下路靠桥
 	#define TURNING_ANGLE             20//拐弯角度差
+ #define  SONIC_QU_SIZE              10
 	void ChassisInit(CAN_HandleTypeDef *hcan,const dbusStruct*rc,const pcDataStruct* pPc_t);
 	void ChassisParseDate(uint16_t id,uint8_t *data);
 //	void ChassisUserCanTx(int16_t w1,int16_t w2);
@@ -101,7 +113,10 @@ const chassisStruct* GetChassisStructAddr(void);
 										void ChassisPcShootModeInit(void);
 											void ChassisEludeControlModeInit(void);
                       	void ChassisPcShootMode(void);
+  void ChassisSensorParse(uint8_t *data);
 				//	void SetArea(void);
+void SetUltrasonic(void);
+int16_t jiujimoshi(void);
 #endif	// __CHASSIS_H
 	
 /*-----------------------------------file of end------------------------------*/

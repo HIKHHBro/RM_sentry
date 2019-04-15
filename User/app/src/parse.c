@@ -65,7 +65,6 @@ void ParseInit(void)
     Pc_ParseData(&pc_t);//小电脑数据解析
     		HCSR04RxMsg();//超声波数据接收
   CommunicateParse(lenjuu);
-
 	}
  /*
 	* @Data    2019-02-24 11:59

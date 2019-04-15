@@ -72,6 +72,7 @@ SqQueue pc_pitch_queue;
   int16_t __tem_pitch;
     float yawscinf =-1;
     float pitchddd =1;
+    int16_t e_pitch_temp =330;
 void Pc_ParseData(pcDataStruct* pc)
 {
   if(UserUsartQueueRX(PC_DATA_UASRT,pc_databuff) == HAL_OK)
@@ -79,10 +80,10 @@ void Pc_ParseData(pcDataStruct* pc)
     if(pc_databuff[0] == PC_CHECK_BYTE)
     {
     tem_yaw = (int16_t)((pc_databuff[1]<<8) | pc_databuff[2]);
-      __tem_yaw = (tem_yaw-334);
+      __tem_yaw = (tem_yaw-300);
     pc->yaw_target_angle = YawDataConversion(__tem_yaw);
     tem_pitch= (int16_t)((pc_databuff[3]<<8) | pc_databuff[4]);
-      __tem_pitch = (tem_pitch-400);
+      __tem_pitch = (tem_pitch-e_pitch_temp);
     pc->pitch_target_angle = PitchDataConversion(__tem_pitch);
      pc->commot =pc_databuff[5];
       pc->shoot_commot = pc_databuff[6];
@@ -201,7 +202,43 @@ int16_t PitchDataConversion(int16_t pitch)
      return pitch *pitch_coe;
 }
 
+/**
+* @Data    2019-03-21 00:46
+* @brief   小电脑正常退出
+* @param   void
+* @retval  void
+*/
+uint8_t esc= 'r';
+//int16_t pc_red =0;
+void EscPc(int16_t key,int16_t ch1,int16_t ch2,int16_t ch3,int16_t ch4,int16_t key1)
+{
+  if(key ==2 && ch1 < -600 && ch2 <-600 && ch3 >600 && ch4 <-600)
+  {
+//    if( (ch1 < -600) && \
+//        (ch2 <-600) && \
+//        (ch3 >600) && \
+//        (ch4 <-600) )//内八设置编码器零点
+    esc= 'q';
+  }
+   // printf("q");
+  else if(key1 ==1&&ch1 >600)
+  {
+        esc= 'r';
+  }
+  else if(key1 ==1&& ch1 <-600)
+  {
+    esc= 'b';
+  }
+  else 
+  {
+    if(esc == 'q')
+    esc = 'r';
+  }
+  HAL_UART_Transmit(PC_DATA_UASRT,&esc,1,0);
+   // HAL_UART_Transmit(PC_DATA_UASRT,'r',1,0);
+  //printf("r");
 
+}
 /*------------------------------------file of end-------------------------------*/
 
 
