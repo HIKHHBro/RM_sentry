@@ -41,14 +41,14 @@ extern	osThreadId startChassisTaskHandle;
 			static currentMeterStruct currtenMeter_t;
        static gy955Struct gyroByCan_t;
         
-   Int16Queue leftSonicQu_t;
-    Int16Queue rightSonicQu_t;
-/*-------------------------------------------------------
-  |       型号     |  线数 |  brown | bule  |black|while|
-  -------------------------------------------------------
-  |欧姆龙 E6A2-CW3C|500P/R |5to12VDC|0V(GND)|OUT A|OUT B|
- -------------------------------------------------------*/
-		static incrementalEnconderStruct chassisEnconder_t; //编码器结构体
+  //  Int16Queue leftSonicQu_t;
+  //   Int16Queue rightSonicQu_t;
+// /*-------------------------------------------------------
+//   |       型号     |  线数 |  brown | bule  |black|while|
+//   -------------------------------------------------------
+//   |欧姆龙 E6A2-CW3C|500P/R |5to12VDC|0V(GND)|OUT A|OUT B|
+//  -------------------------------------------------------*/
+// 		static incrementalEnconderStruct chassisEnconder_t; //编码器结构体
 /* -------------- 私有宏 ----------------- */
 	#define CHASSIS_QUEUE_LEN      5U//深度为5
 	#define CHASSIS_QUEUE_SIZE    8U//长度为5;
@@ -76,14 +76,14 @@ extern	osThreadId startChassisTaskHandle;
     /* -------- can配置 --------- */
       if(UserCanConfig(hcan)!= HAL_OK)
         while(1){}//待添加防重复配置功能
-		/* ------ 编码器初始化 ------- */
-	 	chassis_t.pchassisEnconder_t = &chassisEnconder_t;
-		  if(EnconderInit(&chassisEnconder_t,EN_RADIUS,ENCONDER_POLES) !=HAL_OK)
-        while(1){}
+		// /* ------ 编码器初始化 ------- */
+	 	// chassis_t.pchassisEnconder_t = &chassisEnconder_t;
+		  // if(EnconderInit(&chassisEnconder_t,EN_RADIUS,ENCONDER_POLES) !=HAL_OK)
+      //   while(1){}
 		/* ------ 超声波初始化 ------- */
-	  	HCSR04Init();
-      Int16QueueCreate(&leftSonicQu_t,SONIC_QU_SIZE);
-      Int16QueueCreate(&rightSonicQu_t,SONIC_QU_SIZE);
+	  	// HCSR04Init();
+      // Int16QueueCreate(&leftSonicQu_t,SONIC_QU_SIZE);
+      // Int16QueueCreate(&rightSonicQu_t,SONIC_QU_SIZE);
     /* -------- 底盘模块初始化判断 --------- */
       SET_BIT(chassis_t.status,INIT_OK);//初始化成功
 	/* ------ 挂起任务，等待初始化 ------- */
@@ -548,50 +548,50 @@ int16_t temp_organs =0;
 // {
 //   
 // }
-	/**
-		* @Data    2019-03-30 17:16
-		* @brief   超声波数据处理
-		* @param   void
-		* @retval  void
-		*/
-int16_t soncin3;
-int16_t soncin4;
-int16_t t_soncin3;
-int16_t t_soncin4;
-  int16_t sum3;
-  int16_t sum4;
-  int16_t s3;
-  int16_t s4;
- int16_t temp_s1;
- int16_t temp_s2;
- int16_t last_s3;
-void SetUltrasonic(void)
-{
+//	/**
+//		* @Data    2019-03-30 17:16
+//		* @brief   超声波数据处理
+//		* @param   void
+//		* @retval  void
+//		*/
+//int16_t soncin3;
+//int16_t soncin4;
+//int16_t t_soncin3;
+//int16_t t_soncin4;
+//  int16_t sum3;
+//  int16_t sum4;
+//  int16_t s3;
+//  int16_t s4;
+// int16_t temp_s1;
+// int16_t temp_s2;
+// int16_t last_s3;
+//void SetUltrasonic(void)
+//{
 
-//  rightSonicQu_t.deQueue(&rightSonicQu_t,&t_soncin4);
-  for(int i=0;i< SONIC_QU_SIZE;i++)
-  {
-     sum3+=leftSonicQu_t.data[i];
-  }
+////  rightSonicQu_t.deQueue(&rightSonicQu_t,&t_soncin4);
 //  for(int i=0;i< SONIC_QU_SIZE;i++)
 //  {
-//     sum4+=rightSonicQu_t.data[i];
+//     sum3+=leftSonicQu_t.data[i];
 //  }
-  s3 = (int16_t)(sum3/10.0);
-//  s4 = (int16_t)(sum4/10.0); 
-  soncin3 = (int16_t)GetDistance(3);
-//  soncin4 = (int16_t)GetDistance(4);
-  temp_s1 = soncin3- s3 ;
-//  temp_s2 = soncin4-s4;
-  if(ABS(temp_s1) >40)
-    soncin3 = s3;
-//  if(ABS(temp_s2) >40)
-//    soncin4 = s4;
-   leftSonicQu_t.enQueue(&leftSonicQu_t,soncin3);
-//   rightSonicQu_t.enQueue(&rightSonicQu_t,soncin4);
-  chassis_t.left_dis_son = soncin3;
-//  chassis_t.right_dis_son = soncin4;
-}
+////  for(int i=0;i< SONIC_QU_SIZE;i++)
+////  {
+////     sum4+=rightSonicQu_t.data[i];
+////  }
+//  s3 = (int16_t)(sum3/10.0);
+////  s4 = (int16_t)(sum4/10.0); 
+//  soncin3 = (int16_t)GetDistance(3);
+////  soncin4 = (int16_t)GetDistance(4);
+//  temp_s1 = soncin3- s3 ;
+////  temp_s2 = soncin4-s4;
+//  if(ABS(temp_s1) >40)
+//    soncin3 = s3;
+////  if(ABS(temp_s2) >40)
+////    soncin4 = s4;
+//   leftSonicQu_t.enQueue(&leftSonicQu_t,soncin3);
+////   rightSonicQu_t.enQueue(&rightSonicQu_t,soncin4);
+//  chassis_t.left_dis_son = soncin3;
+////  chassis_t.right_dis_son = soncin4;
+//}
 
 int16_t dddddd=0;
 int16_t dddddd11=18;

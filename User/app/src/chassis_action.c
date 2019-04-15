@@ -43,9 +43,6 @@
     Inject(chassis_t.ppowerBufferPool_t);//¸üĞÂ¹¦ÂÊ»º´æ³Ø×´Ì¬
 	SetArea();//´ı²âÊÔ
    saerr =  jiujimoshi();
-    tsoncin3 = GetDistance(3);
- tsoncin4 = GetDistance(4);
-//    SetUltrasonic();
  chassiscommot	= ChassisControlDecision();
 	ChassisControlSwitch(chassiscommot);
     chassis_t.pwheel1_t->error = chassis_t.pwheel1_t->target - chassis_t.pwheel1_t->real_speed;
