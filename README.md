@@ -1,4 +1,4 @@
-# sentry（哨兵代码）v2.0
+# sentry（哨兵代码）v3.0
 ## 文件层次
 
 * Drivers(HAL库驱动层)
@@ -17,14 +17,14 @@
 
 ## 库说明
 
-STM32CubeF4 Firmware Package V1.19.0
+STM32CubeF4 Firmware Package V1.24.0
 ## 系统支持
 FreeRTOS
 #### 系统用户接口
  userFreeRTOSConfig.h
 ## 开发板支持
 
-RM新板,RM旧板,彬哥第一代板（f427IIHx）
+彬哥第二代代板（f429IIHx）
 
 ## BSP层接口支持(userdriverconfig.h)
 外设|引脚宏接口|端口接口
@@ -145,4 +145,4 @@ pid控制器|普通pid，模糊pid, 专家pid
   2. 增加分离底盘数据和控制成不同文件夹
   3. 找出f1can发送进入硬件错误的原因，是因为can初始化时的发送和接收结构体没有传递地址给hcan造成内存溢出
 **Data**  : *2019-04-17 23:10*   **author**: *HIKpingtouge*    **log**:  
- 
+  1. 增加彬哥版子底层代码并测试成功
