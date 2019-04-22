@@ -59,7 +59,7 @@
       #define RED_LED GPIO_PIN_11//PE11
       #define GREEN_LED GPIO_PIN_14//PE14
       #define COLOR_LED_GPIO GPIOE
-    /* ----------------- 激光引脚宏定义定义 -------------------- */  
+    /* ----------------- 激光红点引脚宏定义定义 -------------------- */  
       #define LASER GPIO_PIN_13//PG13
       #define LASER_GPIO GPIOG
     /* -----------------电源管理引脚宏定义定义 -------------------- */   
@@ -72,12 +72,18 @@
       #define BUZZER GPIO_PIN_6//PH6  TIM12_CH1
       #define BUZZER_GPIO GPIOH
     /* -------------- 超声波引脚宏定义 ----------------- */
-      #define SONIC            GPIO_PIN_1//PA1
+      #define SONIC            GPIO_PIN_1//PA1 Trig
+      #define SONIC_LEFT_E     GPIO_PIN_2//PA2 Echo 左边
+      #define SONIC_RIGHT_E    GPIO_PIN_3//PA3 Echo 右边
       #define SONIC_GPIO       GPIOA
     /* -------------- 激光红外开关引脚宏定义 ----------------- */
-    #define LASER_SWITCH   GPIO_PIN_5
+    #define LASER_SWITCH       GPIO_PIN_5 //后侧
+    #define LASER_SWITCH_BEF   GPIO_PIN_6//前侧（靠灯条）
     #define LASER_SWITCH_GPIO  GPIOI 
     /* ----------------- 编码器宏定义接口 -------------------- */
+     #define ENCODE_A    GPIO_PIN_10//编码器A相  
+     #define ENCODE_B    GPIO_PIN_11//编码器B相   
+     
     extern UART_HandleTypeDef huart1;//串口1
     extern UART_HandleTypeDef huart2;//串口2
     extern UART_HandleTypeDef huart6;
@@ -87,7 +93,6 @@
     extern TIM_HandleTypeDef htim5;
     extern TIM_HandleTypeDef htim2;
 		extern TIM_HandleTypeDef htim4;//摩擦轮电机
-		extern CAN_HandleTypeDef hcan1;
      #define ENCOER_TIM (&htim5)//编码器宏接口
      #define HCSR04_TIM (&htim2)//超声波接口
 		 #define FRICTIONGEAR (&htim4)//摩擦轮定时器电机红接口
@@ -97,6 +102,7 @@
 		 #define FRICTIONGEAR_2_START_V (1000U)//摩擦轮2启动型号
 		 #define GIMBAL_CAN (&hcan1)    //云台电机的can
      #define CHASSIS_CAN (&hcan1)    //云台电机的can
+     #define  GY955_CAN (&hcan2)
      #define PC_DATA_UASRT (&huart6)//小电脑数据接收串口
      #define COMMUNICAT    (&huart3)//裁判系统串口
   #elif BINGE_BOARD

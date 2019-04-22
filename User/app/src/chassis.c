@@ -39,7 +39,7 @@ extern	osThreadId startChassisTaskHandle;
       static speedPidStruct wheel2Speed_t;
      static powerBufferPoolStruct powerBufferPool_t;
 			static currentMeterStruct currtenMeter_t;
-       static gy955Struct gyroByCan_t;
+       //static gy955Struct gyroByCan_t;
         
   //  Int16Queue leftSonicQu_t;
   //   Int16Queue rightSonicQu_t;
@@ -65,7 +65,7 @@ extern	osThreadId startChassisTaskHandle;
 		chassis_t.pPc_t = pPc_t;
     chassis_t.status = 0;
     chassis_t.p_refereeSystem_t = &ext_refereeSystem_t;
-    chassis_t.pgyroByCan_t  = &gyroByCan_t;
+    //chassis_t.pgyroByCan_t  = &gyroByCan_t;
     chassis_t.ppowerBufferPool_t = PowerBufferPoolInit();
 		/* ------ 轮子1结构体数据初始化 ------- */
 		chassis_t.pwheel1_t = wheel1Init();
@@ -111,9 +111,9 @@ extern	osThreadId startChassisTaskHandle;
 	  	case CURRENT_METER_RX_ID:
 				 CurrentMeterAnalysis(&currtenMeter_t,data);
 				break;
-      case BIN_GE_GYRO_CAN_RX_ID:
-        BingeGyroByCan(&gyroByCan_t,data);
-        break;
+     // case BIN_GE_GYRO_CAN_RX_ID:
+       // BingeGyroByCan(&gyroByCan_t,data);
+       // break;
       case CHASSIS_SENSOR_RX_ID:
         ChassisSensorParse(data);
         break;
@@ -386,7 +386,7 @@ chassis_t.pwheel2_t->target = 0;
 			wheel2Speed_t.ki = 0.9;
     	wheel2Speed_t.limiting = W2_LIMIT_SPEED;//轮子2速度限幅
 		/* ------ 方向状态初始化 ------- */
-			chassis_t.State.r_dire = (int16_t)chassis_t.pgyroByCan_t->Yaw;
+			//chassis_t.State.r_dire = (int16_t)chassis_t.pgyroByCan_t->Yaw;
 		/* ------ 设置初始化区域位置 ------- */
 			chassis_t.State.r_area  = UP_ROAD;
 			chassis_t.State.last_area = MID_ROAD;//添加超声波检测是否位置正确
@@ -447,7 +447,7 @@ uint8_t up_turn = 1;
 	int16_t  GetGyroDire(void)
 	{
 		int16_t dire=0;
-		dire = chassis_t.State.r_dire - (int16_t)chassis_t.pgyroByCan_t->Yaw;
+		//dire = chassis_t.State.r_dire - (int16_t)chassis_t.pgyroByCan_t->Yaw;
 		return ABS(dire);
 	}
 int16_t organs_flag =1;//初始化为1，既是初始化为上路

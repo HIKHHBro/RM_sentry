@@ -178,6 +178,7 @@
 	}
   
 int16_t hot_flag=0;
+  int16_t speed_fri =1330;
 void Shoot(uint8_t speed,uint8_t buffer_on)
 {
   if(speed ==0)
@@ -196,12 +197,12 @@ void Shoot(uint8_t speed,uint8_t buffer_on)
      buffer_on =0;
       hot_flag++;
     }
-    else if(speed >8&& buffer_on ==0)
+    else if(speed >12&& buffer_on ==0)
     {
-      speed =8;
+      speed =12;
     }
-    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,(FRICTIONGEAR_SPEED-100));
-    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,(FRICTIONGEAR_SPEED-100));
+    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,speed_fri);
+    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,speed_fri);
          HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
 //    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
     SetRammerPID(speed);

@@ -61,9 +61,11 @@
 		float iout;//i输出
 		float dout;//k输出
 		int32_t pid_out;//pid输出
+    uint8_t kp_separatecmd;
 	}postionPidStruct;
 	int16_t PostionPid(postionPidStruct *pps, int16_t error);
    int16_t IntegralSeparationCallback(postionPidStruct *pps);
+  int16_t KpSeparationCallback(postionPidStruct *pps);
 /* -------------- 速度式pid ----------------- */
 	typedef struct speedPidStruct
 	{
@@ -74,9 +76,9 @@
 		int16_t last_error;//上次误差
 		int16_t before_last_error;//上上次误差
 		int16_t integral_er;//误差积分
-		float pout;//p输出
-		float iout;//i输出
-		float dout;//k输出
+		int32_t pout;//p输出
+		int32_t iout;//i输出
+		int32_t dout;//k输出
 		int32_t pid_out;//pid输出
 		int16_t limiting;
     int32_t motor_lim;

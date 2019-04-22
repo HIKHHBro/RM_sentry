@@ -80,7 +80,7 @@ void Pc_ParseData(pcDataStruct* pc)
     if(pc_databuff[0] == PC_CHECK_BYTE)
     {
     tem_yaw = (int16_t)((pc_databuff[1]<<8) | pc_databuff[2]);
-      __tem_yaw = (tem_yaw-300);
+      __tem_yaw = (tem_yaw-490);
     pc->yaw_target_angle = YawDataConversion(__tem_yaw);
     tem_pitch= (int16_t)((pc_databuff[3]<<8) | pc_databuff[4]);
       __tem_pitch = (tem_pitch-e_pitch_temp);

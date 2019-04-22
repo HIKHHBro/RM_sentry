@@ -41,15 +41,15 @@
 	{
 		//ssssssss = GetPosition(&chassisEnconder_t);
     Inject(chassis_t.ppowerBufferPool_t);//¸üÐÂ¹¦ÂÊ»º´æ³Ø×´Ì¬
-	SetArea();//´ý²âÊÔ
-   saerr =  jiujimoshi();
- chassiscommot	= ChassisControlDecision();
-	ChassisControlSwitch(chassiscommot);
+	  SetArea();//´ý²âÊÔ
+    saerr =  jiujimoshi();
+    chassiscommot	= ChassisControlDecision();
+	  ChassisControlSwitch(chassiscommot);
     chassis_t.pwheel1_t->error = chassis_t.pwheel1_t->target - chassis_t.pwheel1_t->real_speed;
-     chassis_t.pwheel2_t->error = chassis_t.pwheel2_t->target - chassis_t.pwheel2_t->real_speed;
+    chassis_t.pwheel2_t->error = chassis_t.pwheel2_t->target - chassis_t.pwheel2_t->real_speed;
 		pid_out[0] = SpeedPid(chassis_t.pwheel1_t->pspeedPid_t,chassis_t.pwheel1_t->error);
   	pid_out[1] = SpeedPid(chassis_t.pwheel2_t->pspeedPid_t,chassis_t.pwheel2_t->error);
-    SetInPut(chassis_t.ppowerBufferPool_t,pid_out,2);//¿ª¹¦ÂÊ»º´æ³Ø
+      SetInPut(chassis_t.ppowerBufferPool_t,pid_out,2);//¿ª¹¦ÂÊ»º´æ³Ø
 		ChassisCanTx(pid_out[0],pid_out[1]);
     SET_BIT(chassis_t.status,RUNING_OK);
 	}
@@ -61,7 +61,6 @@
 */
   uint32_t ChassisControlDecision(void)
   {
-    
     if(chassis_t.rc_t ->switch_left ==2)
     {
       CLEAR_BIT(chassis_t.status,DISABLE_CHASSIS);

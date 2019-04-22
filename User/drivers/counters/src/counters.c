@@ -112,6 +112,7 @@
 	int16_t PostionPid(postionPidStruct *pps,int16_t error)
 	{
 	  pps->error	= error;
+    //pps->kp = KpSeparationCallback(pps);
 		pps->pout = pps->kp * pps->error;
     pps->pout = MAX(pps->pout,pps->motor_lim);
     pps->pout = MIN(pps->pout,(-pps->motor_lim));
@@ -136,6 +137,18 @@ __weak int16_t IntegralSeparationCallback(postionPidStruct *pps)
   }
   return  pps->ki * pps->integral_er;
 }
+__weak int16_t KpSeparationCallback(postionPidStruct *pps)
+{
+  if(pps->kp_separatecmd ==1)
+  {
+    if(ABS(pps->error) >43)
+    {
+      pps->kp = 220;
+    }
+    else pps->kp = (int16_t)(-0.015 *(float)(pps->error*pps->error) + 245);
+  }
+  return pps->kp;
+}
 /**
 	* @Data    2019-01-26 16:55
 	* @brief   速度pid控制器
@@ -152,10 +165,19 @@ __weak int16_t IntegralSeparationCallback(postionPidStruct *pps)
 //			sps->last_error = sps->error;
 //		if((ABS(sps->last_error)) < (ABS(sps->before_last_error)))
 //			sps->before_last_error = sps->last_error;
-		sps->pout = sps->kp * (sps->error - sps->last_error);
-		sps->iout = sps->ki * sps->error;
-		sps->dout = sps->kd * (sps->error - 2*sps->last_error + \
-													 sps->before_last_error);
+		sps->pout = (int32_t)(sps->kp * (sps->error - sps->last_error));
+    sps->pout = MAX(sps->pout,sps->motor_lim);
+    sps->pout = MIN(sps->pout,-sps->motor_lim);
+    
+		sps->iout = (int32_t)(sps->ki * sps->error);
+    sps->iout = MAX(sps->iout,sps->motor_lim);
+    sps->iout = MIN(sps->iout,-sps->motor_lim);
+    
+		sps->dout = (int32_t)(sps->kd * (sps->error - 2*sps->last_error + \
+													 sps->before_last_error));
+    sps->dout = MAX(sps->dout,sps->motor_lim);
+    sps->dout = MIN(sps->dout,-sps->motor_lim);
+    
 		sps->pid_out += (int32_t)(sps->pout + sps->iout + sps->dout);
     sps->pid_out = MAX(sps->pid_out,sps->motor_lim);
     sps->pid_out = MIN(sps->pid_out,(-sps->motor_lim));
@@ -165,7 +187,7 @@ __weak int16_t IntegralSeparationCallback(postionPidStruct *pps)
     
     sps->before_last_error = sps->last_error;
 		sps->last_error = sps->error;
-		return sps->pid_out;
+		return (int16_t)sps->pid_out;
 	}
 /* ============================ PID控制器 of end ============================ */
 

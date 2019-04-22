@@ -105,7 +105,7 @@ typedef struct chassisStruct
 	CAN_HandleTypeDef *hcanx;
   powerBufferPoolStruct*ppowerBufferPool_t;
   refereeSystemStruct* p_refereeSystem_t;
-	gy955Struct* pgyroByCan_t;
+	//gy955Struct* pgyroByCan_t;
 	 const pcDataStruct* pPc_t;
 	struct State
 	{

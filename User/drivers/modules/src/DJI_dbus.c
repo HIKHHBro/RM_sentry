@@ -24,7 +24,8 @@
 	|-------------------------------declaration of end---------------------------|
  **/
 #include "DJI_dbus.h" 
-uint8_t databuff[21];//数据接收
+#define RC_DATA_RX_LEN   21
+uint8_t databuff[RC_DATA_RX_LEN];//数据接收
 //static dbusStruct lostdata;
 /**
 	* @Data    2019-01-15 20:24
@@ -57,7 +58,7 @@ uint8_t databuff[21];//数据接收
 		dbs->keyBoard.key_code = 0;
 		dbs->keyBoard.jumpkey_code = 0;
 		dbs->state_flag = 0;//状态标志位
-		dbs->a_frame_len = 21;//一帧数据长度  18（一帧数据）+3（校验）
+		dbs->a_frame_len = RC_DATA_RX_LEN;//一帧数据长度  18（一帧数据）+3（校验）
 		dbs->check_byte = 0x55;//帧尾校验
 		dbs->huartx = huartx;
 		/* -------- 初始化开启串口数据接收 --------- */

@@ -119,7 +119,7 @@ void ParseInit(void)
   }
 //void can2_rx(uint32_t id,uint8_t *data)
 //{
-//         ChassisParseDate(id,data);
+//        GyroParse(id,data); //ChassisParseDate(id,data);
 //}
 /*-----------------------------------file of end------------------------------*/
 
