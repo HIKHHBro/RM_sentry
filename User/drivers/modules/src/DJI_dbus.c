@@ -24,7 +24,8 @@
 	|-------------------------------declaration of end---------------------------|
  **/
 #include "DJI_dbus.h" 
-#define RC_DATA_RX_LEN   21
+#ifdef  RC_UART            
+#define RC_DATA_RX_LEN   (18 + HEAD_FRAME_LEN)
 uint8_t databuff[RC_DATA_RX_LEN];//数据接收
 //static dbusStruct lostdata;
 /**
@@ -83,30 +84,30 @@ uint8_t databuff[RC_DATA_RX_LEN];//数据接收
 //          taskENTER_CRITICAL();
 		if(UserUsartQueueRX(dbs->huartx,databuff) == HAL_OK)
 		{
-		dbs->ch1 = (databuff[0] | databuff[1]<<8) & 0x07FF;
+		dbs->ch1 = (databuff[0+DATA_LEN_BYTE_LEN] | databuff[1+DATA_LEN_BYTE_LEN]<<8) & 0x07FF;
 		dbs->ch1 -= 1024;
     dbs->ch1 = DbusAntiShake(20,dbs->ch1);
-		dbs->ch2 = (databuff[1]>>3 | databuff[2]<<5 ) & 0x07FF;
+		dbs->ch2 = (databuff[1+DATA_LEN_BYTE_LEN]>>3 | databuff[2+DATA_LEN_BYTE_LEN]<<5 ) & 0x07FF;
 		dbs->ch2 -= 1024;
     dbs->ch2 = DbusAntiShake(20,dbs->ch2);
-		dbs->ch3 = (databuff[2]>>6 | databuff[3]<<2 | databuff[4]<<10) & 0x07FF;
+		dbs->ch3 = (databuff[2+DATA_LEN_BYTE_LEN]>>6 | databuff[3+DATA_LEN_BYTE_LEN]<<2 | databuff[4+DATA_LEN_BYTE_LEN]<<10) & 0x07FF;
 		dbs->ch3 -= 1024;
     dbs->ch3 = DbusAntiShake(20,dbs->ch3);
-		dbs->ch4 = (databuff[4]>>1 | databuff[5]<<7) & 0x07FF;		
+		dbs->ch4 = (databuff[4+DATA_LEN_BYTE_LEN]>>1 | databuff[5+DATA_LEN_BYTE_LEN]<<7) & 0x07FF;		
 		dbs->ch4 -= 1024;
     dbs->ch4 = DbusAntiShake(20,dbs->ch4);
 		
-		dbs->switch_left = ( (databuff[5] >> 4)& 0x000C ) >> 2;
-		dbs->switch_right =  (databuff[5] >> 4)& 0x0003 ;
+		dbs->switch_left = ( (databuff[5+DATA_LEN_BYTE_LEN] >> 4)& 0x000C ) >> 2;
+		dbs->switch_right =  (databuff[5+DATA_LEN_BYTE_LEN] >> 4)& 0x0003 ;
 		
-		dbs->mouse.x = databuff[6] | (databuff[7] << 8);	//x axis
-		dbs->mouse.y = databuff[8] | (databuff[9] << 8);
-		dbs->mouse.z = databuff[10]| (databuff[11] << 8);
+		dbs->mouse.x = databuff[6+DATA_LEN_BYTE_LEN] | (databuff[7+DATA_LEN_BYTE_LEN] << 8);	//x axis
+		dbs->mouse.y = databuff[8+DATA_LEN_BYTE_LEN] | (databuff[9+DATA_LEN_BYTE_LEN] << 8);
+		dbs->mouse.z = databuff[10+DATA_LEN_BYTE_LEN]| (databuff[11+DATA_LEN_BYTE_LEN] << 8);
 		
-		dbs->mouse.press_left 	= databuff[12];	// is pressed?
-		dbs->mouse.press_right 	= databuff[13];
+		dbs->mouse.press_left 	= databuff[12+DATA_LEN_BYTE_LEN];	// is pressed?
+		dbs->mouse.press_right 	= databuff[13+DATA_LEN_BYTE_LEN];
 		
-		dbs->keyBoard.key_code 	= databuff[14] | databuff[15] << 8; //key broad code
+		dbs->keyBoard.key_code 	= databuff[14+DATA_LEN_BYTE_LEN] | databuff[15+DATA_LEN_BYTE_LEN] << 8; //key broad code
     SET_BIT(dbs->status,RX_OK);
 //      lostdata = *dbs;
 		}
@@ -144,4 +145,5 @@ uint8_t databuff[RC_DATA_RX_LEN];//数据接收
 				data = 0;
 			return data;
 		}
+#endif
 	/*----------------------------------file of end-----------------------------*/

@@ -26,9 +26,6 @@
 #ifndef __BASECLASS_H 
 #define __BASECLASS_H 
 #include "userdriverconfig.h"
-/* -------------- 调试版本和发行版本选择 ----------------- */
-/*发行版请把这行宏定义注释掉*/
-#define DEBUG_BY_KEIL
 
 	#define MAX(X,Y) ((X)>(Y)?(Y):(X))  //限做大值
 	#define MIN(X,Y) ((X)<(Y)?(Y):(X))  //限做小值
@@ -99,6 +96,7 @@ typedef union
 {   
   float  f;   
   int16_t s_16[2];
+  uint16_t u_16[2];
   unsigned char u_8[4];
    uint32_t u_32; 
    int32_t s_32;  

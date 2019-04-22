@@ -1,4 +1,9 @@
-/MDK-ARM/F427HIIxRMOLD/
+/MDK-ARM/
+/Drivers/
+/Inc/
+/Middlewares/
+/Src/
+/F427frertos/MDK-ARM/F429IIHXfreeRTOS/
 ##class file##
 *.com ?
 *.class ?

@@ -24,13 +24,13 @@
 	|------------------------------declaration of end----------------------------|
  **/
 #include "bsp_usart.h"
-#define A_FRAME_CHECK_LEN 3//一帧接收缓存长度
-uint32_t lenjuu =0;
+//uint32_t lenjuu =0;
 /* ----------------- 结构体地址列表 -------------------- */
 usartDataStrcut *pusart1_t = NULL;
 usartDataStrcut *pusart2_t = NULL;
 usartDataStrcut *pusart3_t = NULL;
 usartDataStrcut *pusart6_t = NULL;
+usartDataStrcut *pusart7_t = NULL;
 // xQueueHandle usart1_queue = NULL;
 // xQueueHandle usart2_queue = NULL;
 // xQueueHandle usart3_queue = NULL;
@@ -38,7 +38,7 @@ usartDataStrcut *pusart6_t = NULL;
 /**
 	* @Data    2019-01-15 15:31
 	* @brief   串口初始化
-	* @param	 usartx(x=1~6)
+	* @param	 usartx(x=1~7)
 	* @param   uint8_t frame_size 一帧的长度
 	* @param   on_off   DISABLE = 0U, ENABLE = 1U
 	* @retval  HAL Status
@@ -67,7 +67,7 @@ HAL_StatusTypeDef UsartAndDMAInit(UART_HandleTypeDef *huartx,uint8_t frame_size\
 		return HAL_ERROR;
 	}
   	/* -------- 使能 --------- */
-//  HAL_UART_Receive_DMA(huartx,addr->rx_buff_data,addr->rx_buff_size);
+ HAL_UART_Receive_DMA(huartx,addr->rx_buff_data,addr->rx_buff_size);
 	__HAL_UART_ENABLE_IT(huartx, UART_IT_IDLE);					 //使能串口中断
 	return HAL_OK;
 }
@@ -84,29 +84,53 @@ HAL_StatusTypeDef UsartAndDMAInit(UART_HandleTypeDef *huartx,uint8_t frame_size\
 /**
 	* @Data    2019-01-15 19:07
 	* @brief   任意字节接收
-	* @param   usartx(x=1~6) 用户串口结构体地址
+	* @param   usartx(x=1~7) 用户串口结构体地址
 	* @retval  HAL Status
 	*/
 	HAL_StatusTypeDef NoLenRXforUsart(UART_HandleTypeDef *huartx)
 	{
+//--------------------原来
+//		usartDataStrcut *addr = NULL;
+//		addr = GetUsartAddr(huartx); //获取相应用户串口结构体地址
+//		if(addr == NULL)
+//			return HAL_ERROR;
+//		if(addr->rx_on_off != ENABLE)
+//			return HAL_ERROR;
+//		__HAL_UART_CLEAR_IDLEFLAG(huartx);
+////       HAL_UART_DMAStop(huartx);
+//		/* -------- 接收rx_buff_len个字节 --------- */
+//		if(huartx->hdmarx->Instance->NDTR== A_FRAME_CHECK_LEN)
+//		{
+////			/* -------- 设置校验值 --------- */
+////			if(RCREncryption(addr->rx_buff_data, addr->rx_buff_size) != HAL_OK)
+////				return HAL_ERROR;
+//			xQueueSendToBackFromISR(addr->usart_queue, addr->rx_buff_data,0);
+//		}
+//    /* ------ 设置接收地址和数据长度 ------- */
+//    HAL_UART_Receive_DMA(huartx,addr->rx_buff_data,addr->rx_buff_size);
+//-------------------原来
+//------------------ceshi
+      uint32_t temp; 
 		usartDataStrcut *addr = NULL;
 		addr = GetUsartAddr(huartx); //获取相应用户串口结构体地址
-		if(addr == NULL)
-			return HAL_ERROR;
+    floatToUnion p;
 		if(addr->rx_on_off != ENABLE)
-			return HAL_ERROR;
-		__HAL_UART_CLEAR_IDLEFLAG(huartx);
-//       HAL_UART_DMAStop(huartx);
-		/* -------- 接收rx_buff_len个字节 --------- */
-		if(huartx->hdmarx->Instance->NDTR== A_FRAME_CHECK_LEN)
-		{
-//			/* -------- 设置校验值 --------- */
-//			if(RCREncryption(addr->rx_buff_data, addr->rx_buff_size) != HAL_OK)
-//				return HAL_ERROR;
-			xQueueSendToBackFromISR(addr->usart_queue, addr->rx_buff_data,0);
-		}
-    /* ------ 设置接收地址和数据长度 ------- */
-    HAL_UART_Receive_DMA(huartx,addr->rx_buff_data,addr->rx_buff_size);
+    {
+    }
+     if((__HAL_UART_GET_FLAG(huartx,UART_FLAG_IDLE) != RESET))  
+     {
+	    	__HAL_UART_CLEAR_IDLEFLAG(huartx);
+        HAL_UART_DMAStop(huartx);  
+     temp = huartx->hdmarx->Instance->NDTR; 
+      addr->datalen = addr->rx_buff_size-temp;
+      p.u_16[0] = addr->datalen;
+      addr->rx_buff_data[DATA_LEN_BYTE_HIGH_8] = p.u_8[DATA_LEN_BYTE_HIGH_8];
+      addr->rx_buff_data[DATA_LEN_BYTE_LOW_8]  = p.u_8[DATA_LEN_BYTE_LOW_8];
+       xQueueSendToBackFromISR(addr->usart_queue, addr->rx_buff_data,0);
+       memset(addr->rx_buff_data,0,addr->rx_buff_size);
+      HAL_UART_Receive_DMA(huartx,(addr->rx_buff_data + RX_HEAD_ADDR),addr->rx_buff_size);
+     }
+//ceshi-------------------
     return HAL_OK;
    }
 /**
@@ -126,7 +150,7 @@ HAL_StatusTypeDef UsartAndDMAInit(UART_HandleTypeDef *huartx,uint8_t frame_size\
 /**
 	* @Data    2019-01-16 10:54
 	* @brief   分配相应串口类型数据的空间
-	* @param   huartx （x=1,2,3,6）
+	* @param   huartx （x=1,2,3,6,7）
 	* @retval  HAL Status
 	*/
 HAL_StatusTypeDef AllocateUsartxSpace(UART_HandleTypeDef *huartx)
@@ -159,12 +183,19 @@ HAL_StatusTypeDef AllocateUsartxSpace(UART_HandleTypeDef *huartx)
 		return HAL_ERROR;
 		return HAL_OK;
 	}
+  else if(huartx->Instance == UART7)
+  {
+    pusart7_t	= (struct usartDataStrcut*)malloc(sizeof(struct usartDataStrcut));
+		if(pusart7_t == NULL)
+		return HAL_ERROR;
+		return HAL_OK;
+  }
 	else	return HAL_ERROR;
 }
 /**
 	* @Data    2019-01-16 11:08
 	* @brief   自动判别串口类型获取相应用户串口结构体地址
-	* @param   huartx （1,2,3,6）
+	* @param   huartx （1,2,3,6,7）
 	* @retval  usartDataStrcut* 用户串口结构体指针
 	*/
 	usartDataStrcut* GetUsartAddr(UART_HandleTypeDef *huartx)
@@ -185,13 +216,17 @@ HAL_StatusTypeDef AllocateUsartxSpace(UART_HandleTypeDef *huartx)
 		{
 			return pusart6_t;
 		}
+    else if(huartx->Instance == UART7) 
+    {
+			return pusart7_t;
+		}
 		else	return NULL;
 	}
 
 /**
 	* @Data    2019-01-16 15:22
 	* @brief   队列接收
-	* @param   huartx（1,2,3,6）
+	* @param   huartx（1,2,3,6,7）
 	* @param 	 pvBuffer 接收数据地址
 	* @retval  HAL Status
 	*/
@@ -228,7 +263,7 @@ xStatus = xQueueReceive(addr->usart_queue, pvBuffer, 0);
 	    	__HAL_UART_CLEAR_IDLEFLAG(huartx);
         HAL_UART_DMAStop(huartx);  
      temp = huartx->hdmarx->Instance->NDTR; 
-      lenjuu = addr->rx_buff_size-temp;
+     // lenjuu = addr->rx_buff_size-temp;
        xQueueSendToBackFromISR(addr->usart_queue, addr->rx_buff_data,0);
        memset(addr->rx_buff_data,0,addr->rx_buff_size);
       HAL_UART_Receive_DMA(huartx,addr->rx_buff_data,addr->rx_buff_size);

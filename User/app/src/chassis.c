@@ -27,7 +27,6 @@
 /* -------- 设置失常常和掉线模式 --------- */
   
 /* -------------- 外部链接 ----------------- */
-extern TIM_HandleTypeDef htim5;
 extern	osThreadId startChassisTaskHandle;
 /* -------------- 发送队列 ----------------- */
   xQueueHandle chassis_queue;
@@ -39,7 +38,7 @@ extern	osThreadId startChassisTaskHandle;
       static speedPidStruct wheel2Speed_t;
      static powerBufferPoolStruct powerBufferPool_t;
 			static currentMeterStruct currtenMeter_t;
-       //static gy955Struct gyroByCan_t;
+      static gy955Struct ChassisGyro_t;
         
   //  Int16Queue leftSonicQu_t;
   //   Int16Queue rightSonicQu_t;
@@ -65,7 +64,7 @@ extern	osThreadId startChassisTaskHandle;
 		chassis_t.pPc_t = pPc_t;
     chassis_t.status = 0;
     chassis_t.p_refereeSystem_t = &ext_refereeSystem_t;
-    //chassis_t.pgyroByCan_t  = &gyroByCan_t;
+    chassis_t.pGyro_t  = &ChassisGyro_t;
     chassis_t.ppowerBufferPool_t = PowerBufferPoolInit();
 		/* ------ 轮子1结构体数据初始化 ------- */
 		chassis_t.pwheel1_t = wheel1Init();
@@ -74,9 +73,9 @@ extern	osThreadId startChassisTaskHandle;
   /* ------ 创建云台发送队列 ------- */
 	  chassis_queue	= xQueueCreate(CHASSIS_QUEUE_LEN,CHASSIS_QUEUE_SIZE);//一定要在用之前创建队列
     /* -------- can配置 --------- */
-      if(UserCanConfig(hcan)!= HAL_OK)
+     if(UserCanConfig(hcan)!= HAL_OK)
         while(1){}//待添加防重复配置功能
-		// /* ------ 编码器初始化 ------- */
+		 ///* ------ 编码器初始化 ------- */
 	 	// chassis_t.pchassisEnconder_t = &chassisEnconder_t;
 		  // if(EnconderInit(&chassisEnconder_t,EN_RADIUS,ENCONDER_POLES) !=HAL_OK)
       //   while(1){}
@@ -111,9 +110,9 @@ extern	osThreadId startChassisTaskHandle;
 	  	case CURRENT_METER_RX_ID:
 				 CurrentMeterAnalysis(&currtenMeter_t,data);
 				break;
-     // case BIN_GE_GYRO_CAN_RX_ID:
-       // BingeGyroByCan(&gyroByCan_t,data);
-       // break;
+      case CHASSIS_RX_ID:
+       BingeGyroByCan(chassis_t.pGyro_t,data);
+        break;
       case CHASSIS_SENSOR_RX_ID:
         ChassisSensorParse(data);
         break;
@@ -457,7 +456,7 @@ int16_t temp_organs =0;
   int16_t temp_organssss =0;
 	uint8_t GetOrgans(void)
 	{
-    	 temp_organs = HAL_GPIO_ReadPin(LASER_SWITCH_GPIO,LASER_SWITCH);//读io口
+    //	 temp_organs = HAL_GPIO_ReadPin(LASER_SWITCH_GPIO,LASER_SWITCH);//读io口
 ////    if(GetGyroDire() >= TURNING_ANGLE)
 ////         organs_flag =1;
 ////    if(GetGyroDire() <TURNING_ANGLE &&organs_flag ==1)
@@ -628,7 +627,7 @@ int16_t jiujimoshi(void)//暂时问题，修改一下dddddd的大小
   //-----------------------------------------------------------
    //临时修改，待测试
     temp_area5 = GetGyroDire();
-  temp_area1 = HAL_GPIO_ReadPin(LASER_SWITCH_GPIO,LASER_SWITCH);//读io口
+ // temp_area1 = HAL_GPIO_ReadPin(LASER_SWITCH_GPIO,LASER_SWITCH);//读io口
    if(temp_area1 ==0)
    {
      temp_area2 ++;

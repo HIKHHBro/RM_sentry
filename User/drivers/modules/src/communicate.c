@@ -64,7 +64,7 @@ uint16_t cmd_id =0;
   */
 void CommunicateInit(void)
 {
-    HAL_UART_Receive_DMA(&huart3,reebuff,COMMUN_RX_BUFF);
+   // HAL_UART_Receive_DMA(&huart3,reebuff,COMMUN_RX_BUFF);
   UsartAndDMAInit(&huart3,COMMUN_RX_BUFF,ENABLE);
   ext_refereeSystem_t. p_robot_state_t  = &robot_state_t;
   ext_refereeSystem_t. p_power_heat_data_t  = &power_heat_data_t;
@@ -83,8 +83,10 @@ void CommunicateInit(void)
  uint16_t flagju=0;
 int16_t flag_hurt = 0;
 int16_t flag_hurt1 = 0;
-  void CommunicateParse(uint16_t datalen)
+  void CommunicateParse(void)
   {
+    uint16_t datalen;
+    floatToUnion p;
     if( robot_hurt_t.hurt_type != 5)
     {
       if(flag_hurt1 ==0)
@@ -106,57 +108,60 @@ int16_t flag_hurt1 = 0;
     }
    if(UserUsartQueueRX(&huart3,reebuff) ==HAL_OK)
    {
+     p.u_8[DATA_LEN_BYTE_HIGH_8] = reebuff[DATA_LEN_BYTE_HIGH_8];
+     p.u_8[DATA_LEN_BYTE_LOW_8] =  reebuff[DATA_LEN_BYTE_LOW_8];
+     datalen =  p.u_16[0];
      for(int i=0;i< datalen;)
      {
-       if(reebuff[i] ==_SOF)
+       if(reebuff[i +DATA_LEN_BYTE_LEN] ==_SOF)
        {
-				  cmd_id = GetCmdId(&reebuff[i+5]);
+				  cmd_id = GetCmdId(&reebuff[i+5+DATA_LEN_BYTE_LEN]);
          switch (cmd_id) 
 				 {
 					 case ROBOT_START:
-					 if(ref_verify_crc16(&reebuff[i],ROBOT_START_LEN))
+					 if(ref_verify_crc16(&reebuff[i+DATA_LEN_BYTE_LEN],ROBOT_START_LEN))
 					 {
-							Robotstateparse(&reebuff[i + 7]);
+							Robotstateparse(&reebuff[i + 7+DATA_LEN_BYTE_LEN]);
 							i +=ROBOT_START_LEN;
 					 }
 					 else i++;
 						 break;
 					 case THE_POWER_OF_HEAT:
-				 if(ref_verify_crc16(&reebuff[i],THE_POWER_OF_HEAT_LEN))
+				 if(ref_verify_crc16(&reebuff[i+DATA_LEN_BYTE_LEN],THE_POWER_OF_HEAT_LEN))
 					 {
-						  PowerHeatDataParse(&reebuff[i + 7]);
+						  PowerHeatDataParse(&reebuff[i + 7+DATA_LEN_BYTE_LEN]);
 							i += THE_POWER_OF_HEAT_LEN;
 					 }
 					 	 else i++;
 						 break;
 					 case ROBOT_POSITION:
-					 if(ref_verify_crc16(&reebuff[i],ROBOT_POSITION_LEN))
+					 if(ref_verify_crc16(&reebuff[i+DATA_LEN_BYTE_LEN],ROBOT_POSITION_LEN))
 					 {
-						  GameRobotPosParse(&reebuff[i + 7]);
+						  GameRobotPosParse(&reebuff[i + 7+DATA_LEN_BYTE_LEN]);
 							i += ROBOT_POSITION_LEN;
 					 }
 					 	 else i++;
 						 break;
 				  case ROBOT_GAIN:
-					 if(ref_verify_crc16(&reebuff[i],ROBOT_GAIN_LEN))
+					 if(ref_verify_crc16(&reebuff[i+DATA_LEN_BYTE_LEN],ROBOT_GAIN_LEN))
 					 {
-						 BuffMusk(&reebuff[i + 7]);
+						 BuffMusk(&reebuff[i + 7+DATA_LEN_BYTE_LEN]);
 						i += ROBOT_GAIN_LEN;
 					 }
 					 	 else i++;
 					 	 break;
 					 case THE_DAMAGE_STATE:
-					 if(ref_verify_crc16(&reebuff[i],THE_DAMAGE_STATE_LEN))
+					 if(ref_verify_crc16(&reebuff[i+DATA_LEN_BYTE_LEN],THE_DAMAGE_STATE_LEN))
 					 {
-						RobotHurt(&reebuff[i + 7]);
+						RobotHurt(&reebuff[i + 7+DATA_LEN_BYTE_LEN]);
 						i += THE_DAMAGE_STATE_LEN;
 					 }
 					 	 else i++;
 					 	 break;
 				  case REAL_TIME_SHOOTING_INFORMATION:
-					 if(ref_verify_crc16(&reebuff[i],REAL_TIME_SHOOTING_INFORMATION_LEN))
+					 if(ref_verify_crc16(&reebuff[i+DATA_LEN_BYTE_LEN],REAL_TIME_SHOOTING_INFORMATION_LEN))
 					 {
-						ShootData(&reebuff[i + 7]);
+						ShootData(&reebuff[i + 7+DATA_LEN_BYTE_LEN]);
 						i += REAL_TIME_SHOOTING_INFORMATION_LEN;
 					 }
 					 	 else i++;

@@ -23,7 +23,9 @@
 	|-------2. ...                                                       
 	|-----------------------------declaration of end-----------------------------|
  **/
+
 #include "enconder.h" 
+#ifdef ENCOER_TIM
 #define USE_ARR   0xFFFF//重装值
 #define THRESHILD 50000//((uint32_t)(USE_ARR*0.8))//越界阀值
 /**
@@ -82,6 +84,7 @@
       ies->last_data = temp;
    return (uint32_t)((temp+(USE_ARR*ies->counter)) * ies->coefficient);
 		}
+#endif  
 /*-----------------------------------file of end------------------------------*/
 
 

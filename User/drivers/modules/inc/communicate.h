@@ -43,7 +43,7 @@ typedef void (*ref_send_handler_t)(uint8_t* buf, uint16_t len);
 // #define REF_USER_TO_SERVER_MAX_DATA_LEN     64
 // #define REF_SERVER_TO_USER_MAX_DATA_LEN     32
 void CommunicateInit(void);
-  void CommunicateParse(uint16_t datalen);
+  void CommunicateParse(void);
 	uint16_t GetCmdId(uint8_t *data);
 	void Robotstateparse(uint8_t *data);
 	void PowerHeatDataParse(uint8_t *data);
@@ -138,6 +138,7 @@ typedef  struct refereeSystemStruct
  ext_buff_musk_t * p_buff_musk_t;
  ext_robot_hurt_t* p_robot_hurt_t;
  ext_shoot_data_t* p_shoot_data_t;
+ uint16_t datalen;
 }refereeSystemStruct;
 extern refereeSystemStruct ext_refereeSystem_t;
 //extern ext_game_robot_state_t robot_state_t;

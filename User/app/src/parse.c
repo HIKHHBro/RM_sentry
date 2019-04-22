@@ -31,7 +31,7 @@
 extern osThreadId startParseTaskHandle;
 extern UART_HandleTypeDef huart1;//串口1
 extern uint8_t can1_rx[12];
-extern uint32_t lenjuu;
+//extern uint32_t lenjuu;
 	/**
 	* @Data    2019-02-14 14:36
 	* @brief   数据解析任务初始化
@@ -63,8 +63,8 @@ void ParseInit(void)
 //    taskEXIT_CRITICAL();
         DbusParseData(&dbus_t);//
     Pc_ParseData(&pc_t);//小电脑数据解析
-    		HCSR04RxMsg();//超声波数据接收
-  CommunicateParse(lenjuu);
+ //   		HCSR04RxMsg();//超声波数据接收
+   CommunicateParse();
 	}
  /*
 	* @Data    2019-02-24 11:59
@@ -115,12 +115,11 @@ void ParseInit(void)
   {
 
      GimbalParseDate(id,data);
-    ChassisParseDate(id,data);
   }
-//void can2_rx(uint32_t id,uint8_t *data)
-//{
-//        GyroParse(id,data); //ChassisParseDate(id,data);
-//}
+void can2_rx(uint32_t id,uint8_t *data)
+{
+      ChassisParseDate(id,data);
+}
 /*-----------------------------------file of end------------------------------*/
 
 

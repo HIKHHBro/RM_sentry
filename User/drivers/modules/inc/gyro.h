@@ -38,7 +38,6 @@ typedef struct gy955Struct
   float      Gyrz;
 	uint16_t       counter;
 }gy955Struct;
-#define  BIN_GE_GYRO_CAN_RX_ID   0x413
 void Gy955Init(UART_HandleTypeDef *huartx);
 void AnalysisGyro(gy955Struct* Gyc);
 void BingeGyroByCan(gy955Struct* Gyc,uint8_t *data);

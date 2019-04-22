@@ -24,6 +24,7 @@
 	|---------------------------------declaration of end----------------------------|
  **/
 #include "leds_tip.h" 
+#if defined (LED_GPIO)
 	/*---------------------------------80×Ö·ûÏÞÖÆ-----------------------------------*/
 		/**
 		* @Data    2019-01-18 11:38
@@ -127,7 +128,7 @@
   void WarningLed(uint8_t times,uint16_t lag)
   {
     uint16_t temp;
-    temp = (LED_1|LED_2 |LED_3 |LED_4 |LED_5 |LED_6 |LED_7 |LED_8);
+    temp = (LED_1|LED_2 |LED_3 |LED_4 |LED_5 |LED_6 |LED_7);
     FlashingLed(LED_GPIO,temp,times,lag);
   }
     /**
@@ -141,6 +142,7 @@
       uint8_t i;
       HAL_GPIO_WritePin(LED_GPIO, i, GPIO_PIN_RESET);
     }
+#endif
 /*------------------------------------file of end-------------------------------*/
 
 

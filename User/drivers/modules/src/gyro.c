@@ -24,6 +24,8 @@
   |---------------------------------declaration of end----------------------------|
  **/
 #include "gyro.h" 
+#if  defined (GYRO_CAN) || defined (GYRO_UART)
+
 #define GY955BACKLEN   3
 #define GY955LEN   (18+GY955BACKLEN)
 #define EULERANGLE 0x08
@@ -87,6 +89,7 @@ void BingeGyroByCan(gy955Struct* Gyc,uint8_t *data)
   p.u_8[3] = data[7];
   Gyc->Gyrz = p.f;
 }
+#endif
 /*------------------------------------file of end-------------------------------*/
 
 

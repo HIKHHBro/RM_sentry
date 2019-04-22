@@ -141,7 +141,7 @@ void SysDetectControl(sysDetectStruct* sds)
       if(zero_init_flag == 30)
       {
         zero_init_flag =30;
-         SET_ENCODER_ZERO(0);
+       //  SET_ENCODER_ZERO(0);
         ProgressBarLed(LED_GPIO, 200);
       }
       zero_init_flag++;

@@ -49,7 +49,7 @@
     chassis_t.pwheel2_t->error = chassis_t.pwheel2_t->target - chassis_t.pwheel2_t->real_speed;
 		pid_out[0] = SpeedPid(chassis_t.pwheel1_t->pspeedPid_t,chassis_t.pwheel1_t->error);
   	pid_out[1] = SpeedPid(chassis_t.pwheel2_t->pspeedPid_t,chassis_t.pwheel2_t->error);
-      SetInPut(chassis_t.ppowerBufferPool_t,pid_out,2);//开功率缓存池
+    SetInPut(chassis_t.ppowerBufferPool_t,pid_out,2);//开功率缓存池
 		ChassisCanTx(pid_out[0],pid_out[1]);
     SET_BIT(chassis_t.status,RUNING_OK);
 	}

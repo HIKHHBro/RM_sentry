@@ -73,12 +73,12 @@ extern CAN_HandleTypeDef hcan1;
 //			/* -------- led灯提示任务 --------- */
 //			osThreadDef(ledTask, StartLedTask, osPriorityNormal, 0,128);
 //      startLedTaskHandle = osThreadCreate(osThread(ledTask), NULL);
-			/* ------ 底盘任务 ------- */
-			osThreadDef(chassisTask, StartChassisTask, osPriorityNormal, 0, CHASSIS_HEAP_SIZE);
-      startChassisTaskHandle = osThreadCreate(osThread(chassisTask), NULL);
 			/* ------ 云台任务 ------- */
 			osThreadDef(gimbalTask, StartGimbalTask, osPriorityNormal, 0, GIMBAL_HEAP_SIZE);
       startGimbalTaskHandle = osThreadCreate(osThread(gimbalTask), NULL);
+			/* ------ 底盘任务 ------- */
+			osThreadDef(chassisTask, StartChassisTask, osPriorityNormal, 0, CHASSIS_HEAP_SIZE);
+      startChassisTaskHandle = osThreadCreate(osThread(chassisTask), NULL);
       /* ------ 数据发送任务任务 ------- */
 			osThreadDef(txTask, StartTxTask, osPriorityHigh, 0, TX_HEAP_SIZE);
       startTxTaskHandle = osThreadCreate(osThread(txTask), NULL);

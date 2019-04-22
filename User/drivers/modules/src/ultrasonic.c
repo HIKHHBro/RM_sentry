@@ -24,6 +24,7 @@
 	|-----------------------------declaration of end-----------------------------|
  **/
 #include "ultrasonic.h" 
+#if defined(SONIC_GPIO)
 /* ===========================  HCSR-04 of begin =========================== */
 uint32_t 	Channel3HighTime, Channel4HighTime;
 uint32_t Channel3Period, Channel4Period;
@@ -39,20 +40,20 @@ uint32_t 	Channel4RisingTimeLast=0, Channel4RisingTimeNow, Channel4FallingTime;
 	*/
 	void  HCSR04Init(void)
 	{
-			HAL_TIM_IC_Start_IT(HCSR04_TIM, TIM_CHANNEL_3);
-    	HAL_TIM_IC_Start_IT(HCSR04_TIM, TIM_CHANNEL_4);
+			HAL_TIM_IC_Start_IT(HCSR04_TIM, SONIC_LEFT_E);
+    	HAL_TIM_IC_Start_IT(HCSR04_TIM, SONIC_RIGHT_E);
 	}
 
 	void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim)
 	{
 		
-    if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3)
+    if(htim->Channel == SONIC_LEFT_CHA)
 	{
 		if(Channel3Edge == 0)
 		{
-			Channel3RisingTimeNow = HAL_TIM_ReadCapturedValue(&htim2, TIM_CHANNEL_3);
-			__HAL_TIM_SET_CAPTUREPOLARITY(&htim2, TIM_CHANNEL_3, TIM_INPUTCHANNELPOLARITY_FALLING);
-			HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_3);
+			Channel3RisingTimeNow = HAL_TIM_ReadCapturedValue(HCSR04_TIM, SONIC_LEFT_E);
+			__HAL_TIM_SET_CAPTUREPOLARITY(HCSR04_TIM, SONIC_LEFT_CHA, TIM_INPUTCHANNELPOLARITY_FALLING);
+			HAL_TIM_IC_Start_IT(HCSR04_TIM, SONIC_LEFT_E);
 			Channel3Edge = 1;
 			if(Channel3RisingTimeLast == 0)
 			{
@@ -73,9 +74,9 @@ uint32_t 	Channel4RisingTimeLast=0, Channel4RisingTimeNow, Channel4FallingTime;
 		}
 		else if(Channel3Edge == 1)
 		{
-			Channel3FallingTime = HAL_TIM_ReadCapturedValue(&htim2, TIM_CHANNEL_3);	
-			__HAL_TIM_SET_CAPTUREPOLARITY(&htim2, TIM_CHANNEL_3, TIM_INPUTCHANNELPOLARITY_RISING);
-			HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_3);
+			Channel3FallingTime = HAL_TIM_ReadCapturedValue(HCSR04_TIM, SONIC_LEFT_E);	
+			__HAL_TIM_SET_CAPTUREPOLARITY(HCSR04_TIM, SONIC_LEFT_E, TIM_INPUTCHANNELPOLARITY_RISING);
+			HAL_TIM_IC_Start_IT(HCSR04_TIM, SONIC_LEFT_E);
 			
 			if(Channel3FallingTime < Channel3RisingTimeNow)
 			{
@@ -94,13 +95,13 @@ uint32_t 	Channel4RisingTimeLast=0, Channel4RisingTimeNow, Channel4FallingTime;
 			Channel3Edge = 0;
 		}
 	}
-	else if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_4)
+	else if(htim->Channel == SONIC_RIGHT_CHA)
 	{
 		if(Channel4Edge == 0)
 		{
-			Channel4RisingTimeNow = HAL_TIM_ReadCapturedValue(&htim2, TIM_CHANNEL_4);
-			__HAL_TIM_SET_CAPTUREPOLARITY(&htim2, TIM_CHANNEL_4, TIM_INPUTCHANNELPOLARITY_FALLING);
-			HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_4);
+			Channel4RisingTimeNow = HAL_TIM_ReadCapturedValue(HCSR04_TIM, SONIC_RIGHT_E);
+			__HAL_TIM_SET_CAPTUREPOLARITY(HCSR04_TIM, SONIC_RIGHT_E, TIM_INPUTCHANNELPOLARITY_FALLING);
+			HAL_TIM_IC_Start_IT(HCSR04_TIM, SONIC_RIGHT_E);
 			Channel4Edge = 1;
 			if(Channel4RisingTimeLast == 0)
 			{
@@ -121,9 +122,9 @@ uint32_t 	Channel4RisingTimeLast=0, Channel4RisingTimeNow, Channel4FallingTime;
 		}
 		else if(Channel4Edge == 1)
 		{
-			Channel4FallingTime = HAL_TIM_ReadCapturedValue(&htim2, TIM_CHANNEL_4);	
-			__HAL_TIM_SET_CAPTUREPOLARITY(&htim2, TIM_CHANNEL_4, TIM_INPUTCHANNELPOLARITY_RISING);
-			HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_4);
+			Channel4FallingTime = HAL_TIM_ReadCapturedValue(HCSR04_TIM, SONIC_RIGHT_E);	
+			__HAL_TIM_SET_CAPTUREPOLARITY(HCSR04_TIM, SONIC_RIGHT_E, TIM_INPUTCHANNELPOLARITY_RISING);
+			HAL_TIM_IC_Start_IT(HCSR04_TIM, SONIC_RIGHT_E);
 			
 			if(Channel4FallingTime < Channel4RisingTimeNow)
 			{
@@ -190,6 +191,7 @@ uint32_t 	Channel4RisingTimeLast=0, Channel4RisingTimeNow, Channel4FallingTime;
 	{
        HAL_GPIO_TogglePin(SONIC_GPIO,SONIC);
 	}
+ #endif
 /* ===========================  HCSR-04 of end =========================== */	
 /*-----------------------------------file of end------------------------------*/
 

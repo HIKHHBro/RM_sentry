@@ -77,7 +77,6 @@ void UserTxControl(void)
    {
       memset(pc_data,0,8);
       CanTxMsg(GIMBAL_CAN,GIMBAL_CAN_TX_ID,pc_data);
-      CanTxMsg(CHASSIS_CAN,CHASSIS_CAN_TX_ID,pc_data);
    }
   }
 if((chassis_status & RUNING_OK) ==RUNING_OK)

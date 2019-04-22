@@ -32,6 +32,7 @@ typedef struct usartDataStrcut
 	uint8_t rx_buff_size;//接收校验长度
 	uint8_t *rx_buff_data; //接收缓存空间地址
 	uint8_t rx_on_off;   //数据接收开关
+  uint16_t datalen;//一帧数据长度
 	xQueueHandle usart_queue; //队列句柄
 }usartDataStrcut;
 HAL_StatusTypeDef UsartAndDMAInit(UART_HandleTypeDef *huartx,\
@@ -47,6 +48,13 @@ HAL_StatusTypeDef UserUsartQueueRX(UART_HandleTypeDef *huartx, \
 																	 void *const pvBuffer);
 
 void RxCcomuu(UART_HandleTypeDef *huartx);
+#define A_FRAME_CHECK_LEN 3//一帧接收缓存长度
+#define DATA_LEN_BYTE_LEN 2//数据长度
+#define DATA_LEN_BYTE_HIGH_8 0//数据长度高八位
+#define DATA_LEN_BYTE_LOW_8  1//数据长度低八位
+#define HEAD_FRAME_LEN (A_FRAME_CHECK_LEN + DATA_LEN_BYTE_LEN)
+#define RX_HEAD_ADDR   2//接收数据的首地址
+
 #endif // __BSP_USART_H
 
 /*----------------------------------file of end-------------------------------*/

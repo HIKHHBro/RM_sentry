@@ -126,7 +126,7 @@ void PcControlMode(void)
      gimbal_t.pPitch_t->ppostionPid_t->error =0;
     gimbal_t.pYaw_t->ppostionPid_t->error =0;
     SetPcControlPID();
-    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
+  //  HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
 //        __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_1_START_V+120);
 //    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_2_START_V +120);
 //    if(gimbal_t.pPitch_t->ppostionPid_t->error - gimbal_t.pPc_t->pitch_target_angle)
@@ -267,6 +267,7 @@ int16_t conflag =0;
   int16_t rctemp;
   int16_t seepdd =7;
   int16_t shesu =0;
+  int16_t flaaaa =0;
 void GimbalRcControlMode(void)
 {
   if((gimbal_t.status&RC_MODE_RUNING) != RC_MODE_RUNING)
@@ -294,7 +295,7 @@ void GimbalRcControlMode(void)
      Shoot(shesu,0);
 //  }
 //  else  Shoot(0,0);
-                   HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
+   //                HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
   gimbal_t.pYaw_t->target += (int16_t)(gimbal_t.pRc_t->ch3 * iii);
   
         gimbal_t.pPitch_t->target += (int16_t)(gimbal_t.pRc_t->ch4 * yyyy);
@@ -322,9 +323,8 @@ void GimbalDeinit(void)
         gimbal_t.pPitch_t->pspeedPid_t->ki =0;//45;
         gimbal_t.pPitch_t->pspeedPid_t->kp =0;//290
       gimbal_t.pPitch_t->pspeedPid_t->pid_out = 0;
-     __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_1_START_V);
-    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_2_START_V);
-    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
+  //   __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_1_START_V);
+ //   HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
 }
 /**
 * @Data    2019-03-21 00:46
@@ -336,9 +336,8 @@ void GimbalDeinit(void)
  {
   CLEAR_BIT(gimbal_t.status,GIMBAL_MOD_RUNNING);
     Shoot(0,0);
-    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_1_START_V);
-    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_2_START_V);
-    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
+//    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_1_START_V);
+//    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
  }
 	/**
 		* @Data    2019-03-26 21:32
@@ -349,7 +348,7 @@ void GimbalDeinit(void)
 		void SetFrameDropBufferStatus(void)
 		{
 			SET_RUNING_STATUS(FRAME_DROP_BUFFER_RUNING);
-     HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
+ //    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
 		}
 	/**
 	* @Data    2019-03-26 21:17

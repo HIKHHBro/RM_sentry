@@ -29,9 +29,9 @@
 // #define HAL_F1 0
 #define HAL_F4 1
 /* ----------------- 开发板的选择 1是开启，0是开闭-------------------- */
-#define RM_NEW_BOARD 1
+//#define RM_NEW_BOARD 0
 //#define RM_OLD_BOARD 0
-//#define BINGE_BOARD 1 //斌哥的板子
+#define BINGE_BOARD 1 //斌哥的板子
 #if HAL_F1 
 	// #include "stm32f1xx_hal.h"
 	// #include <stdlib.h>
@@ -106,6 +106,63 @@
      #define PC_DATA_UASRT (&huart6)//小电脑数据接收串口
      #define COMMUNICAT    (&huart3)//裁判系统串口
   #elif BINGE_BOARD
+    extern CAN_HandleTypeDef hcan1;
+    extern CAN_HandleTypeDef hcan2;
+   // extern CAN_HandleTypeDef hcan2;
+    extern UART_HandleTypeDef huart1;//串口1
+    extern UART_HandleTypeDef huart2;//串口2
+    extern UART_HandleTypeDef huart3;
+    extern UART_HandleTypeDef huart7;
+	 	extern TIM_HandleTypeDef htim1;//摩擦轮电机
+    extern TIM_HandleTypeDef htim3;
+    extern TIM_HandleTypeDef htim5;
+    extern TIM_HandleTypeDef htim7;
+    extern TIM_HandleTypeDef htim12;
+/* -----------------遥控宏定义接口 -------------------- */
+     #define RC_UART (&huart1)//遥控串口宏定义
+/* -------------调试和oled显示宏定义接口 ---------------- */
+   /* ------ 调试版本和发行版本选择 --- */
+    /*发行版请把这行宏定义注释掉*/
+    #define DEBUG_BY_KEIL
+    #define DEBUG_UART (&huart2)
+/* -----------------全场宏定义接口 -------------------- */
+    //#define WHOLE_POSITION_UART 
+/* ----------------- 编码器宏定义接口 -------------------- */
+     #define ENCODE_A    GPIO_PIN_6//编码器A相  
+     #define ENCODE_B    GPIO_PIN_7//编码器B相  
+     #define ENCODE_GPIO GPIOC
+     #define ENCOER_TIM  (&htim3)//编码器宏接口
+/* -------------- 超声波引脚宏定义 ----------------- */
+    #define SONIC            GPIO_PIN_2//PA2 Trig
+    #define SONIC_LEFT_E     TIM_CHANNEL_1//PA0 Echo 左边
+    #define SONIC_RIGHT_E    TIM_CHANNEL_2//PA1 Echo 右边
+    #define SONIC_LEFT_CHA    HAL_TIM_ACTIVE_CHANNEL_1
+    #define SONIC_RIGHT_CHA    HAL_TIM_ACTIVE_CHANNEL_2
+    #define SONIC_GPIO       GPIOA
+    #define HCSR04_TIM (&htim5)//超声波接口
+/* -------------- 摩擦轮宏定义 ----------------- */
+		 #define FRICTIONGEAR (&htim1)//摩擦轮定时器电机宏接口
+		 #define FRICTIONGEAR_1 (TIM_CHANNEL_1)//摩擦轮1PWM通道
+		 #define FRICTIONGEAR_1_START_V (1000U)//摩擦轮1启动信号
+     #define FRICTIONGEAR_PWM  GPIO_PIN_8
+     #define FRICTIONGEAR_GPIO   GPIOA
+/* -----------------蜂鸣器引脚宏定义定义 -------------------- */     
+      #define BUZZER GPIO_PIN_12//PH6  TIM12_CH1
+      #define BUZZER_GPIO GPIOB
+      #define BUZZER_TIM (&htim12)
+
+		 #define GIMBAL_CAN (&hcan1)    //云台电机的can
+     #define CHASSIS_CAN (&hcan2)    //云台电机的can
+     #define  GYRO_CAN //(&hcan2)
+
+     #define PC_DATA_UASRT (&huart7)//小电脑数据接收串口
+     #define COMMUNICAT    (&huart3)//裁判系统串口
+
+/* -------------- 激光红外开关引脚宏定义 ----------------- */
+    #define LASER_SWITCH       GPIO_PIN_9 //后侧
+    #define LASER_SWITCH_BEF   GPIO_PIN_11//前侧（靠灯条）
+    #define LASER_SWITCH_GPIO  GPIOA 
+/* -------------- LED引脚宏定义 ----------------- */
     #define LED_1 GPIO_PIN_9
     #define LED_2 GPIO_PIN_10
     #define LED_3 GPIO_PIN_11
@@ -116,6 +173,9 @@
     #define LED_GPIO GPIOE
     #define LED_TOTAL 7 //led等个数
     #define LED_ORIGIN_PIN 9  //灯GPIO起点引脚
+/* -------------KEY引脚宏定义 ----------------- */
+    #define KEY_1 GPIO_PIN_7
+    #define KEY_GPIO GPIOD
   #elif RM_OLD_BOARD
     #define LED_1 0
     #define LED_2 0

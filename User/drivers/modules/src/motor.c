@@ -384,9 +384,7 @@
 	void BrushlessMotorInit(void)
 	{
 		HAL_TIM_PWM_Start(FRICTIONGEAR,FRICTIONGEAR_1);
-		HAL_TIM_PWM_Start(FRICTIONGEAR,FRICTIONGEAR_2);
 		__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,FRICTIONGEAR_1_START_V);
-		__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_2,FRICTIONGEAR_2_START_V);
 	}
 /* =========================== PWM控制的电机 of end ========================== */
 

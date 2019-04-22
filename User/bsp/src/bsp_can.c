@@ -69,16 +69,17 @@ HAL_StatusTypeDef CanFilterInit(CAN_HandleTypeDef* hcanx)
 	addr->filter.FilterMaskIdHigh = 0x0000;							 //过滤器高16位每位必须匹配
 	addr->filter.FilterMaskIdLow = 0x0000;								//过滤器低16位每位必须匹配
 	addr->filter.FilterFIFOAssignment = CAN_FILTER_FIFO0; //过滤器被关联到FIFO 0
-	addr->filter.FilterBank = 0;
 	addr->filter.FilterScale = CAN_FILTERSCALE_32BIT;
 	addr->filter.FilterMode = CAN_FILTERMODE_IDMASK;
 	addr->filter.FilterActivation = ENABLE; //使能过滤器
     if(hcanx->Instance ==CAN1)
   {
+    	addr->filter.FilterBank = 0;
     	addr->filter.SlaveStartFilterBank = 0;
   }
   if(hcanx->Instance ==CAN2)
   {
+    	addr->filter.FilterBank = 14;
         addr->filter.SlaveStartFilterBank = 14;
   }
 	return (HAL_CAN_ConfigFilter(hcanx, &addr->filter)); //使能筛选器

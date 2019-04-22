@@ -27,6 +27,7 @@
 	|---------------------------------declaration of end----------------------------|
  **/
 #include "wholepositioning.h" 
+#if defined(WHOLE_POSITION_UART)
 /* -------- 变量声明 --------- */
 	  uint8_t buffer[31]={0};	
 	 static wholePositionStruct last_wholeositiontruct_t; //缓存数据 
@@ -268,6 +269,7 @@
 	// 	__HAL_UART_ENABLE_IT(huart,UART_IT_IDLE );//串口空闲中断使能
 	// 	return 0;
 	// }
+#endif
 /*------------------------------------file of end------------------------------------*/
 
 

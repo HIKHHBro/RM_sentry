@@ -73,7 +73,7 @@ Int16Queue pitchStatusQu;
     gimbal_t.pGyro_t = &gimbalGyroByCan_t;
   /* ------ 开启摩擦轮 ------- */
 		BrushlessMotorInit();
-//    UserCanConfig(GIMBAL_CAN);
+   UserCanConfig(GIMBAL_CAN);
   /* ------ 创建云台发送队列 ------- */
 	  gimbal_queue	= xQueueCreate(QUEUE_LEN,QUEUE_SIZE);//一定要在用之前创建队列
   /* ------ 创建云台历史状态队列 ------- */
@@ -128,7 +128,7 @@ Int16Queue pitchStatusQu;
 			case PITCH_RX_ID:
         GM6020ParseData(gimbal_t.pPitch_t,data);
 				break;
-     case BIN_GE_GYRO_CAN_RX_ID:
+     case GIMBAL_GYRO_RX_ID:
         BingeGyroByCan(gimbal_t.pGyro_t,data);
       break;
 			default:

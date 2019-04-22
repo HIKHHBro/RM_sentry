@@ -79,6 +79,7 @@
 	#define WHEEL2_RX_ID       			 0x202
 	#define CURRENT_METER_RX_ID      0x401//电流计接收id
   #define CHASSIS_SENSOR_RX_ID     0x402//底盘传感器数据接收id
+  #define  CHASSIS_RX_ID   0x413
 	#define CHASSIS_CAN_TX_ID  			 0x200
 	#define W1_LIMIT_SPEED    			 8000  //轮子1速度限幅
 	#define W2_LIMIT_SPEED    			 8000  //轮子2速度限幅
@@ -105,7 +106,7 @@ typedef struct chassisStruct
 	CAN_HandleTypeDef *hcanx;
   powerBufferPoolStruct*ppowerBufferPool_t;
   refereeSystemStruct* p_refereeSystem_t;
-	//gy955Struct* pgyroByCan_t;
+	gy955Struct* pGyro_t;
 	 const pcDataStruct* pPc_t;
 	struct State
 	{

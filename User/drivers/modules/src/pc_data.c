@@ -25,7 +25,7 @@
  **/
 #include "pc_data.h" 
 #define PC_CHECK_BYTE (0x55)//校验位
-#define PC_DATA_LEN 12//接收数据长度
+#define PC_DATA_LEN (12 + HEAD_FRAME_LEN)//接收数据长度
 #define  PC_DATA_LEN_BSP (PC_DATA_LEN+3)
 uint8_t pc_databuff[PC_DATA_LEN_BSP];
 static pcDataStruct lastpc;
@@ -77,18 +77,18 @@ void Pc_ParseData(pcDataStruct* pc)
 {
   if(UserUsartQueueRX(PC_DATA_UASRT,pc_databuff) == HAL_OK)
   {
-    if(pc_databuff[0] == PC_CHECK_BYTE)
+    if(pc_databuff[0+DATA_LEN_BYTE_LEN] == PC_CHECK_BYTE)
     {
-    tem_yaw = (int16_t)((pc_databuff[1]<<8) | pc_databuff[2]);
+    tem_yaw = (int16_t)((pc_databuff[1+DATA_LEN_BYTE_LEN]<<8) | pc_databuff[2+DATA_LEN_BYTE_LEN]);
       __tem_yaw = (tem_yaw-490);
     pc->yaw_target_angle = YawDataConversion(__tem_yaw);
-    tem_pitch= (int16_t)((pc_databuff[3]<<8) | pc_databuff[4]);
+    tem_pitch= (int16_t)((pc_databuff[3+DATA_LEN_BYTE_LEN]<<8) | pc_databuff[4+DATA_LEN_BYTE_LEN]);
       __tem_pitch = (tem_pitch-e_pitch_temp);
     pc->pitch_target_angle = PitchDataConversion(__tem_pitch);
-     pc->commot =pc_databuff[5];
-      pc->shoot_commot = pc_databuff[6];
-      pc->fps = (pc_databuff[8]<<8)|pc_databuff[9];
-      pc->distance = (pc_databuff[10]<<8)|pc_databuff[11];
+     pc->commot =pc_databuff[5+DATA_LEN_BYTE_LEN];
+      pc->shoot_commot = pc_databuff[6+DATA_LEN_BYTE_LEN];
+      pc->fps = (pc_databuff[8+DATA_LEN_BYTE_LEN]<<8)|pc_databuff[9+DATA_LEN_BYTE_LEN];
+      pc->distance = (pc_databuff[10+DATA_LEN_BYTE_LEN]<<8)|pc_databuff[11+DATA_LEN_BYTE_LEN];
       enQueue(&pc_yaw_queue,pc->yaw_target_angle,MAXSIZE);
       deQueue(&pc_yaw_queue,&temmmm,MAXSIZE);
 //      enQueue(&pc_pitch_queue,pc->pitch_target_angle,MAXSIZE);
