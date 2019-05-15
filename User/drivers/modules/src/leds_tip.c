@@ -133,7 +133,7 @@
   }
     /**
     * @Data    2019-03-16 02:24
-    * @brief   递增等效
+    * @brief   递增灯效
     * @param   void
     * @retval  void
     */

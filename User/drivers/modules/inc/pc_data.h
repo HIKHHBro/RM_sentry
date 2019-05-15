@@ -34,7 +34,8 @@ typedef struct pcDataStruct
   int16_t pitch_target_angle;
   uint8_t commot;
   uint8_t shoot_commot;
-  int16_t fps;
+  int16_t tem_fps;
+  fps_t fps;
   int16_t distance;//µ¥Î»cm
 }pcDataStruct;
      void Pc_ParseData(pcDataStruct* pc);
@@ -42,7 +43,14 @@ typedef struct pcDataStruct
 
 int16_t YawDataConversion(int16_t yaw);
 int16_t PitchDataConversion(int16_t pitch);
-void EscPc(int16_t key,int16_t ch1,int16_t ch2,int16_t ch3,int16_t ch4,int16_t key1);
+void EscPc(int16_t key,int16_t ch1,int16_t ch2,int16_t ch3,int16_t ch4,int16_t thumbwheel,int16_t key1);
+void GetGyroAngle(int16_t yaw_angle,int16_t pitch_angle);
+#define INTEL_YAW    490
+#define INTEL_PITCH   305
+#define GEN_YAW      270
+#define GEN_PITCH     290
+#define IND_YAW      650
+#define IND_PITCH    600
 #endif	// __PC_DATA_H
   
  /*------------------------------------file of end-------------------------------*/

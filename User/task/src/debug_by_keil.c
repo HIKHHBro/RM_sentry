@@ -30,6 +30,7 @@
  extern UART_HandleTypeDef huart2;//串口1
  extern UART_HandleTypeDef huart7;
 extern TIM_HandleTypeDef htim2;
+extern	 pcDataStruct pc_t;//小电脑数据;
  uint32_t runtimeCounter;
 debugByKeilStruct pdebug_t;
 osThreadId startDebugByKeilTaskHandle; 
@@ -54,7 +55,8 @@ void StartDebugByKeilTask(void const *argument);
      osThreadDef(debugByKeilTask, StartDebugByKeilTask, osPriorityHigh, 0,DEBUG_HEAP_SIZE);
      startDebugByKeilTaskHandle = osThreadCreate(osThread(debugByKeilTask), NULL); 
 //    pdebug_t.d_rc= GetRcStructAddr();
-//    pdebug_t.d_pchassis_t = GetChassisStructAddr();
+   pdebug_t.d_pchassis_t = GetChassisStructAddr();
+
 //			 DebugClassInit();   
 
     
@@ -93,7 +95,12 @@ void StartDebugByKeilTask(void const *argument)
      taskEXIT_CRITICAL();
         osDelay(100);      
 #endif
-        osDelay(100); 
+//     if(GetFps(pc_t.fps) ==0)
+//   {
+//       __HAL_TIM_SetCompare(BUZZER_TIM,FRICTIONGEAR_1,10000);
+//     }  
+//    __HAL_TIM_SetCompare(BUZZER_TIM,FRICTIONGEAR_1,0);
+ osDelay(100); 
 		}
 }
 /**

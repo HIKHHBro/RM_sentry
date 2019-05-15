@@ -27,9 +27,11 @@
 #define __POWER_BUFFER_POOL_H 
 #include "baseclass.h "
 #include "currentmeter.h"
+#include "communicate.h"
 typedef struct powerBufferPoolStruct
 {
 	currentMeterStruct* pcurrentMeter_t;
+    refereeSystemStruct* p_refereeSystem_t;
 	float max_p;
 	float max_w;//功率单位W
 	float r_w;//功率单位W

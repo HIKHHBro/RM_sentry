@@ -26,6 +26,9 @@
  **/
 #ifndef __USERFREERTOSCONFIG_H 
 #define __USERFREERTOSCONFIG_H 
+//#include "SEGGER_SYSVIEW_FreeRTOS.h"
+//#define INCLUDE_xTaskGetIdleTaskHandle  1
+//#define INCLUDE_pxTaskGetStackStart     1
 /* -------------- 软件定时器 ----------------- */
 //是否编译定时器相关代码， 如需要使用定时器， 设置为 1 
 #define configUSE_TIMERS 1
@@ -38,11 +41,11 @@
 	/* ----------------- 任务堆栈大小设置 -------------------- */
    #define SYS_INIT_HEAP_SIZE    512//系统初始任务
    #define PARSE_HEAP_SIZE       1024//数据解析任务
-   #define CHASSIS_HEAP_SIZE     512//底盘任务
-   #define GIMBAL_HEAP_SIZE      512//云台任务
-   #define LED_TIP_HEAP_SIZE     512//led提示任务
+   #define CHASSIS_HEAP_SIZE     1024//底盘任务
+   #define GIMBAL_HEAP_SIZE      1024//云台任务
+   #define LED_TIP_HEAP_SIZE     0//led提示任务
    #define SYS_DETEC_HEAP_SIZE   1024//系统自检和数据校准任务
-   #define DEBUG_HEAP_SIZE       1024//硬件仿真任务提示任务
+//   #define DEBUG_HEAP_SIZE       1024//硬件仿真任务提示任务
 	 #define RAMMER_HEAP_SIZE      512//拨弹电机任务
 	 #define TX_HEAP_SIZE          512//用户发送任务
    #define QUEUE_HEAP_SIZE       512//队列
@@ -55,13 +58,14 @@
 					   CHASSIS_HEAP_SIZE +					\
 						 GIMBAL_HEAP_SIZE +						\
 						 LED_TIP_HEAP_SIZE + 					\
-						 DEBUG_HEAP_SIZE + 						\
 						 SYS_DETEC_HEAP_SIZE+					\
 						 RAMMER_HEAP_SIZE +          \
 						 TX_HEAP_SIZE +               \
              QUEUE_HEAP_SIZE +             \
 						 configTIMER_TASK_STACK_DEPTH   \
 																			 ) * 7))
+                                       
+                                       //	 DEBUG_HEAP_SIZE +
 		
 
 /* -------------- 重定义freertos任务内存大小 ----------------- */

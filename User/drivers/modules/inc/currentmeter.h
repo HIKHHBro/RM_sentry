@@ -33,6 +33,7 @@ typedef struct
 	float current;
 	float power;
 	float power_buffer;
+  fps_t fps;
 }currentMeterStruct;
 uint8_t CurrentMeterAnalysis(currentMeterStruct *Cms,uint8_t *data);
 #endif	// __CURRENTMETER_H

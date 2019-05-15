@@ -60,7 +60,7 @@ void UserTxControl(void)
   portBASE_TYPE xStatus;
  gimbal_status = GetGimbalStatus();
  chassis_status =  GetChassisStatus();
-  EscPc(userTx_t.rc->switch_left,userTx_t.rc->ch1,userTx_t.rc->ch2,userTx_t.rc->ch3,userTx_t.rc->ch4,userTx_t.rc->switch_right);
+  EscPc(userTx_t.rc->switch_left,userTx_t.rc->ch1,userTx_t.rc->ch2,userTx_t.rc->ch3,userTx_t.rc->ch4,userTx_t.rc->thumbwheel,userTx_t.rc->switch_right);
   if((gimbal_status & RUNING_OK) ==RUNING_OK)
   {
     if(userTx_t.rc->switch_left ==1)
@@ -71,6 +71,7 @@ void UserTxControl(void)
         taskENTER_CRITICAL();
        CanTxMsg(GIMBAL_CAN,GIMBAL_CAN_TX_ID,pc_data);//注释作为云台电机临时失能
         taskEXIT_CRITICAL();
+        	//	osDelay(1);
       }
     }
    else
@@ -79,9 +80,9 @@ void UserTxControl(void)
       CanTxMsg(GIMBAL_CAN,GIMBAL_CAN_TX_ID,pc_data);
    }
   }
-if((chassis_status & RUNING_OK) ==RUNING_OK)
+if(((chassis_status & RUNING_OK) ==RUNING_OK) || IS_BYTE(chassis_status,DHECK_DATA_RUNING))
 {
-   if(userTx_t.rc->switch_left ==1)
+   if(userTx_t.rc->switch_left !=2)
    {
     memset(pc_data,0,8);
     xStatus = xQueueReceive(chassis_queue,pc_data,0);
@@ -93,7 +94,7 @@ if((chassis_status & RUNING_OK) ==RUNING_OK)
         memset(pc_data,0,8);
         CanTxMsg(CHASSIS_CAN,CHASSIS_CAN_TX_ID,pc_data);
       }
-      else  CanTxMsg(CHASSIS_CAN,CHASSIS_CAN_TX_ID,pc_data);//注释作为底盘电机临时失能
+// else  CanTxMsg(CHASSIS_CAN,CHASSIS_CAN_TX_ID,pc_data);//注释作为底盘电机临时失能
       taskEXIT_CRITICAL();
     }
   }

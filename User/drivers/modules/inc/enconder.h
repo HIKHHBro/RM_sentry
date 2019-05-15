@@ -33,8 +33,9 @@ typedef struct incrementalEnconderStruct
 	float coefficient;//每毫米的脉冲数的倒数
 }incrementalEnconderStruct;
 	HAL_StatusTypeDef EnconderInit(incrementalEnconderStruct* ies,uint16_t radius, int16_t poles);
-	uint32_t GetPosition(incrementalEnconderStruct* ies);
+	int32_t GetPosition(incrementalEnconderStruct* ies);
   void SetEncoderZeroPoint(incrementalEnconderStruct* ies,uint32_t zero);
+MOD_Status CalibratingEncoder(incrementalEnconderStruct* ies,int32_t distanct);
   #define SET_ENCODER_ZERO(__zero)  (ENCOER_TIM->Instance->CNT = (__zero))
 #endif	// __ENCONDER_H
 /*-----------------------------------file of end------------------------------*/

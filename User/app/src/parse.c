@@ -63,8 +63,9 @@ void ParseInit(void)
 //    taskEXIT_CRITICAL();
         DbusParseData(&dbus_t);//
     Pc_ParseData(&pc_t);//小电脑数据解析
- //   		HCSR04RxMsg();//超声波数据接收
+   		HCSR04RxMsg();//超声波数据接收
    CommunicateParse();
+    ChassisSensorParse();
 	}
  /*
 	* @Data    2019-02-24 11:59

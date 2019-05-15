@@ -113,9 +113,10 @@
     extern UART_HandleTypeDef huart2;//串口2
     extern UART_HandleTypeDef huart3;
     extern UART_HandleTypeDef huart7;
+    extern UART_HandleTypeDef huart8;
 	 	extern TIM_HandleTypeDef htim1;//摩擦轮电机
     extern TIM_HandleTypeDef htim3;
-    extern TIM_HandleTypeDef htim5;
+    extern TIM_HandleTypeDef htim2;
     extern TIM_HandleTypeDef htim7;
     extern TIM_HandleTypeDef htim12;
 /* -----------------遥控宏定义接口 -------------------- */
@@ -123,23 +124,25 @@
 /* -------------调试和oled显示宏定义接口 ---------------- */
    /* ------ 调试版本和发行版本选择 --- */
     /*发行版请把这行宏定义注释掉*/
-    #define DEBUG_BY_KEIL
+//    #define DEBUG_BY_KEIL
     #define DEBUG_UART (&huart2)
 /* -----------------全场宏定义接口 -------------------- */
     //#define WHOLE_POSITION_UART 
 /* ----------------- 编码器宏定义接口 -------------------- */
-     #define ENCODE_A    GPIO_PIN_6//编码器A相  
+     #define ENCODE_A    GPIO_PIN_6//编码器A相   
      #define ENCODE_B    GPIO_PIN_7//编码器B相  
+     #define ENCODE_Z    GPIO_PIN_6//编码器B相  
+     #define ENCODE_Z_GPIO GPIOE
      #define ENCODE_GPIO GPIOC
      #define ENCOER_TIM  (&htim3)//编码器宏接口
 /* -------------- 超声波引脚宏定义 ----------------- */
-    #define SONIC            GPIO_PIN_2//PA2 Trig
-    #define SONIC_LEFT_E     TIM_CHANNEL_1//PA0 Echo 左边
-    #define SONIC_RIGHT_E    TIM_CHANNEL_2//PA1 Echo 右边
-    #define SONIC_LEFT_CHA    HAL_TIM_ACTIVE_CHANNEL_1
-    #define SONIC_RIGHT_CHA    HAL_TIM_ACTIVE_CHANNEL_2
+    #define SONIC            GPIO_PIN_1//PA2 Trig
+    #define SONIC_LEFT_E     TIM_CHANNEL_3//PA0 Echo 左边
+    #define SONIC_RIGHT_E    TIM_CHANNEL_4//PA1 Echo 右边
+    #define SONIC_LEFT_CHA    HAL_TIM_ACTIVE_CHANNEL_3
+    #define SONIC_RIGHT_CHA    HAL_TIM_ACTIVE_CHANNEL_4
     #define SONIC_GPIO       GPIOA
-    #define HCSR04_TIM (&htim5)//超声波接口
+    #define HCSR04_TIM (&htim2)//超声波接口
 /* -------------- 摩擦轮宏定义 ----------------- */
 		 #define FRICTIONGEAR (&htim1)//摩擦轮定时器电机宏接口
 		 #define FRICTIONGEAR_1 (TIM_CHANNEL_1)//摩擦轮1PWM通道
@@ -155,13 +158,17 @@
      #define CHASSIS_CAN (&hcan2)    //云台电机的can
      #define  GYRO_CAN //(&hcan2)
 
-     #define PC_DATA_UASRT (&huart7)//小电脑数据接收串口
+     #define PC_DATA_UASRT (&huart8)//小电脑数据接收串口
      #define COMMUNICAT    (&huart3)//裁判系统串口
 
 /* -------------- 激光红外开关引脚宏定义 ----------------- */
-    #define LASER_SWITCH       GPIO_PIN_9 //后侧
+    #define LASER_SWITCH_BACK       GPIO_PIN_9 //后侧
     #define LASER_SWITCH_BEF   GPIO_PIN_11//前侧（靠灯条）
     #define LASER_SWITCH_GPIO  GPIOA 
+/* ------限位开关宏接口 ------- */  
+		 #define LIM_SW_RIGHT         GPIO_PIN_9
+		 #define LIM_SW_LEFT          GPIO_PIN_10
+     #define LIM_SWITCH_GPIO  	  GPIOA
 /* -------------- LED引脚宏定义 ----------------- */
     #define LED_1 GPIO_PIN_9
     #define LED_2 GPIO_PIN_10
@@ -173,9 +180,22 @@
     #define LED_GPIO GPIOE
     #define LED_TOTAL 7 //led等个数
     #define LED_ORIGIN_PIN 9  //灯GPIO起点引脚
+    
+    #define RED_LED GPIO_PIN_4//PB4
+    #define GREEN_LED GPIO_PIN_5//PB5
+    #define COLOR_LED_GPIO GPIOB
 /* -------------KEY引脚宏定义 ----------------- */
     #define KEY_1 GPIO_PIN_7
     #define KEY_GPIO GPIOD
+/* -------------帧率统计宏定义接口 ----------------- */
+    #define _FPS_  //帧率统计宏开关
+    //配置定时器为1us记数一次  ptim = 90， psc =89， arr = 0xFFFF-1 最长时间为65ms
+    
+/* -------------比赛颜色接口 ----------------- */
+#define BLUE_GAME 1
+#define RED_GAME  0
+//#define DEBUG_BY
+
   #elif RM_OLD_BOARD
     #define LED_1 0
     #define LED_2 0

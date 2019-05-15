@@ -32,22 +32,23 @@ extern CAN_HandleTypeDef hcan1;
 /* ----------------- 任务句柄 -------------------- */
 	osThreadId startSysInitTaskHandle; 
 	osThreadId startParseTaskHandle;
-//	osThreadId startLedTaskHandle;
+  osThreadId startFaulTaskHandle;
 	osThreadId startChassisTaskHandle;
 	osThreadId startGimbalTaskHandle;
 	osThreadId startTxTaskHandle;//发送任务
 /* ----------------- 任务钩子函数 -------------------- */
 	void StartSysInitTask(void const *argument);
 	void StartParseTask(void const *argument);
-//	void StartLedTask(void const *argument);
+	void StartFaulTask(void const *argument);
 	void StartChassisTask(void const *argument);
 	void StartGimbalTask(void const *argument);
 	void StartTxTask(void const *argument);
 /* ----------------- 任务信号量 -------------------- */
 //static uint8_t parse_task_status = 0;//数据解析任务工作状态标志
+uint8_t enble_s = 0;
 /**
 	* @Data    2019-01-16 18:30
-	* @brief   系统初始化任务
+	* @brief   系统初始化
 	* @param   void
 	* @retval  void
 	*/
@@ -56,6 +57,8 @@ extern CAN_HandleTypeDef hcan1;
 		/* -------- 系统初始化任务创建 --------- */
 		osThreadDef(sysInitTask, StartSysInitTask, osPriorityRealtime, 0, SYS_INIT_HEAP_SIZE);
 		startSysInitTaskHandle = osThreadCreate(osThread(sysInitTask), NULL);
+    /* -------- 帧率软定时创建 --------- */
+    	FpsUserTimeInit();
 	}
 /**
 	* @Data    2019-01-16 18:27
@@ -70,12 +73,10 @@ extern CAN_HandleTypeDef hcan1;
 			/* -------- 数据分析任务 --------- */
       osThreadDef(parseTask, StartParseTask, osPriorityHigh, 0, PARSE_HEAP_SIZE);
       startParseTaskHandle = osThreadCreate(osThread(parseTask), NULL);	
-//			/* -------- led灯提示任务 --------- */
-//			osThreadDef(ledTask, StartLedTask, osPriorityNormal, 0,128);
-//      startLedTaskHandle = osThreadCreate(osThread(ledTask), NULL);
 			/* ------ 云台任务 ------- */
 			osThreadDef(gimbalTask, StartGimbalTask, osPriorityNormal, 0, GIMBAL_HEAP_SIZE);
       startGimbalTaskHandle = osThreadCreate(osThread(gimbalTask), NULL);
+      		osDelay(10);
 			/* ------ 底盘任务 ------- */
 			osThreadDef(chassisTask, StartChassisTask, osPriorityNormal, 0, CHASSIS_HEAP_SIZE);
       startChassisTaskHandle = osThreadCreate(osThread(chassisTask), NULL);
@@ -83,6 +84,10 @@ extern CAN_HandleTypeDef hcan1;
 			osThreadDef(txTask, StartTxTask, osPriorityHigh, 0, TX_HEAP_SIZE);
       startTxTaskHandle = osThreadCreate(osThread(txTask), NULL);
        ProgressBarLed(LED_GPIO, 500);
+      enble_s =1;
+      			/* -------- 错误警示任务 --------- */
+			osThreadDef(FaulTask, StartFaulTask, osPriorityNormal, 0,LED_TIP_HEAP_SIZE);
+      startFaulTaskHandle = osThreadCreate(osThread(FaulTask), NULL);
       /* -------- 系统模块自检 --------- */
         SystemSelfChecking();
 			/* -------- 删除系统任务 --------- */
@@ -104,7 +109,24 @@ extern CAN_HandleTypeDef hcan1;
 				osDelay(2);
 		}
 	}
-
+	/**
+	* @Data    2019-01-16 18:27
+	* @brief   错误警示任务
+	* @param   argument: Not used
+	* @retval  void
+	*/
+	void StartFaulTask(void const *argument)
+	{
+        		HAL_TIM_PWM_Start(BUZZER_TIM,FRICTIONGEAR_1);
+		for(;;)
+		{
+      if(enble_s ==1)
+      {
+        OffLineTip();
+      }
+			osDelay(TIP_BASE_TIME);
+		}
+	}
 /**
 	* @Data    2019-01-27 17:54
 	* @brief   底盘任务钩子函数

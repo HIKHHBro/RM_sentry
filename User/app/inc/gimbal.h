@@ -28,6 +28,8 @@
 #include "rammer.h" 
 #include "DataStructure.h" 
 #include "gyro.h" 
+#include "sentry_state_config.h"
+#include "filter.h" 
 /* -------------- 模块自定义标志位宏 ----------------- */
 #define  RC_MODE_READ               (0x80000000U) //遥控模式准备就绪
 #define  GIMBAL_PC_SHOOT_MODE_READ  (0x40000000U) //自瞄打击模式准备就绪
@@ -55,7 +57,8 @@
 				{																									\
 					CLEAR_BIT(gimbal_t.status,DISABLE_MOD_READ);	\
 					SET_BIT(gimbal_t.status,__status_);							\
-				}while(0)																					
+				}while(0)	
+#define  IS_BIMBAL_STATUS(_status_)                (GET_BYTE(gimbal_t.status,_status_) == _status_)        
 /* -------------- 私有宏 ----------------- */
 	#define QUEUE_LEN      5U//深度为5
 	#define  QUEUE_SIZE    8U//长度为5;
@@ -67,7 +70,7 @@
 #define GIMBAL_CAN_ID_H 0x208
 	#define YAW_RX_ID 								0x205//YAW轴电机接收 id
 	#define PITCH_RX_ID 							0x206//PITCH轴电机接收 id
-  #define GIMBAL_GYRO_RX_ID                0x414//云台陀螺仪
+  #define GIMBAL_GYRO_RX_ID                0x415//云台陀螺仪
 	#define GIMBAL_CAN_TX_ID 					0x1ff//云台电机发送id
  #define YAW_LIMIMT_CUT                 (6000)//电流限幅
   #define PITCH_LIMIMT_CUT                 (29000)//电流限幅
@@ -75,6 +78,7 @@
 	#define PASS_STATUS_LEN                 10//历史状态记忆长度
   #define DOWN_BUFF_POSI                     6000//仰角位置限制值
   #define UP_BUFF_POSI                     7000//俯角位置限制值
+  #define SCAN_SW                           180//大于180为扫描模式
 typedef struct gimbalStruct
 {
   uint32_t status;
@@ -85,7 +89,9 @@ typedef struct gimbalStruct
   const pcDataStruct* pPc_t;
   int16_t yaw_scan_target;
   int16_t pitch_scan_target;
-	gy955Struct *pGyro_t;
+	gyroStruct *pGyro_t;
+  uint32_t chassis_state;
+  uint32_t state;
 	// struct frameDropBuffer_t
 	// {
 	// 	int16_t yaw_pass_position[PASS_STATUS_LEN];
@@ -119,7 +125,8 @@ void GimbalDeinit(void);
 		void FrameDropBufferMode(void);
 int16_t SetLock(int16_t r,int16_t t);
  void GimbalWeakDeinit(void);
-
+uint8_t SetChassisCommot(void);
+uint32_t GimbalState(void);
 #define GIMBAL_CAL_ERROR(target,real) (CalculateError((target),(real),5500,(8192)))
 //#define YAW_CAL_ERROR(target,real) (CalculateError((target),(real),15000,(20480)))
 #define GET_RAMMER_ANGLE(_A_,_LAST_,_COE_)     (RatiometricConversion(\

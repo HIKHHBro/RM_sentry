@@ -134,11 +134,11 @@
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>4107</DriverSelection>
+            <DriverSelection>4101</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>STLink\ST-LINKIII-KEIL_SWO.dll</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F429xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;..\..\User\bsp\inc;..\..\User\app\inc;..\..\User\drivers\counters\inc;..\..\User\drivers\data_structure\inc;..\..\User\drivers\modules\inc;..\..\User\task\inc</IncludePath>
+              <IncludePath>../Inc; ../Drivers/STM32F4xx_HAL_Driver/Inc; ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy; ../Middlewares/Third_Party/FreeRTOS/Source/include; ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS; ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F; ../Drivers/CMSIS/Device/ST/STM32F4xx/Include; ../Drivers/CMSIS/Include; ..\..\User\bsp\inc; ..\..\User\app\inc; ..\..\User\drivers\counters\inc; ..\..\User\drivers\data_structure\inc; ..\..\User\drivers\modules\inc; ..\..\User\task\inc; ..\Drivers\CMSIS\DSP\Include; ..\tarsrc\Config; ..\tarsrc\Sample\Config; ..\tarsrc\Sample\Patch; ..\tarsrc\SEGGER; ..\tarsrc; ..\tarsrc\Config; ..\tarsrc\Sample</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -578,11 +578,6 @@
           <GroupName>user/bsp</GroupName>
           <Files>
             <File>
-              <FileName>baseclass.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\bsp\src\baseclass.c</FilePath>
-            </File>
-            <File>
               <FileName>bsp_can.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\src\bsp_can.c</FilePath>
@@ -648,6 +643,11 @@
               <FilePath>..\..\User\drivers\modules\src\gyro.c</FilePath>
             </File>
             <File>
+              <FileName>baseclass.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\src\baseclass.c</FilePath>
+            </File>
+            <File>
               <FileName>laser_ranging.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\drivers\modules\src\laser_ranging.c</FilePath>
@@ -682,11 +682,41 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\drivers\modules\src\wholepositioning.c</FilePath>
             </File>
+            <File>
+              <FileName>fps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\drivers\modules\src\fps.c</FilePath>
+            </File>
+            <File>
+              <FileName>fps.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\modules\inc\fps.h</FilePath>
+            </File>
+            <File>
+              <FileName>input_sw.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\modules\inc\input_sw.h</FilePath>
+            </File>
+            <File>
+              <FileName>filter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\drivers\counters\src\filter.c</FilePath>
+            </File>
+            <File>
+              <FileName>filter.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\counters\inc\filter.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>user/app</GroupName>
           <Files>
+            <File>
+              <FileName>gimbal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\src\gimbal.c</FilePath>
+            </File>
             <File>
               <FileName>chassis.c</FileName>
               <FileType>1</FileType>
@@ -698,9 +728,9 @@
               <FilePath>..\..\User\app\src\chassis_action.c</FilePath>
             </File>
             <File>
-              <FileName>gimbal.c</FileName>
+              <FileName>input_sw.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\app\src\gimbal.c</FilePath>
+              <FilePath>..\..\User\drivers\modules\src\input_sw.c</FilePath>
             </File>
             <File>
               <FileName>gimbal_action.c</FileName>
@@ -733,9 +763,19 @@
               <FilePath>..\..\User\app\src\sys_selfchecking.c</FilePath>
             </File>
             <File>
-              <FileName>user_tx.c</FileName>
+              <FileName>sentry_state.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\app\src\user_tx.c</FilePath>
+              <FilePath>..\..\User\app\src\sentry_state.c</FilePath>
+            </File>
+            <File>
+              <FileName>sentry_state.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\app\inc\sentry_state.h</FilePath>
+            </File>
+            <File>
+              <FileName>sentry_state_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\app\inc\sentry_state_config.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -756,6 +796,11 @@
               <FileName>use_times.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\task\src\use_times.c</FilePath>
+            </File>
+            <File>
+              <FileName>user_tx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\src\user_tx.c</FilePath>
             </File>
             <File>
               <FileName>user.c</FileName>

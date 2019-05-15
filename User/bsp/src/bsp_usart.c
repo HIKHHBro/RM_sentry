@@ -31,6 +31,7 @@ usartDataStrcut *pusart2_t = NULL;
 usartDataStrcut *pusart3_t = NULL;
 usartDataStrcut *pusart6_t = NULL;
 usartDataStrcut *pusart7_t = NULL;
+usartDataStrcut *pusart8_t = NULL;
 // xQueueHandle usart1_queue = NULL;
 // xQueueHandle usart2_queue = NULL;
 // xQueueHandle usart3_queue = NULL;
@@ -190,6 +191,13 @@ HAL_StatusTypeDef AllocateUsartxSpace(UART_HandleTypeDef *huartx)
 		return HAL_ERROR;
 		return HAL_OK;
   }
+   else if(huartx->Instance == UART8)
+  {
+    pusart8_t	= (struct usartDataStrcut*)malloc(sizeof(struct usartDataStrcut));
+		if(pusart8_t == NULL)
+		return HAL_ERROR;
+		return HAL_OK;
+  }
 	else	return HAL_ERROR;
 }
 /**
@@ -220,6 +228,10 @@ HAL_StatusTypeDef AllocateUsartxSpace(UART_HandleTypeDef *huartx)
     {
 			return pusart7_t;
 		}
+    else if(huartx->Instance == UART8) 
+    {
+			return pusart8_t;
+		}
 		else	return NULL;
 	}
 
@@ -244,29 +256,29 @@ xStatus = xQueueReceive(addr->usart_queue, pvBuffer, 0);
         	return HAL_ERROR;
 
 	}
-    /**
-    * @Data    2019-03-23 23:28
-    * @brief   裁判系统数据接收//待测试
-    * @param   void
-    * @retval  void
-    */
-  void RxCcomuu(UART_HandleTypeDef *huartx)
-	{
-      uint32_t temp; 
-		usartDataStrcut *addr = NULL;
-		addr = GetUsartAddr(huartx); //获取相应用户串口结构体地址
-		if(addr->rx_on_off != ENABLE)
-    {
-    }
-     if((__HAL_UART_GET_FLAG(huartx,UART_FLAG_IDLE) != RESET))  
-     {
-	    	__HAL_UART_CLEAR_IDLEFLAG(huartx);
-        HAL_UART_DMAStop(huartx);  
-     temp = huartx->hdmarx->Instance->NDTR; 
-     // lenjuu = addr->rx_buff_size-temp;
-       xQueueSendToBackFromISR(addr->usart_queue, addr->rx_buff_data,0);
-       memset(addr->rx_buff_data,0,addr->rx_buff_size);
-      HAL_UART_Receive_DMA(huartx,addr->rx_buff_data,addr->rx_buff_size);
-     }
-   }
+//    /**
+//    * @Data    2019-03-23 23:28
+//    * @brief   裁判系统数据接收//待测试
+//    * @param   void
+//    * @retval  void
+//    */
+//  void RxCcomuu(UART_HandleTypeDef *huartx)
+//	{
+//      uint32_t temp; 
+//		usartDataStrcut *addr = NULL;
+//		addr = GetUsartAddr(huartx); //获取相应用户串口结构体地址
+//		if(addr->rx_on_off != ENABLE)
+//    {
+//    }
+//     if((__HAL_UART_GET_FLAG(huartx,UART_FLAG_IDLE) != RESET))  
+//     {
+//	    	__HAL_UART_CLEAR_IDLEFLAG(huartx);
+//        HAL_UART_DMAStop(huartx);  
+//     temp = huartx->hdmarx->Instance->NDTR; 
+//     // lenjuu = addr->rx_buff_size-temp;
+//       xQueueSendToBackFromISR(addr->usart_queue, addr->rx_buff_data,0);
+//       memset(addr->rx_buff_data,0,addr->rx_buff_size);
+//      HAL_UART_Receive_DMA(huartx,addr->rx_buff_data,addr->rx_buff_size);
+//     }
+//   }
 /*-----------------------------------file of end------------------------------*/

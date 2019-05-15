@@ -154,8 +154,11 @@
     int16_t error;//当前误差
     int32_t last_real;
     int16_t coefficient;
+    fps_t fps;//帧率
     postionPidStruct *ppostionPid_t;
-		speedPidStruct *pspeedPid_t;
+    postionPidStruct* InnerLoopPid_t;
+		//speedPidStruct *pspeedPid_t;
+    
 	} RM6623Struct;
 	/* -------------- 公有函数 ----------------- */
 	void RM6623StructInit(RM6623Struct *RM6623,CAN_HandleTypeDef *hcanx);
@@ -177,6 +180,7 @@
 		int16_t Percentage;//转换比例（减速前角度:减速后的角度 = x:1
 		int16_t thresholds; //电机反转阀值
     int16_t error;//当前误差
+    fps_t fps;//帧率
     postionPidStruct *ppostionPid_t;
 		speedPidStruct *pspeedPid_t;
 	}RM3508Struct;
@@ -200,6 +204,7 @@ void RM3508ParseData(RM3508Struct *RM3508,uint8_t *data);
     int16_t tem_speed;//真实速度
     int32_t last_real;
     int16_t coefficient;
+    fps_t fps;//帧率
     postionPidStruct *ppostionPid_t;
 		speedPidStruct *pspeedPid_t;
 	}M2006Struct;
@@ -235,6 +240,7 @@ void RM3508ParseData(RM3508Struct *RM3508,uint8_t *data);
     int16_t tem_speed;//真实速度
     int32_t last_real;
     int16_t coefficient;
+    fps_t fps;//帧率
     postionPidStruct *ppostionPid_t;
 		speedPidStruct *pspeedPid_t;
   //postionPidStruct *pspeedPid_t;

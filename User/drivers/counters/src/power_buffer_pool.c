@@ -74,7 +74,7 @@ int16_t GetOutlet(powerBufferPoolStruct* pbs,int16_t input)
   switch (state) 
   {
     case POOL_HIGH:
-    if(ABS(cur) > pbs->high_current_threshold)
+    if(ABS(cur) > pbs->high_current_threshold) 
 		{
 			input = CurrentMapOut(pbs->current_mapp_coe,pbs->high_current_threshold);
 		}
@@ -128,6 +128,8 @@ return input;
       pbs->r_w =  pbs->max_w;
       status = POOL_FULL;
     }
+    if(pbs->r_w > pbs->p_refereeSystem_t->p_power_heat_data_t->chassis_power_buffer)
+      pbs->r_w = pbs->p_refereeSystem_t->p_power_heat_data_t->chassis_power_buffer;
     return status;
   }
   /**

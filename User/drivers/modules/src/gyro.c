@@ -74,20 +74,19 @@ void AnalysisGyro(gy955Struct* Gyc)
 		}
 	 }
 }
-void BingeGyroByCan(gy955Struct* Gyc,uint8_t *data)
+void BingeGyroByCan(gyroStruct* Gyc,uint8_t *data)
 {
-  floatToUnion p;
-  p.u_8[0] = data[0];
-  p.u_8[1] = data[1];
-  p.u_8[2] = data[2];
-  p.u_8[3] = data[3];
-  Gyc->Yaw = p.f;
-  p.f = 0;
-  p.u_8[0] = data[4];
-  p.u_8[1] = data[5];
-  p.u_8[2] = data[6];
-  p.u_8[3] = data[7];
-  Gyc->Gyrz = p.f;
+  floatToUnion y,p;
+  uint8_t  i;
+  for(i=0;i<4;i++)
+  {
+   y.u_8[i] = data[i];
+   p.u_8[i] = data[i+4];
+  }
+  Gyc->Yaw   = (int16_t)(y.s_16[0]/100.f);
+  Gyc->Gyrz  = (int16_t)(y.s_16[1]*0.1);
+  Gyc->Pitch = (int16_t)(p.s_16[0]/100.f);
+  Gyc->Gyrx  = (int16_t)(p.s_16[1]*0.1);
 }
 #endif
 /*------------------------------------file of end-------------------------------*/

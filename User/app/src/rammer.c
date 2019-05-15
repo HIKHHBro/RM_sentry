@@ -46,6 +46,7 @@
 			rammer_t.error = 0;
     rammer_t.coefficient =0;
     rammer_t.last_real =0;
+    SetFpsAddress(rammer_t.fps);
 			/* ------ 外环pid参数 ------- */
 				rammer_t.ppostionPid_t = &rammerOuterLoopPid_t;
 				rammerOuterLoopPid_t.kp = 0;
@@ -81,33 +82,45 @@
 	* @param   void
 	* @retval  void
 	*/
+  int16_t zuzhuan=0,duzhuangflag=0;
 	void RammerControl(void)
 	{
     LOCK_ROTOT_TIME  =     3 * RAMMER_TIME; //3s 堵转时间
-     if((rammer_t.real_current < STUCK_BULLET_THRE) &&((rammer_t.real_current > (-STUCK_BULLET_THRE))||(rammer_t.real_current == (-STUCK_BULLET_THRE))))
+    if(ABS(rammer_t.pspeedPid_t->pid_out) ==RAMMER_LIMIMT_CUT)
+    {
+      zuzhuan ++;
+      if(zuzhuan > 10)
+      duzhuangflag = 1;
+    }
+    else zuzhuan=0;
+     if(duzhuangflag==0)
       {
         if(stuct_count < RAMMER_TIME)//500ms
         stuct_count ++;
-        stuct_lock_count =-1;
+        //stuct_lock_count =-1;
       } 
-     else if(rammer_t.real_current > STUCK_BULLET_THRE )
-      {
-        if(stuct_lock_count > -LOCK_ROTOT_TIME)//500ms
-        stuct_lock_count --;
-      }
-     else if(rammer_t.real_current < -STUCK_BULLET_THRE)
-     {
-//       RammerShake();
-     }
-    if(stuct_count >= RAMMER_TIME)
+//     else if(rammer_t.real_current > STUCK_BULLET_THRE )
+//      {
+//        if(stuct_lock_count > -LOCK_ROTOT_TIME)//500ms
+//        stuct_lock_count --;
+//      }
+//     else if(rammer_t.real_current < -STUCK_BULLET_THRE)
+//     {
+////       RammerShake();
+//     }
+    if(stuct_count >= RAMMER_TIME&&ABS(rammer_t.ppostionPid_t->error) < 100&& duzhuangflag==0)
       {
         rammer_t.target = PCycleNumerical( rammer_t.target);
         stuct_count =0;
       }
-      else if(stuct_lock_count <= (-LOCK_ROTOT_TIME))
+      else if(duzhuangflag ==1)
       {
+        if(rammer_t.pspeedPid_t->pid_out >0)
         rammer_t.target = MCycleNumerical( rammer_t.target);
-        stuct_lock_count =-1;
+       else if(rammer_t.pspeedPid_t->pid_out <0)
+          rammer_t.target = PCycleNumerical( rammer_t.target);
+        duzhuangflag =0;
+       stuct_count=0;
       }
 	}
 	/**
@@ -128,7 +141,7 @@
 		*/
 		int16_t MCycleNumerical(int16_t data)
 		{
-			return ((M2006_POLES-1) - (((M2006_POLES-1)-data) + PARTITION_NUMB) % M2006_POLES);
+			return ((M2006_POLES-1) - (((M2006_POLES-1)-data) + (PARTITION_NUMB) *2) % M2006_POLES);
 		}
   // /**
   // * @Data    2019-03-17 00:49
@@ -183,7 +196,7 @@ void Shoot(uint8_t speed,uint8_t buffer_on)
 {
   if(speed ==0)
   {
-    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,1000);
+   // __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,1000);
     SetRammerPID(0);
  //   HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_RESET);
 
@@ -197,13 +210,22 @@ void Shoot(uint8_t speed,uint8_t buffer_on)
       hot_flag++;
     }
     else if(speed >12&& buffer_on ==0)
-    {
+   {
       speed =12;
     }
-   __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,speed_fri);
+//    if(ext_refereeSystem_t.p_power_heat_data_t->shooter_heat0 < 100)
+//    {
+//      __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,1250);
+//      SetRammerPID(3);
+//    }
+//    else
+//    {
+       __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,speed_fri);
     //     HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
 //    HAL_GPIO_WritePin(LASER_GPIO,LASER,GPIO_PIN_SET);
     SetRammerPID(speed);
+   // }
+
   }
 }
 

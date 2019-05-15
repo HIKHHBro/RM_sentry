@@ -119,9 +119,8 @@
 		pps->iout =  IntegralSeparationCallback(pps);
 		pps->dout = pps->kd * (pps->error - pps->last_error);
 		pps->last_error = pps->error;
-     pps->pid_out = (int32_t)(pps->pout + pps->iout + pps->dout);
-    pps->pid_out = MAX(pps->pid_out,pps->motor_lim);
-    pps->pid_out = MIN(pps->pid_out,(-pps->motor_lim));
+    pps->pid_out = MAX(((int32_t)(pps->pout + pps->iout + pps->dout)),pps->motor_lim);
+    pps->pid_out = MIN(((int32_t)(pps->pout + pps->iout + pps->dout)),(-pps->motor_lim));
 		return pps->pid_out;
 	}
 __weak int16_t IntegralSeparationCallback(postionPidStruct *pps)
@@ -210,7 +209,32 @@ __weak int16_t KpSeparationCallback(postionPidStruct *pps)
   
 /* =========================== ¼Ó¼õËÙ of end =========================== */
 
-
+void Insert(int16_t fx[], int16_t x[])
+{
+	int i, j, a, b = 2;
+	for (i = 0; i<2; i++)
+	{
+		a = b;
+		for (j = 2; j>i; j--)
+		{
+			fx[j] = (fx[j] - fx[j - 1]) / (x[j] - x[--a]);
+		}
+		b--;
+	}
+}
+int16_t NewtonInterpolation(int16_t fx[], int16_t x[], int16_t a)
+{
+	int16_t i;
+	int16_t sum;
+	int16_t cc = 1;
+	sum = fx[0];
+	for (i = 1; i<3; i++)
+	{
+		cc = cc*(a - x[i - 1]);
+		sum = sum + fx[i] * cc;
+	}
+	return sum;
+}
 /*--------------------------------file of end---------------------------------*/
 
 

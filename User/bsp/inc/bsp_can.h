@@ -26,6 +26,7 @@
 #ifndef __BSP_CAN_H 
 #define __BSP_CAN_H 
 #include "baseclass.h " 
+#include "fps.h" 
 typedef struct canDataStrcut
 {
 	CAN_TxHeaderTypeDef txMsg;

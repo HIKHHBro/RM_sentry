@@ -24,13 +24,22 @@
   |---------------------------------declaration of end----------------------------|
  **/
 #include "pc_data.h" 
+#define JUN_ZHUN_VERSION 1
+#define ZI_KAI_VERSION 0
 #define PC_CHECK_BYTE (0x55)//校验位
+#if JUN_ZHUN_VERSION
 #define PC_DATA_LEN (12 + HEAD_FRAME_LEN)//接收数据长度
+#elif ZI_KAI_VERSION
+#define PC_DATA_LEN (20 + HEAD_FRAME_LEN)//接收数据长度
+#endif 
 #define  PC_DATA_LEN_BSP (PC_DATA_LEN+3)
 uint8_t pc_databuff[PC_DATA_LEN_BSP];
 static pcDataStruct lastpc;
 SqQueue pc_yaw_queue;
 SqQueue pc_pitch_queue;
+fps_t tem_fps,tem_fps1;
+int16_t fx_[4],x_[4];
+int16_t low_cont,max_low_cont=500;
     /**
     * @Data    2019-03-21 00:22
     * @brief   小电脑数据接收初始化
@@ -55,6 +64,9 @@ SqQueue pc_pitch_queue;
         //报错机制
         return HAL_ERROR;
       }
+      SetFpsAddress(pc->fps);
+      SetFpsAddress(tem_fps);
+      SetFpsAddress(tem_fps1);
       SET_BIT(pc->status,INIT_OK);
       return HAL_OK;
     }
@@ -72,7 +84,8 @@ SqQueue pc_pitch_queue;
   int16_t __tem_pitch;
     float yawscinf =-1;
     float pitchddd =1;
-    int16_t e_pitch_temp =330;
+    int16_t last_yaaw_get;
+    int16_t e_pitch_temp =IND_PITCH,e_yaw_temp=IND_YAW;//英特尔  490//普通   270  290
 void Pc_ParseData(pcDataStruct* pc)
 {
   if(UserUsartQueueRX(PC_DATA_UASRT,pc_databuff) == HAL_OK)
@@ -80,49 +93,74 @@ void Pc_ParseData(pcDataStruct* pc)
     if(pc_databuff[0+DATA_LEN_BYTE_LEN] == PC_CHECK_BYTE)
     {
     tem_yaw = (int16_t)((pc_databuff[1+DATA_LEN_BYTE_LEN]<<8) | pc_databuff[2+DATA_LEN_BYTE_LEN]);
-      __tem_yaw = (tem_yaw-490);
+      __tem_yaw = (tem_yaw-e_yaw_temp);//英特尔  490//普通   390
     pc->yaw_target_angle = YawDataConversion(__tem_yaw);
     tem_pitch= (int16_t)((pc_databuff[3+DATA_LEN_BYTE_LEN]<<8) | pc_databuff[4+DATA_LEN_BYTE_LEN]);
       __tem_pitch = (tem_pitch-e_pitch_temp);
     pc->pitch_target_angle = PitchDataConversion(__tem_pitch);
      pc->commot =pc_databuff[5+DATA_LEN_BYTE_LEN];
       pc->shoot_commot = pc_databuff[6+DATA_LEN_BYTE_LEN];
-      pc->fps = (pc_databuff[8+DATA_LEN_BYTE_LEN]<<8)|pc_databuff[9+DATA_LEN_BYTE_LEN];
+      pc->tem_fps = (pc_databuff[8+DATA_LEN_BYTE_LEN]<<8)|pc_databuff[9+DATA_LEN_BYTE_LEN];
       pc->distance = (pc_databuff[10+DATA_LEN_BYTE_LEN]<<8)|pc_databuff[11+DATA_LEN_BYTE_LEN];
-      enQueue(&pc_yaw_queue,pc->yaw_target_angle,MAXSIZE);
-      deQueue(&pc_yaw_queue,&temmmm,MAXSIZE);
+    //  Fps(pc->fps);
+             pc->yaw_target_angle = (int16_t)( 0.1*last_yaaw_get  + (1-0.1)*pc->yaw_target_angle);
+      last_yaaw_get = pc->yaw_target_angle;
+      low_cont =0;
+//        fx_[0] =  fx_[1];
+//       fx_[1] =  fx_[2];
+//      fx_[2] =  fx_[3];
+//      fx_[3] =  pc->yaw_target_angle;
+//      low_cont = 0;
+//      enQueue(&pc_yaw_queue,pc->yaw_target_angle,MAXSIZE);
+//      deQueue(&pc_yaw_queue,&temmmm,MAXSIZE);
 //      enQueue(&pc_pitch_queue,pc->pitch_target_angle,MAXSIZE);
 //      deQueue(&pc_pitch_queue,&temmmm,MAXSIZE);
-      for(uint8_t i=0;i<MAXSIZE;i++)
-      {
-        pc->yaw_target_angle +=pc_yaw_queue.data[i];
-//         pc->pitch_target_angle += pc_pitch_queue.data[i];
-      }
-      pc->yaw_target_angle = (int16_t)(pc->yaw_target_angle * 0.2);
+//      for(uint8_t i=0;i<MAXSIZE;i++)
+//      {
+//        pc->yaw_target_angle +=pc_yaw_queue.data[i];
+////         pc->pitch_target_angle += pc_pitch_queue.data[i];
+//      }
+//      pc->yaw_target_angle = (int16_t)(pc->yaw_target_angle * 0.2);
 //      pc->pitch_target_angle  = (int16_t)(pc->pitch_target_angle* 0.2);
-      lastpc  = *pc;
-      if(flagdf <-20)
-      {
-        flagdf =0;
-      }
-      else   flagdf--;
+//      lastpc  = *pc;
+//      if(flagdf <-20)
+//      {
+//        flagdf =0;
+//      }
+//      else   flagdf--;
      
     }
-    else if(pc_databuff[0] == 0xA5)
+    else if(pc_databuff[0 + DATA_LEN_BYTE_LEN] == 0xA5)
     {
-      if(flagdf > 20)
-      {
-       pc->commot = 0;//pc_databuff[5];
-       pc->shoot_commot = 0;
-      }
-      else 
-      {
-        flagdf++;
-         *pc =  lastpc;
-      }
-
-      
-    }    
+//      if(low_cont < max_low_cont)
+//      {
+//      pc->pitch_target_angle = 0;
+//      pc->yaw_target_angle = 0;
+//        pc->commot = 1;//pc_databuff[5];
+//       pc->shoot_commot = 0;
+//        low_cont ++;
+//      }
+//      else 
+//      {
+        pc->pitch_target_angle = 0;
+        pc->yaw_target_angle = 0;
+        pc->commot = 0;
+        pc->status = 0;
+        pc->distance = 0;
+//      }
+//      if(flagdf > 20)
+//      {
+//       pc->commot = 0;//pc_databuff[5];
+//       pc->shoot_commot = 0;
+//      }
+//      else 
+//      {
+//        flagdf++;
+//         *pc =  lastpc;
+//      }
+    }  
+     SET_BIT(pc->status,RX_OK);    
+     Fps(pc->fps);
 //    
 //    else if((pc->yaw_target_angle > 320)||(pc->yaw_target_angle <-320))
 //    {
@@ -134,10 +172,17 @@ void Pc_ParseData(pcDataStruct* pc)
 //    }
     
   }
-  else
+  else if(GetFps(pc->fps) ==0)
   {
-     
+      pc->pitch_target_angle = 0;
+      pc->yaw_target_angle = 0;
+      pc->commot = 0;
+      pc->status = 0;
+     pc->distance = 0;
+    pc->shoot_commot=0;
+       CLEAR_BIT(pc->status,RX_OK);
   }
+
   
 }
 /**
@@ -150,9 +195,9 @@ int16_t lockqu =340;
 int16_t zhengda = 140;
 float zhengdacen = 11;
 int16_t zhengzhong = 70;
-float zhengzhongcen = 8;
+float zhengzhongcen = 1;
 int16_t zhengxiao = 2;
-float zhengxixiaoen = 3;
+float zhengxixiaoen = -1;
 int16_t plockqu =200;
 int16_t pzhengda = 100;
 float pzhengdacen = 0;
@@ -176,7 +221,7 @@ int16_t YawDataConversion(int16_t yaw)
 //  }
 //  else
 //  {
-     return (int16_t)(yaw*(-zhengxixiaoen));
+     return (int16_t)(yaw*(zhengxixiaoen));
 //  }
 }
 int16_t pitch_coe =-1;
@@ -208,9 +253,9 @@ int16_t PitchDataConversion(int16_t pitch)
 * @param   void
 * @retval  void
 */
-uint8_t esc= 'r';
+uint8_t esc;
 //int16_t pc_red =0;
-void EscPc(int16_t key,int16_t ch1,int16_t ch2,int16_t ch3,int16_t ch4,int16_t key1)
+void EscPc(int16_t key,int16_t ch1,int16_t ch2,int16_t ch3,int16_t ch4,int16_t thumbwheel,int16_t key1)
 {
   if(key ==2 && ch1 < -600 && ch2 <-600 && ch3 >600 && ch4 <-600)
   {
@@ -221,11 +266,11 @@ void EscPc(int16_t key,int16_t ch1,int16_t ch2,int16_t ch3,int16_t ch4,int16_t k
     esc= 'q';
   }
    // printf("q");
-  else if(key1 ==1&&ch1 >600)
+  else if(key1 ==2&&thumbwheel >600)
   {
         esc= 'r';
   }
-  else if(key1 ==1&& ch1 <-600)
+  else if(key1 ==2&& thumbwheel <-600)
   {
     esc= 'b';
   }
@@ -234,11 +279,30 @@ void EscPc(int16_t key,int16_t ch1,int16_t ch2,int16_t ch3,int16_t ch4,int16_t k
     if(esc == 'q')
     esc = 'r';
   }
-  HAL_UART_Transmit(PC_DATA_UASRT,&esc,1,0);
+  if(HAL_UART_Transmit(PC_DATA_UASRT,&esc,1,1) ==HAL_OK)
+      Fps(tem_fps1);
    // HAL_UART_Transmit(PC_DATA_UASRT,'r',1,0);
   //printf("r");
 
 }
+/**
+* @Data    2019-03-21 00:46
+* @brief   获取陀螺仪角度数据
+* @param   void
+* @retval  void
+*/
+//void GetGyroAngle(int16_t yaw_angle,int16_t pitch_angle)
+//{
+//    floatToUnion p;
+//  p.s_16[0] = yaw_angle;
+//  p.s_16[1] = pitch_angle;
+//  esc[1] = p.u_8[0];
+//  esc[2] = p.u_8[1];
+//  esc[3] = p.u_8[2];
+//  esc[4] = p.u_8[3];
+//  Fps(tem_fps);
+//}
+
 /*------------------------------------file of end-------------------------------*/
 
 

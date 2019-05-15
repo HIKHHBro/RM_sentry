@@ -32,6 +32,8 @@
 #define ROBOT_GAIN        0x204
 #define THE_DAMAGE_STATE 0x206
 #define REAL_TIME_SHOOTING_INFORMATION   0x207
+#define AIR_PLANE_DATA  0x301
+#define GAME_STATE     0x001
 
 //整个数据帧的长度，
 //FrameHeader(5-Byte)+
@@ -44,7 +46,8 @@
 #define ROBOT_GAIN_LEN        (REF_HEADER_CRC_CMDID_LEN + 1)
 #define THE_DAMAGE_STATE_LEN   (REF_HEADER_CRC_CMDID_LEN + 1)
 #define REAL_TIME_SHOOTING_INFORMATION_LEN   (REF_HEADER_CRC_CMDID_LEN + 6)
-
+#define AIR_PLANE_DATA_LEN   (REF_HEADER_CRC_CMDID_LEN + 6+1)
+#define GAME_STATE_DATA_LEN    (REF_HEADER_CRC_CMDID_LEN + 3)
 refereeSystemStruct ext_refereeSystem_t;
 ext_game_robot_state_t robot_state_t;
 ext_power_heat_data_t power_heat_data_t;
@@ -52,10 +55,46 @@ ext_game_robot_pos_t  game_robot_pos_t;
 ext_buff_musk_t  buff_musk_t;
 ext_robot_hurt_t robot_hurt_t;
 ext_shoot_data_t shoot_data_t;
-
-
+ext_student_interactive_header_data_t air_plane_data_t;
+ ext_game_state_t game_state_t;
 uint8_t reebuff[COMMUN_RX_BUFF]  = {0};
 uint16_t cmd_id =0;
+#if RED_GAME
+RobotId_t seftRobotID_t = {
+  .Hero=0x01,
+	.Engineer=0x02,
+	.Standard_3=0x03,
+	.Standard_4=0x04,
+	.Standard_5=0x05,
+	.Aerial=0x06,
+	.Sentry=0x07,
+};
+#elif BLUE_GAME
+RobotId_t seftRobotID_t = {
+	.Hero=0x0011,
+	.Engineer=0x0012,
+	.Standard_3=0x0013,
+	.Standard_4=0x0014,
+	.Standard_5=0x0015,
+	.Aerial=0x0016,
+	.Sentry=0x0017,
+  };
+#endif
+//client_id_t client_id = {
+//	.Red_Hero=0x0101,
+//	.Red_Engineer=0x0102,
+//	.Red_Standard_3=0x0103,
+//	.Red_Standard_4=0x0104,
+//	.Red_Standard_5=0x0105,
+//	.Red_Aerial=0x0106,
+//	
+//	.Blue_Hero=0x0111,
+//	.Blue_Engineer=0x0112,
+//	.Blue_Standard_3=0x0113,
+//	.Blue_Standard_4=0x0114,
+//	.Blue_Standard_5=0x0115,
+//	.Blue_Aerial=0x0116,
+//};
   /**
   * @Data    2019-03-23 23:25
   * @brief   裁判系统初始化
@@ -64,15 +103,23 @@ uint16_t cmd_id =0;
   */
 void CommunicateInit(void)
 {
-   // HAL_UART_Receive_DMA(&huart3,reebuff,COMMUN_RX_BUFF);
-  UsartAndDMAInit(&huart3,COMMUN_RX_BUFF,ENABLE);
+  UsartAndDMAInit(COMMUNICAT,COMMUN_RX_BUFF,ENABLE);
   ext_refereeSystem_t. p_robot_state_t  = &robot_state_t;
+  SetFpsAddress(robot_state_t.fps);
   ext_refereeSystem_t. p_power_heat_data_t  = &power_heat_data_t;
+  SetFpsAddress(power_heat_data_t.fps);
   ext_refereeSystem_t. p_game_robot_pos_t  = &game_robot_pos_t;
+  SetFpsAddress(game_robot_pos_t.fps);
   ext_refereeSystem_t. p_buff_musk_t  = &buff_musk_t;
+  SetFpsAddress(buff_musk_t.fps);
   ext_refereeSystem_t. p_robot_hurt_t  = &robot_hurt_t;
+  robot_hurt_t.hurt_type = 5;
+  SetFpsAddress(robot_hurt_t.fps);
   ext_refereeSystem_t. p_shoot_data_t  = &shoot_data_t;
-
+  SetFpsAddress(shoot_data_t.fps);
+   ext_refereeSystem_t.p_air_plane_data_t= &air_plane_data_t;
+ext_refereeSystem_t.p_ext_game_state_t = &game_state_t;
+  ext_refereeSystem_t.pseftRobotID_t = &seftRobotID_t;
 }
   /**
   * @Data    2019-03-23 23:52
@@ -80,33 +127,11 @@ void CommunicateInit(void)
   * @param   void
   * @retval  void
   */
- uint16_t flagju=0;
-int16_t flag_hurt = 0;
-int16_t flag_hurt1 = 0;
   void CommunicateParse(void)
   {
     uint16_t datalen;
     floatToUnion p;
-    if( robot_hurt_t.hurt_type != 5)
-    {
-      if(flag_hurt1 ==0)
-      {
-        flag_hurt =100;
-        flag_hurt1 =1;
-      }
-      else  
-      {
-        if(flag_hurt <0)
-          robot_hurt_t.hurt_type =5; 
-        else flag_hurt --;
-      }
-    }
-    else 
-    {
-      flag_hurt1 =0;
-        robot_hurt_t.hurt_type =5;
-    }
-   if(UserUsartQueueRX(&huart3,reebuff) ==HAL_OK)
+   if(UserUsartQueueRX(COMMUNICAT,reebuff) ==HAL_OK)
    {
      p.u_8[DATA_LEN_BYTE_HIGH_8] = reebuff[DATA_LEN_BYTE_HIGH_8];
      p.u_8[DATA_LEN_BYTE_LOW_8] =  reebuff[DATA_LEN_BYTE_LOW_8];
@@ -118,11 +143,20 @@ int16_t flag_hurt1 = 0;
 				  cmd_id = GetCmdId(&reebuff[i+5+DATA_LEN_BYTE_LEN]);
          switch (cmd_id) 
 				 {
+           case GAME_STATE:
+					 if(ref_verify_crc16(&reebuff[i+DATA_LEN_BYTE_LEN],GAME_STATE_DATA_LEN))
+					 {
+							GameData(&reebuff[i + 7+DATA_LEN_BYTE_LEN]);
+							i +=GAME_STATE_DATA_LEN;
+					 }
+					 else i++;
+             break;
 					 case ROBOT_START:
 					 if(ref_verify_crc16(&reebuff[i+DATA_LEN_BYTE_LEN],ROBOT_START_LEN))
 					 {
 							Robotstateparse(&reebuff[i + 7+DATA_LEN_BYTE_LEN]);
 							i +=ROBOT_START_LEN;
+             Fps(robot_state_t.fps);
 					 }
 					 else i++;
 						 break;
@@ -131,6 +165,7 @@ int16_t flag_hurt1 = 0;
 					 {
 						  PowerHeatDataParse(&reebuff[i + 7+DATA_LEN_BYTE_LEN]);
 							i += THE_POWER_OF_HEAT_LEN;
+             Fps(power_heat_data_t.fps);
 					 }
 					 	 else i++;
 						 break;
@@ -139,6 +174,7 @@ int16_t flag_hurt1 = 0;
 					 {
 						  GameRobotPosParse(&reebuff[i + 7+DATA_LEN_BYTE_LEN]);
 							i += ROBOT_POSITION_LEN;
+             Fps(game_robot_pos_t.fps);
 					 }
 					 	 else i++;
 						 break;
@@ -147,6 +183,7 @@ int16_t flag_hurt1 = 0;
 					 {
 						 BuffMusk(&reebuff[i + 7+DATA_LEN_BYTE_LEN]);
 						i += ROBOT_GAIN_LEN;
+             Fps(buff_musk_t.fps);
 					 }
 					 	 else i++;
 					 	 break;
@@ -155,6 +192,7 @@ int16_t flag_hurt1 = 0;
 					 {
 						RobotHurt(&reebuff[i + 7+DATA_LEN_BYTE_LEN]);
 						i += THE_DAMAGE_STATE_LEN;
+             Fps(robot_hurt_t.fps);
 					 }
 					 	 else i++;
 					 	 break;
@@ -163,23 +201,27 @@ int16_t flag_hurt1 = 0;
 					 {
 						ShootData(&reebuff[i + 7+DATA_LEN_BYTE_LEN]);
 						i += REAL_TIME_SHOOTING_INFORMATION_LEN;
+             Fps(shoot_data_t.fps);
 					 }
 					 	 else i++;
 							 break;
+         case AIR_PLANE_DATA:
+         if(ref_verify_crc16(&reebuff[i+DATA_LEN_BYTE_LEN],AIR_PLANE_DATA_LEN))
+					 {
+						AirPlane(&reebuff[i + 7+DATA_LEN_BYTE_LEN]);
+						i += AIR_PLANE_DATA_LEN;
+           //  Fps(shoot_data_t.fps);
+					 }  
+            else i++;
+             break;
 					 default:
               i++;
 						 break;
-				 }
-           
+				 }    
        }
 			 else i++;
      }
-		 if(flagju>100)
-		 {
-			 flagju=0;
-		 }
    }
-	 else flagju++;
   }
 /**
 	* @Data    2019-03-24 14:03
@@ -274,6 +316,43 @@ int16_t flag_hurt1 = 0;
 		shoot_data_t.bullet_type = *(data) ;
 		shoot_data_t.bullet_freq =  *(data+1);
 		shoot_data_t.bullet_speed =  m1.f;
+	}
+/**
+	* @Data    2019-03-24 14:54
+	* @brief   无人机数据
+	* @param   void
+	* @retval  void
+	*/ 
+void AirPlane(uint8_t *data)
+{
+  floatToUnion m1;
+    m1.u_8[0] = *(data);
+    m1.u_8[1] = *(data+1);
+    m1.u_8[2] = *(data+2);
+    m1.u_8[3] = *(data+3);
+  air_plane_data_t.data_cmd_id = m1.u_16[0];
+  air_plane_data_t.send_ID = m1.u_16[1];
+    m1.u_32=0;
+    m1.u_8[0] = *(data+4);
+    m1.u_8[1] = *(data+5);
+    m1.u_8[2] = *(data+6);
+  air_plane_data_t.receiver_ID = m1.u_16[0];
+  if(air_plane_data_t.data_cmd_id ==ext_refereeSystem_t.pseftRobotID_t->Aerial \
+      && air_plane_data_t.receiver_ID == ext_refereeSystem_t.pseftRobotID_t->Sentry)
+  {
+      air_plane_data_t.commot =  m1.u_8[2];
+  }
+
+}
+/**
+	* @Data    2019-03-24 14:54
+	* @brief   比赛状态
+	* @param   void
+	* @retval  void
+	*/ 
+	void GameData(uint8_t *data)
+	{
+    game_state_t.game_progress =  RIGHT_SH(*data,4) & 0x0f;
 	}
 /**
 	* @Data    2019-03-24 13:38
@@ -800,6 +879,10 @@ void ref_append_crc16(uint8_t* p_msg, uint32_t len)
 //    p_msg[len-2] = (uint8_t)(crc16 & 0x00ff);
 //    p_msg[len-1] = (uint8_t)((crc16 >> 8)& 0x00ff);
 //}
+
+
+
+
 
 /*-----------------------------------file of end------------------------------*/
 

@@ -26,7 +26,6 @@
 #ifndef __DJI_DBUS_H 
 #define __DJI_DBUS_H 
 	#include "bsp_usart.h"
-
 #define KEY_V		0x4000
 #define KEY_C		0x2000
 #define KEY_X		0x1000
@@ -51,6 +50,7 @@
 		
 		uint8_t switch_left;	//3 value
 		uint8_t switch_right;
+    int16_t thumbwheel;
 		struct
 		{
 			int16_t x;
@@ -77,6 +77,7 @@
 		uint32_t state_flag;//标志位
 		uint8_t a_frame_len;//一帧数据长度
 		uint8_t check_byte;//帧尾校验
+    fps_t fps;//帧率记数
 		UART_HandleTypeDef *huartx; //获取串口地址指针
 	} dbusStruct;
 	HAL_StatusTypeDef DJIDbusInit(dbusStruct *dbs, UART_HandleTypeDef *huartx);

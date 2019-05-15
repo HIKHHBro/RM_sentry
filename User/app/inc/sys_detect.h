@@ -34,6 +34,8 @@ typedef struct sysDetectStruct
   gimbalStruct* psys_gimbal_t;
 }sysDetectStruct; 
 void SystemSelfChecking(void);
+MOD_Status CheckTackData(sysDetectStruct* sds);
+  void OffLineTip(void);
 #endif	// __SYS_DETECT_H
   
  /*------------------------------------file of end-------------------------------*/

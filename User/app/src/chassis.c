@@ -34,11 +34,14 @@ extern	osThreadId startChassisTaskHandle;
 	 chassisStruct chassis_t;
     static RM3508Struct wheel1_t;         //轮子1
       static speedPidStruct wheel1Speed_t;
+      static postionPidStruct wheel1postion_t;
     static RM3508Struct wheel2_t;         //轮子2
       static speedPidStruct wheel2Speed_t;
+       static postionPidStruct wheel2postion_t;
      static powerBufferPoolStruct powerBufferPool_t;
 			static currentMeterStruct currtenMeter_t;
-      static gy955Struct ChassisGyro_t;
+      static gyroStruct ChassisGyro_t;
+      static incrementalEnconderStruct chassisEnconder_t;
         
   //  Int16Queue leftSonicQu_t;
   //   Int16Queue rightSonicQu_t;
@@ -65,6 +68,7 @@ extern	osThreadId startChassisTaskHandle;
     chassis_t.status = 0;
     chassis_t.p_refereeSystem_t = &ext_refereeSystem_t;
     chassis_t.pGyro_t  = &ChassisGyro_t;
+    SetFpsAddress(chassis_t.pGyro_t->fps);
     chassis_t.ppowerBufferPool_t = PowerBufferPoolInit();
 		/* ------ 轮子1结构体数据初始化 ------- */
 		chassis_t.pwheel1_t = wheel1Init();
@@ -74,13 +78,25 @@ extern	osThreadId startChassisTaskHandle;
 	  chassis_queue	= xQueueCreate(CHASSIS_QUEUE_LEN,CHASSIS_QUEUE_SIZE);//一定要在用之前创建队列
     /* -------- can配置 --------- */
      if(UserCanConfig(hcan)!= HAL_OK)
-        while(1){}//待添加防重复配置功能
+     {
+      while(1)
+      {
+//        HAL_GPIO_WritePin(COLOR_LED_GPIO,RED_LED,GPIO_PIN_RESET);
+//       HAL_GPIO_WritePin(COLOR_LED_GPIO,GREEN_LED,GPIO_PIN_RESET);
+      }//待添加防重复配置功能
+    }
 		 ///* ------ 编码器初始化 ------- */
-	 	// chassis_t.pchassisEnconder_t = &chassisEnconder_t;
-		  // if(EnconderInit(&chassisEnconder_t,EN_RADIUS,ENCONDER_POLES) !=HAL_OK)
-      //   while(1){}
+	 	 chassis_t.pchassisEnconder_t = &chassisEnconder_t;
+		 if(EnconderInit(&chassisEnconder_t,EN_RADIUS,ENCONDER_POLES) !=HAL_OK)
+     {
+//            while(1){
+//              HAL_GPIO_WritePin(COLOR_LED_GPIO,RED_LED,GPIO_PIN_RESET);
+//              HAL_GPIO_WritePin(COLOR_LED_GPIO,GREEN_LED,GPIO_PIN_RESET);
+//                    }
+     }
+      //TrackparseInit(5436,60);
 		/* ------ 超声波初始化 ------- */
-	  	// HCSR04Init();
+	  	HCSR04Init();
       // Int16QueueCreate(&leftSonicQu_t,SONIC_QU_SIZE);
       // Int16QueueCreate(&rightSonicQu_t,SONIC_QU_SIZE);
     /* -------- 底盘模块初始化判断 --------- */
@@ -103,22 +119,24 @@ extern	osThreadId startChassisTaskHandle;
 		{
 			case WHEEL1_RX_ID:
 				RM3508ParseData(&wheel1_t,data);
+        Fps(wheel1_t.fps);
 				break;
 			case WHEEL2_RX_ID:
 				RM3508ParseData(&wheel2_t,data);
+        Fps(wheel2_t.fps);
 				break;
 	  	case CURRENT_METER_RX_ID:
 				 CurrentMeterAnalysis(&currtenMeter_t,data);
+         Fps(currtenMeter_t.fps);
 				break;
       case CHASSIS_RX_ID:
        BingeGyroByCan(chassis_t.pGyro_t,data);
-        break;
-      case CHASSIS_SENSOR_RX_ID:
-        ChassisSensorParse(data);
+       Fps(chassis_t.pGyro_t->fps);
         break;
 			default:
 				break;
 		}
+    
     SET_BIT(chassis_t.status,RX_OK);//接受成功
 	}
 ///**
@@ -223,35 +241,6 @@ const chassisStruct* GetChassisStructAddr(void)
 
 
 /**
-	* @Data    2019-03-25 19:16
-	* @brief   获取机器人被攻击的状态
-	* @param   void
-	* @retval  void
-	*/
-int16_t f_hurt_flag=0;
-int16_t f_hurt_fre=0;
-int16_t b_hurt_flag=0;
-int16_t b_hurt_fre=0;
-uint8_t GetHurtStatus(void)
-{
-	if(chassis_t.p_refereeSystem_t->p_robot_hurt_t->hurt_type ==0)
-	{
-		f_hurt_flag =1000;
-	}
-	else
-	{
-    
-		if(f_hurt_flag >0)
-    {
-      f_hurt_flag --;
-     return (chassis_t.p_refereeSystem_t->p_robot_hurt_t->armor_id);
-    }
-      else f_hurt_flag =-1;
-	}
-  	 return 5;
-}
-
-/**
 * @Data    2019-03-21 00:46
 * @brief   底盘模块失能//待完善
 * @param   void
@@ -276,6 +265,8 @@ chassis_t.pwheel2_t->target = 0;
   powerBufferPoolStruct* PowerBufferPoolInit(void)
   {
     powerBufferPool_t.pcurrentMeter_t = &currtenMeter_t;
+     powerBufferPool_t.p_refereeSystem_t = &ext_refereeSystem_t;
+    SetFpsAddress(powerBufferPool_t.pcurrentMeter_t->fps);
     powerBufferPool_t.max_p = 20.0;
     powerBufferPool_t.max_w = 200.0;//功率单位mW
     powerBufferPool_t.r_p = 0.0;
@@ -284,16 +275,16 @@ chassis_t.pwheel2_t->target = 0;
     powerBufferPool_t.high_water_level = 100.0;
     powerBufferPool_t.low_water_level = 30.0;
     powerBufferPool_t.mid_water_level = 50.0;
-    powerBufferPool_t.period = 0.01;//运行周期，单位/s
-    powerBufferPool_t.high_current_threshold = 7.0;//A
-    powerBufferPool_t.mid_current_threshold = 2.0;//A
-    powerBufferPool_t.low_current_threshold = 0.9;//A
-    powerBufferPool_t.safe_current_threshold = 0.7;//A
+    powerBufferPool_t.period = 0.006;//运行周期，单位/s
+    powerBufferPool_t.high_current_threshold = 6.0;//A
+    powerBufferPool_t.mid_current_threshold = 4.0;//A
+    powerBufferPool_t.low_current_threshold = 1.5;//A
+    powerBufferPool_t.safe_current_threshold = 0.65;//A
     return &powerBufferPool_t;
   }
   /**
   * @Data    2019-03-25 00:12
-  * @brief   初始化轮子参数
+  * @brief   初始化轮子1参数
   * @param   void
   * @retval  void
   */
@@ -311,7 +302,9 @@ chassis_t.pwheel2_t->target = 0;
 			wheel1_t.Percentage = 0;//转换比例（减速前角度:减速后的角度 = x:1
 			wheel1_t.thresholds = 0; //电机反转阀值
   	  wheel1_t.error = 0;//当前误差
-      wheel1_t.ppostionPid_t = NULL;
+      SetFpsAddress(wheel1_t.fps); 
+    
+      wheel1_t.ppostionPid_t = &wheel1postion_t;
       wheel1_t.pspeedPid_t = &wheel1Speed_t;
 //				wheel1Speed_t.kp = 1;
 //				wheel1Speed_t.kd = 0;
@@ -325,7 +318,20 @@ chassis_t.pwheel2_t->target = 0;
 				wheel1Speed_t.dout = 0;//k输出
 				wheel1Speed_t.pid_out = 0;//pid输出
         wheel1Speed_t.motor_lim = RM3508_LIM;//3508最大电流范围
+        	wheel1_t.target = 0;		 //目标值
+    		wheel1Speed_t.kp = 4;
+				wheel1Speed_t.kd = 0;
+				wheel1Speed_t.ki = 0.2;
+     	wheel1Speed_t.limiting = W1_LIMIT_SPEED;//轮子1速度限幅
 //				wheel1Speed_t.limiting = W1_LIMIT_SPEED;//轮子1速度限幅
+/* -------- 外环 --------- */
+        wheel1postion_t.integral_limint = 2000;
+        wheel1postion_t.integral_threshold =0;
+        wheel1postion_t.kp_separatecmd = 0;
+        wheel1postion_t.motor_lim = RM3508_LIM;
+        wheel1postion_t.kd = 0;
+        wheel1postion_t.ki = 0;
+        wheel1postion_t.kp =-4;
         return &wheel1_t;
   }
   /**
@@ -348,7 +354,10 @@ chassis_t.pwheel2_t->target = 0;
 			wheel2_t.Percentage = 0;//转换比例（减速前角度:减速后的角度 = x:1
 			wheel2_t.thresholds = 0; //电机反转阀值
 			wheel2_t.error = 0;//当前误差
- 			wheel2_t.ppostionPid_t = NULL;
+    
+    SetFpsAddress(wheel2_t.fps); 
+    
+ 			wheel2_t.ppostionPid_t = &wheel2postion_t;
       wheel2_t.pspeedPid_t = &wheel2Speed_t;
 //				wheel2Speed_t.kp = 1;
 //				wheel2Speed_t.kd = 0;
@@ -363,6 +372,19 @@ chassis_t.pwheel2_t->target = 0;
 				wheel2Speed_t.pid_out = 0;//pid输出
         wheel2Speed_t.motor_lim = RM3508_LIM;//3508最大电流范围
 //				wheel2Speed_t.limiting = W2_LIMIT_SPEED;//轮子2速度限幅
+    	wheel2_t.target = 0;		 //目标值
+    	wheel2Speed_t.kp = 4;
+			wheel2Speed_t.kd = 0;
+			wheel2Speed_t.ki = 0.2;
+    	wheel2Speed_t.limiting = W2_LIMIT_SPEED;//轮子2速度限幅
+/* -------- 外环 --------- */
+        wheel2postion_t.integral_limint = 2000;
+        wheel2postion_t.integral_threshold =0;
+        wheel2postion_t.kp_separatecmd = 0;
+        wheel2postion_t.motor_lim = RM3508_LIM;
+        wheel2postion_t.kd = 0;
+        wheel2postion_t.ki = 0;
+        wheel2postion_t.kp =-4;
       return &wheel2_t;
   }
  /**
@@ -378,18 +400,24 @@ chassis_t.pwheel2_t->target = 0;
 				wheel1Speed_t.kd = 1.5;
 				wheel1Speed_t.ki = 0.9;
      	wheel1Speed_t.limiting = W1_LIMIT_SPEED;//轮子1速度限幅
+     wheel1postion_t.kd = -5;
+    wheel1postion_t.ki = 0;
+    wheel1postion_t.kp = -18;
+    wheel1postion_t.motor_lim = 5000;
+
     
     	wheel2_t.target = 0;		 //目标值
     	wheel2Speed_t.kp = 9;
 			wheel2Speed_t.kd = 1.5;
 			wheel2Speed_t.ki = 0.9;
     	wheel2Speed_t.limiting = W2_LIMIT_SPEED;//轮子2速度限幅
-		/* ------ 方向状态初始化 ------- */
-			//chassis_t.State.r_dire = (int16_t)chassis_t.pgyroByCan_t->Yaw;
+
+    wheel2postion_t.kd = -5;
+    wheel2postion_t.ki = 0;
+    wheel2postion_t.kp = -18;
+    wheel2postion_t.motor_lim = 5000;
+
 		/* ------ 设置初始化区域位置 ------- */
-			chassis_t.State.r_area  = UP_ROAD;
-			chassis_t.State.last_area = MID_ROAD;//添加超声波检测是否位置正确
-      chassis_t.State.out_of_flag =AUTO_CONTROL_OK;
      /* ------ 设置启动标志位 ------- */  
         SET_BIT(chassis_t.status,START_OK);  
   }
@@ -399,43 +427,38 @@ chassis_t.pwheel2_t->target = 0;
 		* @param   void
 		* @retval  void
 		*/
-uint8_t up_turn = 1;
- uint8_t road_flag =0;
+  uint32_t temp_are =0,temp_are1=0,temp_are2=0;
 	void SetArea(void)
 	{
-//	if(GetOrgans() != 0)
-//	{
-   up_turn =GetOrgans();
-//	}
-		if(GetGyroDire()<TURNING_ANGLE)//陀螺仪状态//up
+    uint32_t state;
+    state = SetAByEncoder();
+    if(state == UP_ROAD)
+      {
+        if(!IS_ROAD(UP_ROAD))
+        {
+           temp_are = CLEAR_BIT(GET_ALL_STATE,LAST_AREA);
+          SET_CHASSIS_LAST_SELF_POS(GET_CHASSIS_SELF_POS(REAL_AREA));
+        }
+        SET_CHASSIS_REAL_SELF_POS(UP_ROAD);
+      }
+    else if(state == MID_ROAD)
 		{
-				// temp = UP_ROAD;
-				if(up_turn ==1)
-				{
-					if(chassis_t.State.r_area  != UP_ROAD)
-					{
-						chassis_t.State.last_area = chassis_t.State.r_area;
-					}
-					chassis_t.State.r_area = UP_ROAD;
-				}
-			else
-			{
-				if(chassis_t.State.r_area  != DOWN_ROAD)
-				{
-					chassis_t.State.last_area = chassis_t.State.r_area;
-				}
-				chassis_t.State.r_area = DOWN_ROAD;
-			}
-
+       if(!IS_ROAD(MID_ROAD))
+       {
+           temp_are1 = CLEAR_BIT(GET_ALL_STATE,LAST_AREA);
+          SET_CHASSIS_LAST_SELF_POS(GET_CHASSIS_SELF_POS(REAL_AREA));
+       }
+        SET_CHASSIS_REAL_SELF_POS(MID_ROAD);
 		}
-		else if(GetGyroDire() >= TURNING_ANGLE)//mid
-		{
-			if(chassis_t.State.r_area  != MID_ROAD)
-			{
-				chassis_t.State.last_area = chassis_t.State.r_area;
-			}
-			chassis_t.State.r_area = MID_ROAD;
-		}
+    else if(state == DOWN_ROAD)
+    {
+        if(!IS_ROAD(DOWN_ROAD))
+        {
+          temp_are2 = CLEAR_BIT(GET_ALL_STATE,LAST_AREA);
+          SET_CHASSIS_LAST_SELF_POS(GET_CHASSIS_SELF_POS(REAL_AREA));
+        }
+        SET_CHASSIS_REAL_SELF_POS(DOWN_ROAD);
+    }
 	}
 /**
 	* @Data    2019-03-30 19:58
@@ -445,125 +468,32 @@ uint8_t up_turn = 1;
 	*/
 	int16_t  GetGyroDire(void)
 	{
-		int16_t dire=0;
-		//dire = chassis_t.State.r_dire - (int16_t)chassis_t.pgyroByCan_t->Yaw;
-		return ABS(dire);
+		return ABS(CalculateError(chassis_t.r_dire,\
+                             (int16_t)chassis_t.pGyro_t->Yaw,\
+                              DIRE_SU,GYRO_MAX_ANGLE));
 	}
 int16_t organs_flag =1;//初始化为1，既是初始化为上路
 int16_t organs = 1;
  int16_t organssss = 0; 
 int16_t temp_organs =0;
   int16_t temp_organssss =0;
-	uint8_t GetOrgans(void)
+ 	uint8_t GetOrgans(void)
 	{
-    //	 temp_organs = HAL_GPIO_ReadPin(LASER_SWITCH_GPIO,LASER_SWITCH);//读io口
-////    if(GetGyroDire() >= TURNING_ANGLE)
-////         organs_flag =1;
-////    if(GetGyroDire() <TURNING_ANGLE &&organs_flag ==1)
-////       organs_flag =0;
-   	if(temp_organs ==0)//激光开关
-	  {
-		  organs_flag ++;
-	  }
-    
-    if(GetGyroDire() >= TURNING_ANGLE)
-    {
-      if(organs_flag >10)
-      {
-          organs_flag  =1;//过上路拐弯
-        temp_organssss=0;
-      }
-      else if(temp_organs ==1)
-      {
-        temp_organssss ++;
-        if(temp_organssss >5000)
-        organs_flag  =0;//过下路拐弯
-        else organs_flag =1;
-      }
-      
-    }
-//    else if(GetGyroDire() <= TURNING_ANGLE)
-//    {
-//      if(organs_flag ==1)
-//      {
-//        
-//      }
-//    }
-    
-      
-     return  organs_flag;
-    
-    
-//    if(GetGyroDire() >= TURNING_ANGLE  && organs_flag >10 &&organs_flag ==0)//
-//    {
-//      
-////      if(GetGyroDire() <= 50  && temp_organs == 0) //1是被遮住，0是没遮住
-////      {
-//        organs_flag  =1;//过上路拐弯
-//        organssss =1;
-////      }
-//    }
-//      else if(GetGyroDire() >= TURNING_ANGLE  && organssss ==1 &&temp_organs == 1)
-//      {
-//        organs_flag = 0;
-//        organssss =0;
-//      }
-//      return  organs_flag;
-		// temp_organs = HAL_GPIO_ReadPin(LASER_SWITCH_GPIO,LASER_SWITCH);//读io口
-//  	if(temp_organs ==0)//激光开关
-//	{
-//		organs_flag ++;
-//	}
-//	else organs_flag --;
-//	if(organs_flag <0)
-//    return  0;  
-//	else if(organs_flag >30)
-//   	return  1; 
-//    if(temp_organs !=0 )
-//    {
-//      organs = 0;
-//    }
-//    
-//    return  organs;
-		// uint8_t temp;
-//	if(organs ==0)//激光开关
-//	{
-//		organs_flag ++;
-//	}
-//	else organs_flag --;
-//	if(organs_flag <0)
-//    return  0;  
-//	else if(organs_flag >30)
-//   	return  1; 
-//  else   return  0; 
+    int16_t temp_dire;
+    temp_dire = GetGyroDire();
+     if(LaserSwBef() ==1 && temp_dire >10 && temp_dire< 40)
+       return DOWN_ROAD;
+     else if(LaserSwBack() ==1 && temp_dire >10 && temp_dire< 40)
+       return UP_ROAD;
+     else 
+     {
+       if(temp_dire >45)
+       return MID_ROAD;
+       return 5;//错误
+     }
 	}
-	/**
-		* @Data    2019-03-30 17:16
-		* @brief   底盘自检
-		* @param   void
-		* @retval  void
-		*/
-// uint8_t AutoCalibratorMode(void)
-// {
-//   
-// }
-//	/**
-//		* @Data    2019-03-30 17:16
-//		* @brief   超声波数据处理
-//		* @param   void
-//		* @retval  void
-//		*/
-//int16_t soncin3;
-//int16_t soncin4;
-//int16_t t_soncin3;
-//int16_t t_soncin4;
-//  int16_t sum3;
-//  int16_t sum4;
-//  int16_t s3;
-//  int16_t s4;
-// int16_t temp_s1;
-// int16_t temp_s2;
-// int16_t last_s3;
+
+
 //void SetUltrasonic(void)
 //{
 
@@ -655,27 +585,30 @@ int16_t jiujimoshi(void)//暂时问题，修改一下dddddd的大小
 		* @param   void
 		* @retval  void
 		*/
-void ChassisSensorParse(uint8_t *data)
+void ChassisSensorParse(void)
 {
-  floatToUnion p;
-  chassis_t.Sensor.lim_sw_left = data[0]>>4 & 0x0f;
-  chassis_t.Sensor.lim_sw_right = data[0] & 0x0f;
-  if(data[1] >AUTO_CONTROL_OK)
-  {
-   chassis_t.State.out_of_flag =OUT_OF_CONTROL;
-  }
-  chassis_t.Sensor.laser_sw_left = data[1]>>4 & 0x0f;
-  chassis_t.Sensor.laser_sw_left = data[1] & 0x0f;
-  
-   chassis_t.Sensor.sonic_left = data[2];
-   chassis_t.Sensor.sonic_right = data[3];
-  
-  p.u_8[0] = data[4];
-  p.u_8[1] = data[5];
-  p.u_8[2] = data[6];
-  p.u_8[3] = data[7];
-  
-  chassis_t.Sensor.encoder = p.s_32;
+  uint8_t data[1];
+   data[0] = LimSw();
+  if((data[0]>>4 & 0x0f) ==0 && data[0] !=0)
+  chassis_t.Sensor.lim_sw_left = 1;
+  else chassis_t.Sensor.lim_sw_left = 0;
+   if((data[0] & 0x0f) ==0 && data[0] !=0)
+  chassis_t.Sensor.lim_sw_right = 1;
+   else   chassis_t.Sensor.lim_sw_right = 0;
+  if(IS_STATE(CORRET_ENCODE) && data[0]>0)
+     SET_STATE(OUT_OF_CONTROL);
+//  chassis_t.Sensor.laser_sw_left = data[1]>>4 & 0x0f;
+//  chassis_t.Sensor.laser_sw_left = data[1] & 0x0f;
+//  
+//   chassis_t.Sensor.sonic_left = data[2];
+//   chassis_t.Sensor.sonic_right = data[3];
+//  
+//  p.u_8[0] = data[4];
+//  p.u_8[1] = data[5];
+//  p.u_8[2] = data[6];
+//  p.u_8[3] = data[7];
+//  
+  chassis_t.Sensor.encoder = GetPosition(chassis_t.pchassisEnconder_t);  
 }
 /**
 	* @Data    2019-03-30 22:13
@@ -686,21 +619,171 @@ void ChassisSensorParse(uint8_t *data)
 	int16_t Go(int16_t target,int16_t speed)
 	{
 		int16_t dire;
-		dire =chassis_t.State.r_area  - target;
+		dire =GET_CHASSIS_SELF_POS(REAL_AREA)  - target;
 			if(ABS(dire) >1)
 			dire =(int16_t)( dire *0.5);
 			speed = dire * speed;
 			SetMotorTarget(speed,speed); 
 			return dire;
-
-
 	}
+  int16_t flag_toback,flag_max=150,dire_temp=1;
+  
+int16_t Toback(int16_t speed)
+  {
+    if(flag_toback>flag_max)
+    {
+      dire_temp = -dire_temp;
+      flag_toback=0;
+    } 
+    else flag_toback++;
+    return speed*dire_temp;
+  }
+/**
+	* @Data    2019-03-30 22:13
+	* @brief   编码器跑到指定位置
+	* @param   void
+	* @retval  void
+	*/
+  int16_t GoToPiont(int16_t piont,int16_t *pid_out)
+  {
+    *(pid_out+0)= PostionPid(chassis_t.pwheel1_t->ppostionPid_t, CalculateError(piont,chassis_t.Sensor.encoder,4000,5000));
+    *(pid_out+1) = PostionPid(chassis_t.pwheel2_t->ppostionPid_t, CalculateError(piont,chassis_t.Sensor.encoder,4000,5000));
+    return ABS(chassis_t.pwheel1_t->ppostionPid_t->error);
+  }
+ /**
+	* @Data    2019-03-30 22:13
+	* @brief   编码器值确定区域
+	* @param   void
+	* @retval  void
+	*/ 
+uint32_t SetAByEncoder(void)
+{
+  if(chassis_t.Sensor.encoder <=chassis_t.track.up_turn_len)
+    return UP_ROAD;
+  else if(chassis_t.Sensor.encoder > chassis_t.track.up_turn_len &&chassis_t.Sensor.encoder <chassis_t.track.down_turn_len)
+    return MID_ROAD;
+  else return DOWN_ROAD;
+}
+ /**
+	* @Data    2019-03-30 22:13
+	* @brief   判断编码器值是否偏差过大，并校准
+	* @param   void
+	* @retval  void
+	*/ 
+int16_t u_flag =0,u_flag4=0,max_u_flag = 100;
+void EncodeDetector(void)
+{
+if(IS_OPEN_INT(GetGyroDire(),(chassis_t.track.half_angle-3),(chassis_t.track.half_angle+3)))
+{
+  if(chassis_t.Sensor.encoder <  chassis_t.track.half_len-100)
+     CalibratingEncoder(chassis_t.pchassisEnconder_t,chassis_t.track.up_turn_len);
+  else if(chassis_t.Sensor.encoder > chassis_t.track.half_len +100)
+    CalibratingEncoder(chassis_t.pchassisEnconder_t,chassis_t.track.down_turn_len);
+}
+else if(chassis_t.Sensor.lim_sw_left ==1)
+{
+   CalibratingEncoder(chassis_t.pchassisEnconder_t,chassis_t.track.total_len);
+}
+else if(chassis_t.Sensor.lim_sw_right ==1)
+{
+   CalibratingEncoder(chassis_t.pchassisEnconder_t,0);
+}
+//待测试
+else if(GetDistance(3) > 100)
+{
+  u_flag++;
+  if(u_flag >max_u_flag)
+  {
+    CalibratingEncoder(chassis_t.pchassisEnconder_t,chassis_t.track.total_len - (int32_t)GetDistance(3));
+    u_flag =0;
+  }
+}
+else if(GetDistance(4) >100)
+{
+  u_flag4++;
+  if(u_flag4 >max_u_flag)
+  {
+    CalibratingEncoder(chassis_t.pchassisEnconder_t,(int32_t)GetDistance(4));
+    u_flag4 =0;
+  }
+}
+  else 
+  {
+    if(u_flag <0)
+     u_flag = 0;
+    u_flag--;
+    if(u_flag4 <0)
+     u_flag4 = 0;
+    u_flag4--;
+  }
+  //    lefts = (int16_t)GetDistance(3);
+  //rights = (int16_t)GetDistance(4);
+}
+
+ /**
+	* @Data    2019-03-30 22:13
+	* @brief   自动校准所有数据
+	* @param   void
+	* @retval  void
+	*/ 
+  MOD_Status AutoCalibrationData(void)
+{
+  if(chassis_t.Sensor.lim_sw_left ==1)
+  {
+     CalibratingEncoder(chassis_t.pchassisEnconder_t,chassis_t.track.total_len);
+     chassis_t.pwheel1_t->target =chassis_t.pwheel2_t->target = 0;
+      SET_CHASSIS_LAST_SELF_POS(MID_ROAD);
+    SET_CHASSIS_REAL_SELF_POS(DOWN_ROAD);
+    return MOD_OK;
+  }
+  else if(chassis_t.Sensor.lim_sw_right ==1)
+  {
+     CalibratingEncoder(chassis_t.pchassisEnconder_t,0);
+     chassis_t.r_dire = chassis_t.pGyro_t->Yaw;
+    chassis_t.pwheel1_t->target =chassis_t.pwheel2_t->target = 0;
+    SET_CHASSIS_LAST_SELF_POS(MID_ROAD);
+    SET_CHASSIS_REAL_SELF_POS(UP_ROAD);
+       return MOD_OK;
+  }
+  else 
+//    chassis_t.pwheel1_t->target =chassis_t.pwheel2_t->target = 1000;
+//    chassis_t.pwheel1_t->error = chassis_t.pwheel1_t->target - chassis_t.pwheel1_t->real_speed;
+//    chassis_t.pwheel2_t->error = chassis_t.pwheel2_t->target - chassis_t.pwheel2_t->real_speed;
+//    SpeedPid(chassis_t.pwheel1_t->pspeedPid_t,chassis_t.pwheel1_t->error);
+//    SpeedPid(chassis_t.pwheel2_t->pspeedPid_t,chassis_t.pwheel2_t->error);
+//   chassis_t.pwheel1_t->pspeedPid_t->pid_out= MAX(chassis_t.pwheel1_t->pspeedPid_t->pid_out,4000);
+//   chassis_t.pwheel1_t->pspeedPid_t->pid_out= MIN(chassis_t.pwheel1_t->pspeedPid_t->pid_out,-4000);
+//    chassis_t.pwheel2_t->pspeedPid_t->pid_out =MAX(chassis_t.pwheel2_t->pspeedPid_t->pid_out,4000);
+//    chassis_t.pwheel2_t->pspeedPid_t->pid_out = MIN(chassis_t.pwheel2_t->pspeedPid_t->pid_out,-4000);
+//		ChassisCanTx(chassis_t.pwheel1_t->pspeedPid_t->pid_out,chassis_t.pwheel2_t->pspeedPid_t->pid_out);
+    return MOD_ERROR;
+}
+ /**
+	* @Data    2019-03-30 22:13
+	* @brief   轨道数据初始化
+	* @param   void
+	* @retval  void
+	*/ 
+void TrackparseInit(int16_t tatol_len,int16_t angle)
+{
+     chassis_t.track.total_len =1670 ;//tatol_len;//总长度
+     chassis_t.track.angle = angle;//轨道角度 4
+     chassis_t.track.up_road_len =520-300; //(int16_t)(0.246 *tatol_len);//中路长度1
+     chassis_t.track.mid_road_len = 1000-300; //(int16_t)(0.317 *tatol_len);//中路长度
+     chassis_t.track.dowm_road_len = 400-300;//chassis_t.track.up_road_len;//下路长度
+     chassis_t.track.turning_len =523;//拐弯长度//实验室423 3
+
+     chassis_t.track.half_angle = (int16_t)(chassis_t.track.angle*0.5);//轨道半角度 5
+     chassis_t.track.turning_angle = chassis_t.track.half_angle;//拐弯角度 6
+     chassis_t.track.half_len = (int16_t)(tatol_len*0.5);//轨道半长度
+
+     chassis_t.track.up_turn_len = 500+ (int16_t)(chassis_t.track. turning_len*0.5)-350;//实验室//chassis_t.track.up_road_len + (int16_t)(chassis_t.track. turning_len*0.5);//上路拐弯距离比赛//实验室274  7
+     chassis_t.track.down_turn_len = chassis_t.track.up_turn_len + (int16_t)(chassis_t.track. turning_len*0.5) + 1000-300-150;//下路拐弯距离//chassis_t.track.up_turn_len + (int16_t)(chassis_t.track. turning_len*0.5) +  chassis_t.track.mid_road_len-300;//下路拐弯距离//实验室1512
+     chassis_t.track.end = chassis_t.track.total_len - 600;//终点死区
+     chassis_t.track.start = 300;//起点死区 2
+}
 /*----------------------------------file of end-------------------------------*/
 //测试区
-//void midrun(void)
-//{
-//  
-//}
 
 
 

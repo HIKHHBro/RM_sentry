@@ -100,8 +100,8 @@ int16_t SpeedPid(speedPidStruct *sps, int16_t error);
 	HAL_StatusTypeDef CreateDataSpace(bezierStruct* bs);
 	uint32_t QuadTo(const uint8_t n,const uint32_t *point,float t);
 /* =========================== ±´Èû¶ûÇúÏß of end =========================== */
-
-
+void Insert(int16_t fx[], int16_t x[]);
+int16_t NewtonInterpolation(int16_t fx[], int16_t x[], int16_t a);
 #endif	// __COUNTERS_H
 	
 /*--------------------------------file of end---------------------------------*/

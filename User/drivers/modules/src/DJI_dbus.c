@@ -27,7 +27,7 @@
 #ifdef  RC_UART            
 #define RC_DATA_RX_LEN   (18 + HEAD_FRAME_LEN)
 uint8_t databuff[RC_DATA_RX_LEN];//数据接收
-//static dbusStruct lostdata;
+static dbusStruct lostdata;
 /**
 	* @Data    2019-01-15 20:24
 	* @brief   大疆遥控初始化
@@ -68,6 +68,8 @@ uint8_t databuff[RC_DATA_RX_LEN];//数据接收
 			dbs->status = 0;
 			return HAL_ERROR;
 		}
+    dbs->fps[FPS_ADDR]= 1;
+    SetFpsAddress(dbs->fps);
 		SET_BIT(dbs->status,INIT_OK);
 		return HAL_OK;
 	}
@@ -108,27 +110,24 @@ uint8_t databuff[RC_DATA_RX_LEN];//数据接收
 		dbs->mouse.press_right 	= databuff[13+DATA_LEN_BYTE_LEN];
 		
 		dbs->keyBoard.key_code 	= databuff[14+DATA_LEN_BYTE_LEN] | databuff[15+DATA_LEN_BYTE_LEN] << 8; //key broad code
+    dbs->thumbwheel =((int16_t)databuff[16 +DATA_LEN_BYTE_LEN] | ((int16_t)databuff[17 +DATA_LEN_BYTE_LEN] << 8)) & 0x07FF;
+     dbs->thumbwheel -= 1024;
+     Fps(dbs->fps);
     SET_BIT(dbs->status,RX_OK);
-//      lostdata = *dbs;
+     lostdata = *dbs;
 		}
 		else
 		{
-//    *dbs = lostdata;
-//		dbs->ch1 = 0;
-//		dbs->ch2 = 0;
-//		dbs->ch3 = 0;
-//		dbs->ch4 = 0;
-// 
-//		dbs->switch_left = 0;
-//		dbs->switch_right = 0;
-//		
-//		dbs->mouse.x = 0;
-//		dbs->mouse.y = 0;
-//		dbs->mouse.z = 0;
-//		
-//		dbs->mouse.press_left	= 0;
-//		dbs->mouse.press_right	= 0;
-//		dbs->keyBoard.key_code	= 0;
+      if(GetFps(dbs->fps) ==0)
+      {
+        dbs->ch1 = 0;
+        dbs->ch2 = 0;
+        dbs->ch3 = 0;
+        dbs->ch4 = 0;
+       CLEAR_BIT(dbs->status,RX_OK);
+      }
+      else *dbs = lostdata;
+//    
 		}
 //        taskEXIT_CRITICAL()	;
 	}
@@ -144,6 +143,6 @@ uint8_t databuff[RC_DATA_RX_LEN];//数据接收
 			if(data > -(ABS(range)) && data < (ABS(range)))
 				data = 0;
 			return data;
-		}
+		} 
 #endif
 	/*----------------------------------file of end-----------------------------*/
