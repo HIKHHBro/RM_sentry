@@ -242,8 +242,8 @@ void RM3508ParseData(RM3508Struct *RM3508,uint8_t *data);
     int16_t coefficient;
     fps_t fps;//Ö¡ÂÊ
     postionPidStruct *ppostionPid_t;
-		speedPidStruct *pspeedPid_t;
-  //postionPidStruct *pspeedPid_t;
+//		speedPidStruct *pspeedPid_t;
+  postionPidStruct *pspeedPid_t;
 }GM6020Struct;
  void GM6020ParseData(GM6020Struct* GM6020,uint8_t *data);
 /* =========================== M6020 of end =========================== */

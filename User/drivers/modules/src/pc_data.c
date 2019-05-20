@@ -84,7 +84,7 @@ int16_t low_cont,max_low_cont=500;
   int16_t __tem_pitch;
     float yawscinf =-1;
     float pitchddd =1;
-    int16_t last_yaaw_get;
+        int16_t last_yaaw_get;
     int16_t e_pitch_temp =IND_PITCH,e_yaw_temp=IND_YAW;//Ó¢ÌØ¶û  490//ÆÕÍ¨   270  290
 void Pc_ParseData(pcDataStruct* pc)
 {

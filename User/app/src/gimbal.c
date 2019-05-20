@@ -31,7 +31,7 @@
 	postionPidStruct yawInnerLoopPid_t;//yaw 电机内环pid
 	GM6020Struct pitch_t;//pitch轴电机
 	postionPidStruct pitchOuterLoopPid_t;//pitch 电机外环pid
-	speedPidStruct pitchInnerLoopPid_t;//pitch 电机内环pid
+	postionPidStruct pitchInnerLoopPid_t;//pitch 电机内环pid
   
   static gyroStruct gimbalGyroByCan_t;
 /* -------------- 任务句柄 ----------------- */
@@ -287,20 +287,34 @@ Int16Queue pitchStatusQu;
         gimbal_t.pPitch_t->ppostionPid_t->integral_threshold =300;
 			/* ------ 内环pid参数 ------- */
                   /* ------ 内环pid参数 ------- */
-        gimbal_t.pPitch_t->pspeedPid_t->kd =0;
-        gimbal_t.pPitch_t->pspeedPid_t->ki =0.35;//45;
-        gimbal_t.pPitch_t->pspeedPid_t->kp =236;//290;
-        gimbal_t.pPitch_t->pspeedPid_t->pid_out = 0;
+                  
+        gimbal_t.pPitch_t->pspeedPid_t->kp = 0;
+				gimbal_t.pPitch_t->pspeedPid_t->kd = 0;
+				gimbal_t.pPitch_t->pspeedPid_t->ki = 0;
 				gimbal_t.pPitch_t->pspeedPid_t->error = 0;
 				gimbal_t.pPitch_t->pspeedPid_t->last_error = 0;//上次误差
-				gimbal_t.pPitch_t->pspeedPid_t->before_last_error = 0;//上上次误差
 				gimbal_t.pPitch_t->pspeedPid_t->integral_er = 0;//误差积分
 				gimbal_t.pPitch_t->pspeedPid_t->pout = 0;//p输出
 				gimbal_t.pPitch_t->pspeedPid_t->iout = 0;//i输出
 				gimbal_t.pPitch_t->pspeedPid_t->dout = 0;//k输出
 				gimbal_t.pPitch_t->pspeedPid_t->pid_out = 0;//pid输出
-        gimbal_t.pPitch_t->pspeedPid_t->motor_lim =PITCH_LIMIMT_CUT;
-        gimbal_t.pPitch_t->pspeedPid_t->limiting=PITCH_LIMIMT_CUT;
+        gimbal_t.pPitch_t->pspeedPid_t->integral_limint = LINT_LIMINT;//积分限幅
+        gimbal_t.pPitch_t->pspeedPid_t->integral_threshold =300;
+                  
+//        gimbal_t.pPitch_t->pspeedPid_t->kd =0;
+//        gimbal_t.pPitch_t->pspeedPid_t->ki =0.35;//45;
+//        gimbal_t.pPitch_t->pspeedPid_t->kp =236;//290;
+//        gimbal_t.pPitch_t->pspeedPid_t->pid_out = 0;
+//				gimbal_t.pPitch_t->pspeedPid_t->error = 0;
+//				gimbal_t.pPitch_t->pspeedPid_t->last_error = 0;//上次误差
+//				gimbal_t.pPitch_t->pspeedPid_t->before_last_error = 0;//上上次误差
+//				gimbal_t.pPitch_t->pspeedPid_t->integral_er = 0;//误差积分
+//				gimbal_t.pPitch_t->pspeedPid_t->pout = 0;//p输出
+//				gimbal_t.pPitch_t->pspeedPid_t->iout = 0;//i输出
+//				gimbal_t.pPitch_t->pspeedPid_t->dout = 0;//k输出
+//				gimbal_t.pPitch_t->pspeedPid_t->pid_out = 0;//pid输出
+//        gimbal_t.pPitch_t->pspeedPid_t->motor_lim =PITCH_LIMIMT_CUT;
+//        gimbal_t.pPitch_t->pspeedPid_t->limiting=PITCH_LIMIMT_CUT;
 
 //ceshi----------------
 //				gimbal_t.pPitch_t->pspeedPid_t->kp = 0;
@@ -444,11 +458,11 @@ Int16Queue pitchStatusQu;
     gimbal_t.pPitch_t->ppostionPid_t->pid_out = MAX(gimbal_t.pPitch_t->ppostionPid_t->pid_out,pitchxianfu);
     gimbal_t.pPitch_t->ppostionPid_t->pid_out = MIN( gimbal_t.pPitch_t->ppostionPid_t->pid_out,-pitchxianfu);
        /* -------- 内环 --------- */
-		gimbal_t.pPitch_t->ppostionPid_t->pid_out = PostionOutToSpeedOut(gimbal_t.pPitch_t->ppostionPid_t->pid_out);
+		gimbal_t.pPitch_t->ppostionPid_t->pid_out = gimbal_t.pPitch_t->ppostionPid_t->pid_out;
     gimbal_t.pPitch_t->pspeedPid_t->error = gimbal_t.pPitch_t->ppostionPid_t->pid_out - gimbal_t.pPitch_t->real_speed;//GIMBAL_CAL_ERROR(gimbal_t.pPitch_t->ppostionPid_t->pid_out,gimbal_t.pPitch_t->real_speed);
   //	temp_pid_out = MAX(gimbal_t.pPitch_t->pspeedPid_t->pid_out,sudupitchxianfu); //限做大值
    // temp_pid_out = MIN(gimbal_t.pPitch_t->pspeedPid_t->pid_out,-sudupitchxianfu); //限做小值
-    return SpeedPid(gimbal_t.pPitch_t->pspeedPid_t,gimbal_t.pPitch_t->pspeedPid_t->error);
+    return PostionPid(gimbal_t.pPitch_t->pspeedPid_t,gimbal_t.pPitch_t->pspeedPid_t->error);
   }
 /**
 	* @Data    2019-04-16 22:29
@@ -551,9 +565,9 @@ Int16Queue pitchStatusQu;
 * @param   void
 * @retval  void
 */
-float kp_test=5;
-float ki_test=0;
-float kd_test=5;
+float kp_test=0.4;
+float ki_test=0.005;
+float kd_test=0;
 void SetPcControlPID(void)
 {
 //				gimbal_t.pYaw_t->ppostionPid_t->kp = 0;//低速-2.9，-29  中速//-3.5,-16//-3.5,-25//     0.8,0.4,nei-5,-15
@@ -601,8 +615,8 @@ void SetPcControlPID(void)
         gimbal_t.pPitch_t->ppostionPid_t->integral_threshold =300;
         
          gimbal_t.pPitch_t->pspeedPid_t->kd =0;
-        gimbal_t.pPitch_t->pspeedPid_t->ki =0.35;//45;
-        gimbal_t.pPitch_t->pspeedPid_t->kp =200;//290
+        gimbal_t.pPitch_t->pspeedPid_t->ki =0;//45;
+        gimbal_t.pPitch_t->pspeedPid_t->kp =400;//290
          //gimbal_t.pPitch_t->pspeedPid_t->pid_out = 0;
 }
 /**
@@ -630,9 +644,9 @@ void SetGeneralMode(void)
 				gimbal_t.pYaw_t->InnerLoopPid_t->ki = 0;
   
   						/* ------ 外环pid参数 ------- */
-				gimbal_t.pPitch_t->ppostionPid_t->kp =4;
-				gimbal_t.pPitch_t->ppostionPid_t->kd =6;
-				gimbal_t.pPitch_t->ppostionPid_t->ki = 0;
+				gimbal_t.pPitch_t->ppostionPid_t->kp =0.4;
+				gimbal_t.pPitch_t->ppostionPid_t->kd =0;
+				gimbal_t.pPitch_t->ppostionPid_t->ki = 0.005;
 				gimbal_t.pPitch_t->ppostionPid_t->error = 0;
 				gimbal_t.pPitch_t->ppostionPid_t->last_error = 0;//上次误差
 				gimbal_t.pPitch_t->ppostionPid_t->integral_er = 0;//误差积分
@@ -646,8 +660,8 @@ void SetGeneralMode(void)
         
         
         gimbal_t.pPitch_t->pspeedPid_t->kd =0;
-        gimbal_t.pPitch_t->pspeedPid_t->ki =0.35;//45;
-        gimbal_t.pPitch_t->pspeedPid_t->kp =236;//290
+        gimbal_t.pPitch_t->pspeedPid_t->ki =0;//45;
+        gimbal_t.pPitch_t->pspeedPid_t->kp =400;//290
   //gimbal_t.pPitch_t->pspeedPid_t->pid_out = 0;
 //        //ceshi----------------
 //        gimbal_t.pPitch_t->pspeedPid_t->kp = 0;

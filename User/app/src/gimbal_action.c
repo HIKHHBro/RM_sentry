@@ -53,7 +53,7 @@ extern 	gimbalStruct gimbal_t;//云台结构体
 uint8_t scflag = 0;
   int16_t pitchspeed_= 15;
     int16_t yawspeed_= 550;
-  int16_t scok_up = 1500;
+  int16_t scok_up = 1580;
   int16_t scok_down = 2000;
 void ScanningToExplore(void)
 {
@@ -109,7 +109,7 @@ void ScanningToExplore(void)
 * @retval  void
 */
 int16_t fri_fre = 12;
-float pitchcin = 0.5;//1024分辨率 0.5   720  1
+float pitchcin = 0.3;//1024分辨率 0.5   720  1
 float  yawcin = 0.12;//0.77
 void PcControlMode(void)
 {
@@ -132,8 +132,21 @@ void PcControlMode(void)
 //    if(gimbal_t.pPitch_t->ppostionPid_t->error - gimbal_t.pPc_t->pitch_target_angle)
   }
   
-  if(gimbal_t.pPc_t->distance < 300 &&(IS_STATE(GAMING_BEGIN) || IS_STATE(DEBUG_BEGIN)))
-    Shoot(10,0);
+  if((IS_STATE(GAMING_BEGIN) || IS_STATE(DEBUG_BEGIN)))
+  {
+    if(gimbal_t.pPc_t->distance < 300)
+    Shoot(12,0);
+    else if(gimbal_t.pPc_t->distance >= 300)
+    {
+        Shoot(5,0);
+       __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,1310);
+    }
+    else if(gimbal_t.pPc_t->distance <= 430)
+    {
+      Shoot(0,0);
+      
+    }
+  }
   else Shoot(0,0);
 //  Shoot(0,0);
 //    __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,1000);
@@ -203,9 +216,8 @@ void ControlSwitch(uint32_t commot)
 int16_t conflag =0;
   uint32_t ControlDecision(void)
   {
-    switch (gimbal_t.pRc_t->switch_left)
+    if (gimbal_t.pRc_t->switch_left !=DISABLE_MOD)
     {
-      case 1:
         if(gimbal_t.pRc_t->switch_right ==1)
         {
           if(IS_STATE(FINE_ENEMY))
@@ -217,15 +229,9 @@ int16_t conflag =0;
         else if(gimbal_t.pRc_t->switch_right ==2)
         {
            SET_READ_STATUS(RC_MODE_READ);
-        } 
-        break;
-      case 2:
-        CLEAR_BIT(gimbal_t.status,DISABLE_GIMBAL);//完全开闭
-        break;
-      default:
-        SET_READ_STATUS(DISABLE_MOD_READ);//失能
-        break;      
+        }      
     } 
+    else CLEAR_BIT(gimbal_t.status,DISABLE_GIMBAL);//完全开闭
     return (gimbal_t.status & JUDGE_READ);//与出就绪位，用以判断不影响转态值
   }
  /**
@@ -285,11 +291,11 @@ void GimbalRcControlMode(void)
      gimbal_t.pYaw_t->ppostionPid_t->error =CalculateError((gimbal_t.pYaw_t->target),(gimbal_t.pYaw_t->real_angle),15000,(20480));//待测试//rctemp;// 
    if(gimbal_t.pRc_t->ch2 >600)
   {
-       Shoot(8,0);
+       Shoot(12,0);
   }
   else  Shoot(0,0);
     
-  __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,1250);
+  __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,1260);
 //  if(ABS( gimbal_t.pYaw_t->ppostionPid_t->error) <13)
 //  {
 //   gimbal_t.pYaw_t->ppostionPid_t->kp = kp_temp*gimbal_t.pYaw_t->ppostionPid_t->error*0.05;
@@ -370,7 +376,7 @@ uint8_t lock_buffer_flag =0;
 			SetGeneralMode();
       angle_buffer_f = 0;
       angle_buffer_f = gimbal_t.pYaw_t->real_angle;
-   //   gimbal_t.pPitch_t->target = gimbal_t.pPitch_t->real_angle +e_error;
+      gimbal_t.pPitch_t->target = gimbal_t.pPitch_t->real_angle;
 		}
     if(lock_buffer_flag == 10)
     {

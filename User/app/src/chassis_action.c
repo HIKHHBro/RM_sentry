@@ -67,7 +67,7 @@
 */
   uint32_t ChassisControlDecision(void)
   {
-    if(chassis_t.rc_t ->switch_left ==2)
+    if(chassis_t.rc_t ->switch_left ==DISABLE_MOD)
     {
       CLEAR_BIT(chassis_t.status,DISABLE_CHASSIS);
      return (chassis_t.status & CHASSIS_JUDGE_READ);
@@ -76,8 +76,8 @@
     {
       if(IS_STATE(OUT_OF_CONTROL))
         SET_CHA_READ_STATUS(CHASSIS_OUT_OF_CONTROL_READ);
-      else if(IS_STATE(HURTED))
-        SET_CHA_READ_STATUS(CHASSIS_ELUDE_MODE_READ);
+      //else if(IS_STATE(HURTED))
+      //  SET_CHA_READ_STATUS(CHASSIS_ELUDE_MODE_READ);//躲避模式有问题
       else if(IS_STATE(HAVE_ENEMY))
         SET_CHA_READ_STATUS(CHASSIS_PC_SHOOT_MODE_READ);
       else SET_CHA_READ_STATUS(CHASSIS_CRUISE_MODE_READ);
@@ -275,7 +275,8 @@ int16_t pid_out[2];
     temp_outtarget = postion_i+postion_buff;
    if(temp_outtarget>chassis_t.track.end)
      postion_buff -= (temp_outtarget - chassis_t.track.end);
-     
+   //if(temp_outtarget < chassis_t.track.start)
+   //   postion_buff += (temp_outtarget - chassis_t.track.start);
      GoToPiont((postion_i+postion_buff),pid_chassis_pos);
     
  //  target_posion = Toback(speed_temp_);
@@ -333,7 +334,7 @@ void ChassisOutOfControlMode(void)
   {
     if(buffer_lim_sw ==1)
     {
-      temp_error = GoToPiont(100,pidout);
+      temp_error = GoToPiont(chassis_t.track.start +100,pidout);
       SetMotorTarget(pidout[0],pidout[1]);
     }
     else if(buffer_lim_sw ==2)

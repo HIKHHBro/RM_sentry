@@ -191,7 +191,7 @@
 	}
   
 int16_t hot_flag=0;
-  int16_t speed_fri =1300;
+  int16_t speed_fri =1260;
 void Shoot(uint8_t speed,uint8_t buffer_on)
 {
   if(speed ==0)

@@ -42,6 +42,15 @@
     #include <string.h>
     #include <stdio.h>
 #endif 
+/* -------------比赛颜色接口 ----------------- */
+#define BLUE_GAME 0
+#define RED_GAME  1
+
+ //#define DEBUG_BY
+/* ------------- 按键接口----------------- */
+#define DISABLE_MOD 3
+#define RC_MOD      2
+#define AUTO_MOD    1
 /* ----------------- led引脚宏定义定义 -------------------- */
   #if RM_NEW_BOARD //新板引脚宏定义
       #define LED_1 GPIO_PIN_1
@@ -191,11 +200,6 @@
     #define _FPS_  //帧率统计宏开关
     //配置定时器为1us记数一次  ptim = 90， psc =89， arr = 0xFFFF-1 最长时间为65ms
     
-/* -------------比赛颜色接口 ----------------- */
-#define BLUE_GAME 1
-#define RED_GAME  0
-//#define DEBUG_BY
-
   #elif RM_OLD_BOARD
     #define LED_1 0
     #define LED_2 0

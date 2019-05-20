@@ -112,22 +112,12 @@ void SysDetectControl(sysDetectStruct* sds)
 {
   switch (sds->psys_chassis_t->rc_t->switch_left)
   {
-    case 1:
-      CLEAR_BIT(sds->psys_chassis_t->status,DHECK_DATA_RUNING);
+    case AUTO_MOD:
+      SET_BIT(sds->psys_chassis_t->status,DHECK_DATA_RUNING);
    // __HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,2000);//ces
-     RcCalibratorMode(sds);
-      break;
-    case 3:
-         SET_BIT(sds->psys_chassis_t->status,DHECK_DATA_RUNING);
-   //   		__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,1000);//ces
-     AutoCalibratorMode(sds);
-      break;
-//   case 2: 
-//    	__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,1200);//ces
-//     break;
-    default:
-      break;
-  }
+  //   RcCalibratorMode(sds);
+    AutoCalibratorMode(sds);
+    
     sds->psys_chassis_t->pwheel1_t->error = sds->psys_chassis_t->pwheel1_t->target - sds->psys_chassis_t->pwheel1_t->real_speed;
     sds->psys_chassis_t->pwheel2_t->error =sds->psys_chassis_t->pwheel2_t->target - sds->psys_chassis_t->pwheel2_t->real_speed;
     SpeedPid(sds->psys_chassis_t->pwheel1_t->pspeedPid_t,sds->psys_chassis_t->pwheel1_t->error);
@@ -137,7 +127,19 @@ void SysDetectControl(sysDetectStruct* sds)
     sds->psys_chassis_t->pwheel2_t->pspeedPid_t->pid_out =MAX(sds->psys_chassis_t->pwheel2_t->pspeedPid_t->pid_out,4000);
     sds->psys_chassis_t->pwheel2_t->pspeedPid_t->pid_out = MIN(sds->psys_chassis_t->pwheel2_t->pspeedPid_t->pid_out,-4000);
 		ChassisCanTx(sds->psys_chassis_t->pwheel1_t->pspeedPid_t->pid_out,sds->psys_chassis_t->pwheel2_t->pspeedPid_t->pid_out);
- 
+      break;
+    case RC_MOD:
+         CLEAR_BIT(sds->psys_chassis_t->status,DHECK_DATA_RUNING);
+   //   		__HAL_TIM_SetCompare(FRICTIONGEAR,FRICTIONGEAR_1,1000);//ces
+     //AutoCalibratorMode(sds);
+       RcCalibratorMode(sds);
+      break;
+   case DISABLE_MOD: 
+    	ChassisCanTx(0,0);
+     break;
+    default:
+      break;
+  } 
 }
 
   /**

@@ -120,7 +120,6 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>?瑆0仚 ?瑆0仚 </Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -711,6 +710,11 @@
           <count>81</count>
           <WinNumber>2</WinNumber>
           <ItemText>e_pitch_temp,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>82</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>u_flag,0x0A</ItemText>
         </Ww>
       </WatchWindow2>
       <Tracepoint>
@@ -1375,7 +1379,7 @@
       <GroupNumber>7</GroupNumber>
       <FileNumber>47</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\bsp\src\baseclass.c</PathWithFileName>

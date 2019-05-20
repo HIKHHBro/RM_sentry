@@ -63,7 +63,7 @@ void UserTxControl(void)
   EscPc(userTx_t.rc->switch_left,userTx_t.rc->ch1,userTx_t.rc->ch2,userTx_t.rc->ch3,userTx_t.rc->ch4,userTx_t.rc->thumbwheel,userTx_t.rc->switch_right);
   if((gimbal_status & RUNING_OK) ==RUNING_OK)
   {
-    if(userTx_t.rc->switch_left ==1)
+    if(userTx_t.rc->switch_left !=DISABLE_MOD)
     {
       xStatus = xQueueReceive(gimbal_queue,pc_data,0);
       if(xStatus == pdPASS)
@@ -82,19 +82,19 @@ void UserTxControl(void)
   }
 if(((chassis_status & RUNING_OK) ==RUNING_OK) || IS_BYTE(chassis_status,DHECK_DATA_RUNING))
 {
-   if(userTx_t.rc->switch_left !=2)
+   if(userTx_t.rc->switch_left !=DISABLE_MOD)
    {
     memset(pc_data,0,8);
     xStatus = xQueueReceive(chassis_queue,pc_data,0);
     if(xStatus == pdPASS)
     {
       taskENTER_CRITICAL();
-      if(userTx_t.rc->switch_right ==3)
-      {
-        memset(pc_data,0,8);
-        CanTxMsg(CHASSIS_CAN,CHASSIS_CAN_TX_ID,pc_data);
-      }
-// else  CanTxMsg(CHASSIS_CAN,CHASSIS_CAN_TX_ID,pc_data);//注释作为底盘电机临时失能
+//      if(userTx_t.rc->switch_right ==3)
+//      {
+//        memset(pc_data,0,8);
+//        CanTxMsg(CHASSIS_CAN,CHASSIS_CAN_TX_ID,pc_data);
+//      }
+   CanTxMsg(CHASSIS_CAN,CHASSIS_CAN_TX_ID,pc_data);//注释作为底盘电机临时失能
       taskEXIT_CRITICAL();
     }
   }
